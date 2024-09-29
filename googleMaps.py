@@ -7,8 +7,9 @@ class Node:
         self.parent = parent
         self.state = state # we want it to be type State
 class Problem: # TODO
-    def __init__(self):
-        self = self
+    pass
+class Action: # Maybe we can receive a state and return a new one 
+    pass # TODO
 def main():
     print("Hello World!")
 main()
