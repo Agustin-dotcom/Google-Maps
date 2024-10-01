@@ -14,8 +14,8 @@ class Problem: # TODO
         with open(file_name,'r') as file:
             new_dictionary = json.load(file)
             for i in new_dictionary['intersections']:
-                i['whereto'] = [j['destination'] for j in new_dictionary['segments'] if j['origin'] == i['identifier']]
-                
+                i['whereto'] = [(j['destination'],j['distance']/j['speed']) for j in new_dictionary['segments'] if j['origin'] == i['identifier']]
+
 class Action: # Maybe we can receive a state and return a new one 
     def __init__(self,action):
         self.action = action
