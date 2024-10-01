@@ -20,7 +20,7 @@ class Problem: # TODO # yo pondria "current" y "accumulatedCost" aqui en la clas
             i['whereto'] = [{"id":j['destination'],"cost":j['distance']/j['speed']} for j in new_dictionary['segments'] if j['origin'] == i['identifier']]
         self.dictionary = new_dictionary    
         # and here I guess we are ready to start the problem
-
+        self.initializeOpen(self.dictionary['initial']) # inicializo nodo raiz
     def initializeOpen(self,initial):
         self.root = Node(None,initial,None) # no estoy seguro si para llegar al nodo raiz action == None
 class Action: # Maybe we can receive a state and return a new one 
@@ -30,6 +30,5 @@ class Action: # Maybe we can receive a state and return a new one
 def main():
     #os.chdir("C:\googleMapsVS\Google-Maps")
     problem = Problem("paseo_simón_abril_albacete_250_1.json")
-    problem.initializeOpen(problem.dictionary['initial'])
     print(problem.root)
 main()
