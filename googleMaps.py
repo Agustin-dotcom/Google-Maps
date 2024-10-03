@@ -29,9 +29,13 @@ class Problem: # TODO # yo pondria "current" y "accumulatedCost" aqui en la clas
         self.root = Node(None,State(initial),Action(None,initial,0),0) # no estoy seguro si para llegar al nodo raiz action == None
         self.listOfActionsForRecoverPath.append(self.root.action)
     def testGoal(self,Node):
-        return self.dictionary['final'] == Node.state
+        return self.dictionary['final'] == Node.state.state
     def search(self,Search): # Search asumimos que es o BreadthFirst o DepthFirst
-        open = Search.insert(self.root)
+        """:param Search: o BFS o DPS
+        
+        :returns: o fallo o una lista de acciones"""
+        open = []
+        Search.insert(self.root,open)
         explored = []
         while open is not None:
             #Search.insert()
@@ -64,7 +68,7 @@ class Problem: # TODO # yo pondria "current" y "accumulatedCost" aqui en la clas
         """ 
         :param Node_param: nodo al que apuntamos 
         
-        :returns: list of """
+        :returns: list of nodes """
         successors = []
         possibleActions = []
         dictionaryOfDictionaries = self.dictionary['intersections']['identifier' == Node_param.state.state]['whereto'] # we get a dictionary of dictionaries
@@ -84,20 +88,22 @@ class Action: # Maybe we can receive a state and return a new one
         self.cost = cost
 class Search: # this is where we use inheritance
     recoverPath = [] # yo lo pondría en problema
-    def insert():
-        pass
+    def insert(self,successor,open):
+        open.append(successor)
     def extract():
         pass
-class BreadthFirst(Search):# FIFO queue
-    def insert(self,succesor,open):
-        open.append(succesor)
+    def order():
+        pass
+class BreadthFirst(Search):# FIFO queue    
     def extract(self,open):
         return open.popleft() # extrae por la izquierda (el primero en llegar)
+    def order():
+        pass
 class DepthFirst(Search): # LIFO queue
-    def insert(self,sucessor,open):
-        open.append(sucessor)
     def extract(self,open):
         return open.pop() # lo del return tiene sentido yo creo
+    def order():
+        pass
 def main():
     #os.chdir("C:\googleMapsVS\Google-Maps")
     problem = Problem("paseo_simón_abril_albacete_250_1.json")
