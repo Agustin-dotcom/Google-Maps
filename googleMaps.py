@@ -47,6 +47,7 @@ import json
 class Problem:
     def __init__(self,file_name):
         # Here, I read the dictionary
+        self.nodesGenerated = 0
         with open(file_name,'r') as file:
             self.dictionary = json.load(file)
         for i in self.dictionary.get('intersections'):
@@ -54,10 +55,12 @@ class Problem:
         # and here I guess we are ready to start the problem
         self.initializeOpen(self.dictionary.get('initial')) # inicializo nodo raiz
         
+        
     def initializeOpen(self,initial):
         if not isinstance(initial,int):
             raise TypeError(f"Introduce an int, not a {type(initial).__name__}")
         self.root = Node(None,State(initial),Action(None,initial,0),0) # no estoy seguro si para llegar al nodo raiz action == None
+        self.nodesGenerated+=1
     #################################################################################
     ####################             search              ############################
     #################################################################################
@@ -65,6 +68,8 @@ class Problem:
         """:param search_param: o BFS o DPS
         
         :returns: o fallo o una lista de acciones"""
+        expandedNodes = 0
+        exploredNodes = 0
         if not isinstance(search_param,(Search,BreadthFirst,DepthFirst)):
             raise TypeError(f"Introduce a Search object, not a {type(search_param).__name__}")
         explored = []
@@ -75,12 +80,17 @@ class Problem:
                 search_param.openDS = []
                 while len(temp)!=0:
                     search_param.openDS.append(temp.pop())
-                #search_param.openDS = np.array(search_param.openDS) #dando la vuelta el array para coger con el id mas peque;o
+                #search_param.openDS = np.array(search_param.openDS) #dando la vuelta el array para coger con el id mas peque;o    
             node = search_param.extract()
+            exploredNodes +=1
             if node.state.state not in explored:
                 if(self.testGoal(node)):
-                    return self.recoverPath(node,[])
+                    print(f'(Expanded nodes, explored nodes) --> ({expandedNodes},{exploredNodes})')
+                    print(f'Depth of the solution --> {node.depth}')
+                    print(f'Nodes generated --> {self.nodesGenerated}')
+                    return self.recoverPath(node,[],0)
                 successors = self.expand(node)
+                expandedNodes+=1
                 for  successor in successors:
                     #search_param.insert(successor,successors)
                     search_param.insert(successor)
@@ -118,6 +128,7 @@ class Problem:
         for action in possibleActions:
             newState = self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
             newNode = Node(Node_param,newState,action,Node_param.depth+1)
+            self.nodesGenerated+=1
             successors.append(newNode)
         return successors
     #################################################################################
@@ -136,20 +147,22 @@ class Problem:
         if (action.origin == state.state) :
             #self.listOfActionsForRecoverPath.append(action) # si hacemos esto estariamos introduciendo todos los nodos
             return State(action.destination)
-        raise RuntimeError(f"No se puede aplicar la siguiente acción")
+        raise Exception(f"No se puede aplicar la siguiente acción")
          #################################################################################
     ####################             recoverPath              ############################
     #################################################################################
-    def recoverPath(self,node,list_param):
-        if node.parent is None:
-            temp = []
+    def recoverPath(self,node,list_param,total_cost):# n <- len(list_param)
+        if node.parent is None:# O(1)
+            temp = []# O(1)
             i = deque(list_param)
-            while  len(i) != 0:
-                temp.append(i.pop())
+            while  len(i) != 0:# O(n)
+                temp.append(i.pop())# O(1)
+            print(f'total cost -->{total_cost}')# O(1)
             return temp
         else:
-            list_param.append(node.action)
-            return self.recoverPath(node.parent,list_param=list_param)
+            list_param.append(node.action)# O(1)
+            total_cost = total_cost + node.action.cost
+            return self.recoverPath(node.parent,list_param=list_param,total_cost=total_cost) # O(T) # not that expensive it could be worse
 class Action: # Maybe we can receive a state and return a new one 
     def __init__(self,origin,destination,cost):
         if not isinstance(origin,(int,type(None))):
@@ -183,9 +196,9 @@ def main():
     #print(agus.state.state)
     #problem.search(DepthFirst())
     #######
-    #problem = Problem('paseo_simón_abril_albacete_250_1.json')
-    #print(';'.join(map(str,problem.search(BreadthFirst()))))
-    #
     problem = Problem('paseo_simón_abril_albacete_250_1.json')
-    print(';'.join(map(str,problem.search(DepthFirst()))))
+    print(';'.join(map(str,problem.search(BreadthFirst()))))
+    #
+    #problem = Problem('paseo_simón_abril_albacete_250_1.json')
+    #print(';'.join(map(str,problem.search(DepthFirst()))))
 main()
