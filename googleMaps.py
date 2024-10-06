@@ -71,7 +71,11 @@ class Problem:
         search_param.insert(self.root)
         while search_param.openDS is not []:
             if  isinstance(search_param,DepthFirst):# solo si estamos con LIFO
-                search_param.openDS = np.array(search_param.openDS) #dando la vuelta el array para coger con el id mas peque;o
+                temp = deque(search_param.openDS)
+                search_param.openDS = []
+                while len(temp)!=0:
+                    search_param.openDS.append(temp.pop())
+                #search_param.openDS = np.array(search_param.openDS) #dando la vuelta el array para coger con el id mas peque;o
             node = search_param.extract()
             if node.state.state not in explored:
                 if(self.testGoal(node)):
@@ -179,6 +183,9 @@ def main():
     #print(agus.state.state)
     #problem.search(DepthFirst())
     #######
+    #problem = Problem('paseo_simón_abril_albacete_250_1.json')
+    #print(';'.join(map(str,problem.search(BreadthFirst()))))
+
     problem = Problem('paseo_simón_abril_albacete_250_1.json')
-    print(';'.join(map(str,problem.search(BreadthFirst()))))
+    print(';'.join(map(str,problem.search(DepthFirst()))))
 main()
