@@ -75,7 +75,7 @@ class Problem:
             node = search_param.extract()
             if node.state.state not in explored:
                 if(self.testGoal(node)):
-                    return self.recoverPath(node)
+                    return self.recoverPath(node,[])
                 successors = self.expand(node)
                 for  successor in successors:
                     #search_param.insert(successor,successors)
@@ -136,15 +136,16 @@ class Problem:
          #################################################################################
     ####################             recoverPath              ############################
     #################################################################################
-    def recoverPath(self,node):
+    def recoverPath(self,node,list_param):
         if node.parent is None:
-            #listOfActionsForRecoverPath = np.array(listOfActionsForRecoverPath)
-            #listOfActionsForRecoverPath = np.flip(listOfActionsForRecoverPath)
-            #temp = deque()
-            #for i in self.listOfActionsForRecoverPath:
-            return self.listOfActionsForRecoverPath
-        self.listOfActionsForRecoverPath.append(node.action)
-        return self.recoverPath(node.parent)
+            temp = []
+            i = deque(list_param)
+            while  len(i) != 0:
+                temp.append(i.pop())
+            return temp
+        else:
+            list_param.append(node.action)
+            return self.recoverPath(node.parent,list_param=list_param)
 class Action: # Maybe we can receive a state and return a new one 
     def __init__(self,origin,destination,cost):
         if not isinstance(origin,(int,type(None))):
@@ -156,6 +157,11 @@ class Action: # Maybe we can receive a state and return a new one
         self.origin = origin
         self.destination = destination
         self.cost = cost
+    def __str__(self):
+        return(
+            f'\n ######### \n'
+            f' (Origin, Destination, Cost) --> ({self.origin},{self.destination},{self.cost})\n'
+        )
 
 def main():
     #os.chdir("C:\googleMapsVS\Google-Maps")
@@ -174,6 +180,5 @@ def main():
     #problem.search(DepthFirst())
     #######
     problem = Problem('paseo_simón_abril_albacete_250_1.json')
-    print(problem.search(BreadthFirst()))
-
+    print(';'.join(map(str,problem.search(BreadthFirst()))))
 main()
