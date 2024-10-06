@@ -1,20 +1,21 @@
 import json
-import os
 from collections import deque
 class Search: # this is where we use inheritance
-    def __init__(self,openDS):
-        if not isinstance(openDS,deque):
-            raise TypeError(f" There has been an error, please introduce a deque object, not a {type(openDS).__name__}.")
-        self.openDS = openDS
+    def __init__(self):
+        self.openDS = deque()
     def insert(self,successor):
         self.openDS.append(successor)
     def extract():
         pass
 class BreadthFirst(Search):# FIFO queue    
     def extract(self):
+        if len(self.openDS)<1:
+            raise Exception("No puedes extraer algo que no existe")    
         return self.openDS.popleft() # extrae por la izquierda (el primero en llegar)
 class DepthFirst(Search): # LIFO queue
     def extract(self):
+        if len(self.openDS)<1:
+            raise Exception("No puedes extraer algo que no existe")
         return self.openDS.pop() # lo del return tiene sentido yo creo
 class State:
     def __init__(self,state):
@@ -34,14 +35,18 @@ class Node:
         self.action = action # the same with action is going to be a class
         self.depth = depth
     def __str__(self):
-        print("parent --> "+ str(self.parent))
-        print("state --> "+ str(self.state))
-        print("action --> (origin, destination,cost) --> "+ str(self.action.origin)+", "+str(self.action.destination)+", "+str(self.action.cost))
-        print("depth --> "+ str(self.depth))
+        stringToReturn = (
+        f'parent --> { self.parent}\n'
+        f'state --> { self.state.state}\n'
+        f'action --> (origin, destination,cost) --> ({self.action.origin} , {self.action.destination}, {self.action.cost})\n'
+        f'depth -->  {self.depth}'
+        )
+        return stringToReturn
+import json
+#import numpy as np # requiere de 'pip install numpy' in cmd line
 class Problem:
-    def __init__(self,file_name,listOfActionsForRecoverPath):
+    def __init__(self,file_name):
         # Here, I read the dictionary
-        self.listOfActionsForRecoverPath = listOfActionsForRecoverPath
         with open(file_name,'r') as file:
             self.dictionary = json.load(file)
         for i in self.dictionary.get('intersections'):
@@ -53,14 +58,6 @@ class Problem:
         if not isinstance(initial,int):
             raise TypeError(f"Introduce an int, not a {type(initial).__name__}")
         self.root = Node(None,State(initial),Action(None,initial,0),0) # no estoy seguro si para llegar al nodo raiz action == None
-        self.listOfActionsForRecoverPath.append(self.root.action)
-    #################################################################################
-    ####################             testGoal              ############################
-    #################################################################################
-    def testGoal(self,node):
-        if not isinstance(node,Node):
-            raise TypeError(f"Introduce a Node, not a {type(node).__name__}")
-        return self.dictionary.get('final') == node.state.state
     #################################################################################
     ####################             search              ############################
     #################################################################################
@@ -70,11 +67,11 @@ class Problem:
         :returns: o fallo o una lista de acciones"""
         if not isinstance(search_param,(Search,BreadthFirst,DepthFirst)):
             raise TypeError(f"Introduce a Search object, not a {type(search_param).__name__}")
-        open = []
-        search_param.insert(self.root)
         explored = []
-        while open is not None:
-            #Search.insert()
+        search_param.insert(self.root)
+        while search_param.openDS is not []:
+            if  isinstance(search_param,DepthFirst):# solo si estamos con LIFO
+                search_param.openDS = np.array(search_param.openDS) #dando la vuelta el array para coger con el id mas peque;o
             node = search_param.extract()
             if node.state.state not in explored:
                 if(self.testGoal(node)):
@@ -84,7 +81,41 @@ class Problem:
                     #search_param.insert(successor,successors)
                     search_param.insert(successor)
                 explored.append(node.state.state) #  node.state es el objeto y node.state.state es la variable en el objeto state
-        return -1
+        raise Exception("Solucion no encontrada y hemos recorrido todo el arbol :[")
+
+     #################################################################################
+    ####################             testGoal              ############################
+    #################################################################################
+    def testGoal(self,node):
+        if not isinstance(node,Node):
+            raise TypeError(f"Introduce a Node, not a {type(node).__name__}")
+        return self.dictionary.get('final') == node.state.state
+    #################################################################################
+    ####################             expand             ############################
+    #################################################################################
+    def expand(self,Node_param):
+        """ 
+        :param Node_param: nodo al que apuntamos 
+        
+        :returns: list of nodes """
+        if not isinstance(Node_param,Node):
+            raise TypeError(f"Introduce a Node object, not a {type(Node_param).__name__}")
+        successors = []
+        possibleActions = []
+        dictionaryOfDictionaries = [d['whereto'] for d in self.dictionary['intersections'] if d['identifier'] == Node_param.state.state][0] # we get a dictionary of dictionaries
+        for dictionary in dictionaryOfDictionaries:# we iterate through dictionaries with attributes {"id":x,"cost":y}
+            possibleActions.append(
+                Action(
+                    Node_param.state.state, #origen
+                    dictionary.get("id"), # destino
+                    dictionary.get("cost") #coste
+                )
+            ) # we insert into our open list the next nodes
+        for action in possibleActions:
+            newState = self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
+            newNode = Node(Node_param,newState,action,Node_param.depth+1)
+            successors.append(newNode)
+        return successors
     #################################################################################
     ####################             applyAction              ############################
     #################################################################################
@@ -99,34 +130,21 @@ class Problem:
         if not isinstance(action,Action):
             raise TypeError(f"Introduce an Action object, not a {type(action).__name__}")
         if (action.origin == state.state) :
-            self.listOfActionsForRecoverPath.append(action)
+            #self.listOfActionsForRecoverPath.append(action) # si hacemos esto estariamos introduciendo todos los nodos
             return State(action.destination)
         raise RuntimeError(f"No se puede aplicar la siguiente acción")
-        
-
-    def recoverPath(self):
-        return self.listOfActionsForRecoverPath
-     #################################################################################
-    ####################             expand             ############################
+         #################################################################################
+    ####################             recoverPath              ############################
     #################################################################################
-    def expand(self,Node_param):
-        """ 
-        :param Node_param: nodo al que apuntamos 
-        
-        :returns: list of nodes """
-        if not isinstance(Node_param,Node):
-            raise TypeError(f"Introduce a Node object, not a {type(Node_param).__name__}")
-        successors = []
-        possibleActions = []
-        dictionaryOfDictionaries = self.dictionary['intersections']['identifier' == Node_param.state.state]['whereto'] # we get a dictionary of dictionaries
-        for dictionary in dictionaryOfDictionaries:# we iterate through dictionaries with attributes {"id":x,"cost":y}
-            possibleActions.append(Action(Node_param.state.state,dictionary.get("id"),dictionary.get("cost"))) # we insert into our open list the next nodes
-        for action in possibleActions:
-            newState = self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
-            newNode = Node(Node_param,newState,action,Node_param.depth+1)
-            successors.append(newNode)
-        return successors
-
+    def recoverPath(self,node):
+        if node.parent is None:
+            #listOfActionsForRecoverPath = np.array(listOfActionsForRecoverPath)
+            #listOfActionsForRecoverPath = np.flip(listOfActionsForRecoverPath)
+            #temp = deque()
+            #for i in self.listOfActionsForRecoverPath:
+            return self.listOfActionsForRecoverPath
+        self.listOfActionsForRecoverPath.append(node.action)
+        return self.recoverPath(node.parent)
 class Action: # Maybe we can receive a state and return a new one 
     def __init__(self,origin,destination,cost):
         if not isinstance(origin,(int,type(None))):
@@ -141,18 +159,21 @@ class Action: # Maybe we can receive a state and return a new one
 
 def main():
     #os.chdir("C:\googleMapsVS\Google-Maps")
-    problem = Problem("paseo_simón_abril_albacete_250_1.json")
+    #problem = Problem("paseo_simón_abril_albacete_250_1.json")
     #print(problem.root)
-    clase1 = BreadthFirst()
-    cola = deque()
-    cola.append('a')
-    cola.append('g')
+    #clase1 = BreadthFirst()
+    #cola = deque()
+    #cola.append('a')s
+    #cola.append('g')
     #print(clase1.extract(cola))
-    print(cola)
-    print(clase1.extract(cola))
-    print(cola)
-    agus = Node(None,State(12),Action(None,12,0),0)
-    print(agus.state.state)
-    problem.search(DepthFirst())
+    #print(cola)
+    #print(clase1.extract(cola))
+    #print(cola)
+    #agus = Node(None,State(12),Action(None,12,0),0)
+    #print(agus.state.state)
+    #problem.search(DepthFirst())
+    #######
+    problem = Problem('paseo_simón_abril_albacete_250_1.json')
+    print(problem.search(BreadthFirst()))
 
 main()
