@@ -185,7 +185,7 @@ def main():
     #######
     #problem = Problem('paseo_simón_abril_albacete_250_1.json')
     #print(';'.join(map(str,problem.search(BreadthFirst()))))
-
+    #
     problem = Problem('paseo_simón_abril_albacete_250_1.json')
     print(';'.join(map(str,problem.search(DepthFirst()))))
 main()
