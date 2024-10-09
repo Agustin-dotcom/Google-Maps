@@ -90,7 +90,8 @@ class Problem:
                     print(f'Nodes generated --> {self.nodesGenerated}')
                     return self.recoverPath(node,[],0)
                 successors = self.expand(node)
-                expandedNodes+=1
+                if (len(successors>0)):
+                    expandedNodes+=1
                 for  successor in successors:
                     #search_param.insert(successor,successors)
                     search_param.insert(successor)
