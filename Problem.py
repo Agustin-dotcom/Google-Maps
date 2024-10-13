@@ -1,48 +1,11 @@
 import json
 from collections import deque
-class Search: # this is where we use inheritance
-    def __init__(self):
-        self.openDS = deque()
-    def insert(self,successor):
-        self.openDS.append(successor)
-    def extract():
-        pass
-class BreadthFirst(Search):# FIFO queue    
-    def extract(self):
-        if len(self.openDS)<1:
-            raise Exception("No puedes extraer algo que no existe")    
-        return self.openDS.popleft() # extrae por la izquierda (el primero en llegar)
-class DepthFirst(Search): # LIFO queue
-    def extract(self):
-        if len(self.openDS)<1:
-            raise Exception("No puedes extraer algo que no existe")
-        return self.openDS.pop() # lo del return tiene sentido yo creo
-class State:
-    def __init__(self,state):
-        if not isinstance(state,int):
-            raise TypeError(f"Introduce an int, not a {type(state).__name__}")
-        self.state = state
-class Node:
-    def __init__(self,parent,state,action,depth):
-        if not isinstance(parent,(Node,type(None))):
-            raise TypeError(f"Introduce a Node, not a {type(parent).__name__}")
-        if not isinstance(action,Action):
-            raise TypeError(f"Introduce an Action, not a {type(action).__name__}")
-        if not isinstance(state,State):
-            raise TypeError(f"Introduce a State, not a {type(state).__name__}")
-        self.parent = parent
-        self.state = state # we want it to be type State
-        self.action = action # the same with action is going to be a class
-        self.depth = depth
-    def __str__(self):
-        stringToReturn = (
-        f'parent --> { self.parent}\n'
-        f'state --> { self.state.state}\n'
-        f'action --> (origin, destination,cost) --> ({self.action.origin} , {self.action.destination}, {self.action.cost})\n'
-        f'depth -->  {self.depth}'
-        )
-        return stringToReturn
-import json
+from Action import Action
+from State import State
+from Node import Node
+from Search import Search
+from DepthFirst import DepthFirst
+from BreadthFirst import BreadthFirst
 #import numpy as np # requiere de 'pip install numpy' in cmd line
 class Problem:
     def __init__(self,file_name):
@@ -164,42 +127,3 @@ class Problem:
             list_param.append(node.action)# O(1)
             total_cost = total_cost + node.action.cost
             return self.recoverPath(node.parent,list_param=list_param,total_cost=total_cost) # O(T) # not that expensive it could be worse
-class Action: # Maybe we can receive a state and return a new one 
-    def __init__(self,origin,destination,cost):
-        if not isinstance(origin,(int,type(None))):
-            raise TypeError(f"Introduce an int, not a {type(origin).__name__}")
-        if not isinstance(destination,int):
-            raise TypeError(f"Introduce an int, not a {type(destination).__name__}")
-        if not isinstance(cost,(int,float)):
-            raise TypeError(f"Introduce an int or a float, not a {type(cost).__name__}")
-        self.origin = origin
-        self.destination = destination
-        self.cost = cost
-    def __str__(self):
-        return(
-            f'\n ######### \n'
-            f' (Origin, Destination, Cost) --> ({self.origin},{self.destination},{self.cost})\n'
-        )
-
-def main():
-    #os.chdir("C:\googleMapsVS\Google-Maps")
-    #problem = Problem("paseo_simón_abril_albacete_250_1.json")
-    #print(problem.root)
-    #clase1 = BreadthFirst()
-    #cola = deque()
-    #cola.append('a')s
-    #cola.append('g')
-    #print(clase1.extract(cola))
-    #print(cola)
-    #print(clase1.extract(cola))
-    #print(cola)
-    #agus = Node(None,State(12),Action(None,12,0),0)
-    #print(agus.state.state)
-    #problem.search(DepthFirst())
-    #######
-    problem = Problem('paseo_simón_abril_albacete_250_1.json')
-    print(';'.join(map(str,problem.search(BreadthFirst()))))
-    #
-    #problem = Problem('paseo_simón_abril_albacete_250_1.json')
-    #print(';'.join(map(str,problem.search(DepthFirst()))))
-main()
