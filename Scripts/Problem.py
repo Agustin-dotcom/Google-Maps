@@ -1,3 +1,5 @@
+from BestFirst import BestFirst
+from AStar import AStar
 import json
 from collections import deque
 from Action import Action
@@ -33,12 +35,12 @@ class Problem:
         :returns: o fallo o una lista de acciones"""
         expandedNodes = 0
         exploredNodes = 0
-        if not isinstance(search_param,(Search,BreadthFirst,DepthFirst)):
+        if not isinstance(search_param,Search) or not isinstance(search_param,BreadthFirst) or not isinstance(search_param,DepthFirst) or not isinstance(search_param,BestFirst) or not isinstance(search_param,AStar):
             raise TypeError(f"Introduce a Search object, not a {type(search_param).__name__}")
         explored = []
         search_param.insert(self.root)
         while len(search_param.openDS)!=0:
-            if  isinstance(search_param,DepthFirst):# solo si estamos con LIFO
+            if  isinstance(search_param,DepthFirst):# solo si estamos con LIFO #“Notes: The order of the actions is determined by the destination state whose identifier is the lowest, that is, if different (partial) destinations can be reached at a given point (intersection), they will be visited in increasing numerical order”.
                 temp = deque(search_param.openDS)
                 search_param.openDS = []
                 while len(temp)!=0:
@@ -59,7 +61,7 @@ class Problem:
                     #search_param.insert(successor,successors)
                     search_param.insert(successor)
                 explored.append(node.state.state) #  node.state es el objeto y node.state.state es la variable en el objeto state
-        print("Solucion no encontrada y hemos recorrido todo el arbol :[")
+        print("Solución no encontrada y hemos recorrido todo el árbol :[")
         return search_param.openDS
 
      #################################################################################
