@@ -37,7 +37,7 @@ class Problem:
             raise TypeError(f"Introduce a Search object, not a {type(search_param).__name__}")
         explored = []
         search_param.insert(self.root)
-        while search_param.openDS is not []:
+        while len(search_param.openDS)!=0:
             if  isinstance(search_param,DepthFirst):# solo si estamos con LIFO
                 temp = deque(search_param.openDS)
                 search_param.openDS = []
@@ -59,7 +59,8 @@ class Problem:
                     #search_param.insert(successor,successors)
                     search_param.insert(successor)
                 explored.append(node.state.state) #  node.state es el objeto y node.state.state es la variable en el objeto state
-        raise Exception("Solucion no encontrada y hemos recorrido todo el arbol :[")
+        print("Solucion no encontrada y hemos recorrido todo el arbol :[")
+        return search_param.openDS
 
      #################################################################################
     ####################             testGoal              ############################

@@ -21,7 +21,10 @@ def main():
     #os.curdir()
     directorio = "C:\\googleMapsVS\\Google-Maps\\problems\\small"
     archivos = os.listdir(directorio)
-    print(archivos)
+    #print(archivos)
+    print(f"#################################################")
+    print(f"#            COMENZAMOS                 #")
+    print(f"#################################################")
 
     for i in archivos:
         os.chdir(directorio)
@@ -42,8 +45,8 @@ def main():
     #######
     #problem = Problem('paseo_simón_abril_albacete_250_1.json')
     #print(';'.join(map(str,problem.search(BreadthFirst()))))
-    #
-    #problem = Problem('paseo_simón_abril_albacete_250_1.json')
+    #os.chdir(directorio)
+    #problem = Problem('paseo_simoÌn_abril_250_0.json')
     #print(';'.join(map(str,problem.search(DepthFirst()))))
     # Obtiene el directorio actual donde está ejecutándose el script
     # o pide al usuario que lo proporcione
@@ -52,7 +55,7 @@ def main():
     #problema = Problem("calle_mariÌa_mariÌn_500_0.json")
         
     # Ejecuta la búsqueda y muestra los resultados
-    #print(';'.join(map(str, problema.search(DepthFirst()))))
+    #print(';'.join(map(str, problem.search(DepthFirst()))))
     #print(';'.join(map(str, problema.search(BreadthFirst()))))
     
 main()
