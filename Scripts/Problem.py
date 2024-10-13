@@ -91,7 +91,7 @@ class Problem:
                 )
             ) # we insert into our open list the next nodes
         for action in possibleActions:
-            newState = self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
+            newState = State(action.destination) #self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
             newNode = Node(Node_param,newState,action,Node_param.depth+1)
             self.nodesGenerated+=1
             successors.append(newNode)
@@ -99,21 +99,21 @@ class Problem:
     #################################################################################
     ####################             applyAction              ############################
     #################################################################################
-    def applyAction(self,state,action):
-        """Given a state, we apply an action and return a new state.
-        Imagine we have a current state, for example, and then we apply an action.
-        Importante decir que recibe objetos, no atributos
+    # def applyAction(self,state,action):
+    #     """Given a state, we apply an action and return a new state.
+    #     Imagine we have a current state, for example, and then we apply an action.
+    #     Importante decir que recibe objetos, no atributos
 
-        :return: the new state"""
-        if not isinstance(state,State):
-            raise TypeError(f"Introduce a State object, not a {type(state).__name__}")
-        if not isinstance(action,Action):
-            raise TypeError(f"Introduce an Action object, not a {type(action).__name__}")
-        if (action.origin == state.state) :
-            #self.listOfActionsForRecoverPath.append(action) # si hacemos esto estariamos introduciendo todos los nodos
-            return State(action.destination)
-        raise Exception(f"No se puede aplicar la siguiente acción")
-         #################################################################################
+    #     :return: the new state"""
+    #     if not isinstance(state,State):
+    #         raise TypeError(f"Introduce a State object, not a {type(state).__name__}")
+    #     if not isinstance(action,Action):
+    #         raise TypeError(f"Introduce an Action object, not a {type(action).__name__}")
+    #     if (action.origin == state.state) :
+    #         #self.listOfActionsForRecoverPath.append(action) # si hacemos esto estariamos introduciendo todos los nodos
+    #         return State(action.destination)
+    #     raise Exception(f"No se puede aplicar la siguiente acción")
+    #################################################################################
     ####################             recoverPath              ############################
     #################################################################################
     def recoverPath(self,node,list_param,total_cost):# n <- len(list_param)
