@@ -1,6 +1,7 @@
-from Scripts.Problem import Problem
-from Scripts.BreadthFirst import BreadthFirst
-from Scripts.DepthFirst import DepthFirst
+import os
+from Problem import Problem
+from BreadthFirst import BreadthFirst
+from DepthFirst import DepthFirst
 from collections import deque
 def main():
     #os.chdir("C:\googleMapsVS\Google-Maps")
@@ -21,6 +22,17 @@ def main():
     #problem = Problem('paseo_simón_abril_albacete_250_1.json')
     #print(';'.join(map(str,problem.search(BreadthFirst()))))
     #
-    problem = Problem('paseo_simón_abril_albacete_250_1.json')
-    print(';'.join(map(str,problem.search(DepthFirst()))))
+    #problem = Problem('paseo_simón_abril_albacete_250_1.json')
+    #print(';'.join(map(str,problem.search(DepthFirst()))))
+    directorio = 'C:\googleMaps\Google-Maps\Scripts\problemas'
+
+    # Obtiene la lista de archivos y carpetas en el directorio
+    archivos = os.listdir(directorio)
+
+    # Filtra solo los archivos (opcional)
+    solo_archivos = [f for f in archivos if os.path.isfile(os.path.join(directorio, f))]
+    #print(solo_archivos[0])
+    # Imprime la lista de archivos
+    problema = Problem(os.path.join(directorio,solo_archivos[0]))
+    print(';'.join(map(str,problema.search(DepthFirst()))))
 main()

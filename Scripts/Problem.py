@@ -1,11 +1,11 @@
 import json
 from collections import deque
-from Scripts.Action import Action
-from Scripts.State import State
-from Scripts.Node import Node
-from Scripts.Search import Search
-from Scripts.DepthFirst import DepthFirst
-from Scripts.BreadthFirst import BreadthFirst
+from Action import Action
+from State import State
+from Node import Node
+from Search import Search
+from DepthFirst import DepthFirst
+from BreadthFirst import BreadthFirst
 #import numpy as np # requiere de 'pip install numpy' in cmd line
 class Problem:
     def __init__(self,file_name):
