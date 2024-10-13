@@ -1,5 +1,7 @@
-from Printer import Printer
-
+from Scripts.Problem import Problem
+from Scripts.BreadthFirst import BreadthFirst
+from Scripts.DepthFirst import DepthFirst
+from collections import deque
 def main():
     #os.chdir("C:\googleMapsVS\Google-Maps")
     #problem = Problem("paseo_simón_abril_albacete_250_1.json")
@@ -16,9 +18,9 @@ def main():
     #print(agus.state.state)
     #problem.search(DepthFirst())
     #######
-    problem = Problem('paseo_simón_abril_albacete_250_1.json')
-    print(';'.join(map(str,problem.search(BreadthFirst()))))
-    #
     #problem = Problem('paseo_simón_abril_albacete_250_1.json')
-    #print(';'.join(map(str,problem.search(DepthFirst()))))
+    #print(';'.join(map(str,problem.search(BreadthFirst()))))
+    #
+    problem = Problem('paseo_simón_abril_albacete_250_1.json')
+    print(';'.join(map(str,problem.search(DepthFirst()))))
 main()

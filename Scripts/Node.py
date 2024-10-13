@@ -1,5 +1,5 @@
-from Action import Action
-from State import State
+from Scripts.Action import Action
+from Scripts.State import State
 class Node:
     def __init__(self,parent,state,action,depth):
         if not isinstance(parent,(Node,type(None))):

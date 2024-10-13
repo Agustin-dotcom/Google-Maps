@@ -1,4 +1,4 @@
-from Search import Search
+from Scripts.Search import Search
 class BreadthFirst(Search):# FIFO queue    
     def extract(self):
         if len(self.openDS)<1:

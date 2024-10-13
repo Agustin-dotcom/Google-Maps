@@ -1,4 +1,4 @@
-from Search import Search
+from Scripts.Search import Search
 class DepthFirst(Search): # LIFO queue
     def extract(self):
         if len(self.openDS)<1:

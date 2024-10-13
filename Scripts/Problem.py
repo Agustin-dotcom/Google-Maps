@@ -1,11 +1,11 @@
 import json
 from collections import deque
-from Action import Action
-from State import State
-from Node import Node
-from Search import Search
-from DepthFirst import DepthFirst
-from BreadthFirst import BreadthFirst
+from Scripts.Action import Action
+from Scripts.State import State
+from Scripts.Node import Node
+from Scripts.Search import Search
+from Scripts.DepthFirst import DepthFirst
+from Scripts.BreadthFirst import BreadthFirst
 #import numpy as np # requiere de 'pip install numpy' in cmd line
 class Problem:
     def __init__(self,file_name):
@@ -53,7 +53,7 @@ class Problem:
                     print(f'Nodes generated --> {self.nodesGenerated}')
                     return self.recoverPath(node,[],0)
                 successors = self.expand(node)
-                if (len(successors>0)):
+                if (len(successors)>0):
                     expandedNodes+=1
                 for  successor in successors:
                     #search_param.insert(successor,successors)
