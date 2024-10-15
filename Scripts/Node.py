@@ -1,7 +1,7 @@
 from Action import Action
 from State import State
 class Node:
-    def __init__(self,parent,state,action,depth):
+    def __init__(self,parent,state,action,depth,accumulatedCost):
         if not isinstance(parent,(Node,type(None))):
             raise TypeError(f"Introduce a Node, not a {type(parent).__name__}")
         if not isinstance(action,Action):
@@ -12,6 +12,8 @@ class Node:
         self.state = state # we want it to be type State
         self.action = action # the same with action is going to be a class
         self.depth = depth
+        self.heuristic = 0 # we initialize it in problem with function 'straightLineDistanceToTheGoal'
+        self.accumulatedCost = accumulatedCost # this way it's easier to compute g(n) on f(n) = g(n)+h(n)
     def __str__(self):
         stringToReturn = (
         f'parent --> { self.parent}\n'

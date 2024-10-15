@@ -1,3 +1,4 @@
+import math
 from BestFirst import BestFirst
 from AStar import AStar
 import json
@@ -17,6 +18,7 @@ class Problem:
             self.dictionary = json.load(file)
         for i in self.dictionary.get('intersections'):
             i['whereto'] = [{"id":j.get('destination'),"cost":j.get('distance')/j.get('speed')} for j in self.dictionary.get('segments') if j.get('origin') == i.get('identifier')]
+        self.dictionary['intersections'] = sorted(self.dictionary['intersections'], key = lambda x : x['identifier'])
         # and here I guess we are ready to start the problem
         self.initializeOpen(self.dictionary.get('initial')) # inicializo nodo raiz
         
@@ -24,7 +26,9 @@ class Problem:
     def initializeOpen(self,initial):
         if not isinstance(initial,int):
             raise TypeError(f"Introduce an int, not a {type(initial).__name__}")
-        self.root = Node(None,State(initial),Action(None,initial,0),0) # no estoy seguro si para llegar al nodo raiz action == None
+        longitudeInitialNode = [d['longitude'] for d in self.dictionary['intersections'] if d['identifier'] == initial][0]
+        latitudeInitialNode = [d['latitude'] for d in self.dictionary['intersections'] if d['identifier'] == initial][0]
+        self.root = Node(None,State(initial,longitudeInitialNode,latitudeInitialNode),Action(None,initial,0),0,0) # no estoy seguro si para llegar al nodo raiz action == None
         self.nodesGenerated+=1
     #################################################################################
     ####################             search              ############################
@@ -35,7 +39,7 @@ class Problem:
         :returns: o fallo o una lista de acciones"""
         expandedNodes = 0
         exploredNodes = 0
-        if not isinstance(search_param,Search) or not isinstance(search_param,BreadthFirst) or not isinstance(search_param,DepthFirst) or not isinstance(search_param,BestFirst) or not isinstance(search_param,AStar):
+        if not isinstance(search_param,Search) and not isinstance(search_param,BreadthFirst) and not isinstance(search_param,DepthFirst) and not isinstance(search_param,BestFirst) and not isinstance(search_param,AStar):
             raise TypeError(f"Introduce a Search object, not a {type(search_param).__name__}")
         explored = []
         search_param.insert(self.root)
@@ -50,11 +54,10 @@ class Problem:
             exploredNodes +=1
             if node.state.state not in explored:
                 if(self.testGoal(node)):
-                    print(f'(Expanded nodes, explored nodes) --> ({expandedNodes},{exploredNodes})')
-                    print(f'Depth of the solution --> {node.depth}')
-                    print(f'Nodes generated --> {self.nodesGenerated}')
+                    print(f'Expanded nodes ; explored nodes ; depthOfSolution ; nodesGenerated ; cost)')
+                    print(f'{expandedNodes};{exploredNodes};{node.depth};{self.nodesGenerated};{node.accumulatedCost}')
                     return self.recoverPath(node,[],0)
-                successors = self.expand(node)
+                successors = self.expand(node,isinstance(search_param,AStar))
                 if (len(successors)>0):
                     expandedNodes+=1
                 for  successor in successors:
@@ -70,36 +73,52 @@ class Problem:
     def testGoal(self,node):
         if not isinstance(node,Node):
             raise TypeError(f"Introduce a Node, not a {type(node).__name__}")
-        return self.dictionary.get('final') == node.state.state
+        return self.dictionary.get('final') == node.state.state# node.state es de tipo State y node.state.state es de tipo int
     #################################################################################
     ####################             expand             ############################
     #################################################################################
-    def expand(self,Node_param):
+    def expand(self,Node_param,search_param2):
         """ 
         :param Node_param: nodo al que apuntamos 
+        :param search_param: estrategia de búsqueda
         
         :returns: list of nodes """
         if not isinstance(Node_param,Node):
             raise TypeError(f"Introduce a Node object, not a {type(Node_param).__name__}")
         successors = []
         possibleActions = []
-        dictionaryOfDictionaries = [d['whereto'] for d in self.dictionary['intersections'] if d['identifier'] == Node_param.state.state][0] # we get a dictionary of dictionaries
-        for dictionary in dictionaryOfDictionaries:# we iterate through dictionaries with attributes {"id":x,"cost":y}
-            possibleActions.append(
-                Action(
+        dictionaryOfDictionaries = [[d['longitude'],d['latitude'],d['whereto']] for d in self.dictionary['intersections'] if d['identifier'] == Node_param.state.state][0] # we get a dictionary of dictionaries
+        for dictionary in dictionaryOfDictionaries[2]:
+            """dictionaryOfDictionaries = [-1.858676,
+                                        38.9876469,
+            [{'id': 1256026663, 'cost': 1.7331}, {'id': 1531659796, 'cost': 2.346}]]"""
+            newAction = Action(
                     Node_param.state.state, #origen
                     dictionary.get("id"), # destino
                     dictionary.get("cost") #coste
                 )
-            ) # we insert into our open list the next nodes
-        for action in possibleActions:
-            newState = State(action.destination) #self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
-            newNode = Node(Node_param,newState,action,Node_param.depth+1)
+            possibleActions.append(newAction) # we insert into our open list the next nodes
+            newState = State(newAction.destination,dictionaryOfDictionaries[0],dictionaryOfDictionaries[1]) #self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
+            newNode = Node(Node_param,newState,newAction,Node_param.depth+1,Node_param.accumulatedCost+newAction.cost)
+            newNode.heuristic = self.straightLineDistanceToTheGoal(newNode)
             self.nodesGenerated+=1
-            successors.append(newNode)
+            h = self.decideWhetherAStarOrBestFirst(newNode,search_param2)#Also known as f(n)
+            successors.append((h,newNode))
         return successors
     #################################################################################
-    ####################             applyAction              ############################
+    ###                    decideWhetherAStarOrBestFirst              ###############
+    #################################################################################
+    def decideWhetherAStarOrBestFirst(node_param,argument):
+        """:param node_param: nodo recientemente creado
+            :param search_param: estrategia de búsqueda
+            
+            :returns: f(n)"""
+        boolean = isinstance(argument,AStar)
+        if(boolean):
+            return node_param.accumulatedCost + node_param.heuristic#g(n)+h(n)
+        return node_param.heuristic
+    #################################################################################
+    ####################             applyAction              #######################
     #################################################################################
     # def applyAction(self,state,action):
     #     """Given a state, we apply an action and return a new state.
@@ -130,3 +149,16 @@ class Problem:
             list_param.append(node.action)# O(1)
             total_cost = total_cost + node.action.cost
             return self.recoverPath(node.parent,list_param=list_param,total_cost=total_cost) # O(T) # not that expensive it could be worse
+        #################################################################################
+    ####################             computeHeuristic              ############################
+    #################################################################################
+    def straightLineDistanceToTheGoal(self,node_param):
+        """:params node_param : a node
+        :returns : straight line distance from state of the parameter to the goal"""
+        goalId = self.dictionary['final']
+        thisIsWhatIWanted = [d for d in self.dictionary['intersections'] if d['identifier'] ==goalId ][0]
+        x2 = thisIsWhatIWanted.get("longitude")
+        y2 = thisIsWhatIWanted.get("latitude")
+        x1 = node_param.state.longitude
+        y1 = node_param.state.latitude
+        return math.sqrt((x2-x1)+(y2-y1))

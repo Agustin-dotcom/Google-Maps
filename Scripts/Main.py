@@ -3,6 +3,8 @@ from Problem import Problem
 from BreadthFirst import BreadthFirst
 from DepthFirst import DepthFirst
 from collections import deque
+from BestFirst import BestFirst
+from AStar import AStar
 
 def main():
     #os.chdir("C:\googleMapsVS\Google-Maps")
@@ -23,24 +25,36 @@ def main():
     archivos = os.listdir(directorio)
     #print(archivos)
     print(f"#################################################")
-    print(f"#            COMENZAMOS                 #")
+    print(f"#                    COMENZAMOS                 #")
     print(f"#################################################")
 
     for i in archivos:
         os.chdir(directorio)
         problem = Problem(i)
+        #print(f"#################################################")
+        #print(f"#            DEPTH FIRST SEARCH                 #")
+        #print(f"#################################################")
+        # print(f"#                       {i}                     #")
+        # print(f"#################################################")
+        # print(';'.join(map(str,problem.search(DepthFirst()))))
+        # print(f"#################################################")
+        # print(f"#            BREADTH FIRST SEARCH                 #")
+        # print(f"#################################################")
+        # print(f"#                       {i}                     #")
+        # print(f"#################################################")
+        # print(';'.join(map(str,problem.search(BreadthFirst()))))
         print(f"#################################################")
-        print(f"#            DEPTH FIRST SEARCH                 #")
+        print(f"#            BEST FIRST SEARCH                  #")
         print(f"#################################################")
-        print(f"#            {i}                 #")
+        print(f"#                       {i}                     #")
         print(f"#################################################")
-        print(';'.join(map(str,problem.search(DepthFirst()))))
+        print(';'.join(map(str,problem.search(BestFirst()))))
         print(f"#################################################")
-        print(f"#            BREADTH FIRST SEARCH                 #")
+        print(f"#                       A*                      #")
         print(f"#################################################")
-        print(f"#            {i}                 #")
+        print(f"#                       {i}                     #")
         print(f"#################################################")
-        print(';'.join(map(str,problem.search(BreadthFirst()))))
+        print(';'.join(map(str,problem.search(BestFirst()))))
     #problem.search(DepthFirst())
     #######
     #problem = Problem('paseo_simón_abril_albacete_250_1.json')
