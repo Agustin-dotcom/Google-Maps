@@ -71,5 +71,8 @@ def main():
     # Ejecuta la búsqueda y muestra los resultados
     #print(';'.join(map(str, problem.search(DepthFirst()))))
     #print(';'.join(map(str, problema.search(BreadthFirst()))))
+    problem = Problem('alabacete_simo_abril')
+    search = Search(problem)
+    
     
 main()

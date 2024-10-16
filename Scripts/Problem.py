@@ -39,16 +39,16 @@ class Problem:
         :returns: o fallo o una lista de acciones"""
         expandedNodes = 0
         exploredNodes = 0
-        if not isinstance(search_param,Search) and not isinstance(search_param,BreadthFirst) and not isinstance(search_param,DepthFirst) and not isinstance(search_param,BestFirst) and not isinstance(search_param,AStar):
-            raise TypeError(f"Introduce a Search object, not a {type(search_param).__name__}")
+        #if not isinstance(search_param,Search) and not isinstance(search_param,BreadthFirst) and not isinstance(search_param,DepthFirst) and not isinstance(search_param,BestFirst) and not isinstance(search_param,AStar):
+        #    raise TypeError(f"Introduce a Search object, not a {type(search_param).__name__}")
         explored = []
         search_param.insert(self.root)
         while len(search_param.openDS)!=0:
-            if  isinstance(search_param,DepthFirst):# solo si estamos con LIFO #“Notes: The order of the actions is determined by the destination state whose identifier is the lowest, that is, if different (partial) destinations can be reached at a given point (intersection), they will be visited in increasing numerical order”.
-                temp = deque(search_param.openDS)
-                search_param.openDS = []
-                while len(temp)!=0:
-                    search_param.openDS.append(temp.pop())
+            #if  isinstance(search_param,DepthFirst):# solo si estamos con LIFO #“Notes: The order of the actions is determined by the destination state whose identifier is the lowest, that is, if different (partial) destinations can be reached at a given point (intersection), they will be visited in increasing numerical order”.
+                #temp = deque(search_param.openDS)
+                #search_param.openDS = []
+                #while len(temp)!=0:
+                    #search_param.openDS.append(temp.pop())
                 #search_param.openDS = np.array(search_param.openDS) #dando la vuelta el array para coger con el id mas peque;o    
             node = search_param.extract()
             exploredNodes +=1
@@ -100,23 +100,12 @@ class Problem:
             possibleActions.append(newAction) # we insert into our open list the next nodes
             newState = State(newAction.destination,dictionaryOfDictionaries[0],dictionaryOfDictionaries[1]) #self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
             newNode = Node(Node_param,newState,newAction,Node_param.depth+1,Node_param.accumulatedCost+newAction.cost)
-            newNode.heuristic = self.straightLineDistanceToTheGoal(newNode)
+            #newNode.heuristic = self.straightLineDistanceToTheGoal(newNode)
             self.nodesGenerated+=1
-            h = self.decideWhetherAStarOrBestFirst(newNode,search_param2)#Also known as f(n)
-            successors.append((h,newNode))
+            #h = self.decideWhetherAStarOrBestFirst(newNode,search_param2)#Also known as f(n)
+            successors.append(newNode)
         return successors
-    #################################################################################
-    ###                    decideWhetherAStarOrBestFirst              ###############
-    #################################################################################
-    def decideWhetherAStarOrBestFirst(node_param,argument):
-        """:param node_param: nodo recientemente creado
-            :param search_param: estrategia de búsqueda
-            
-            :returns: f(n)"""
-        boolean = isinstance(argument,AStar)
-        if(boolean):
-            return node_param.accumulatedCost + node_param.heuristic#g(n)+h(n)
-        return node_param.heuristic
+
     #################################################################################
     ####################             applyAction              #######################
     #################################################################################
@@ -149,16 +138,4 @@ class Problem:
             list_param.append(node.action)# O(1)
             total_cost = total_cost + node.action.cost
             return self.recoverPath(node.parent,list_param=list_param,total_cost=total_cost) # O(T) # not that expensive it could be worse
-        #################################################################################
-    ####################             computeHeuristic              ############################
-    #################################################################################
-    def straightLineDistanceToTheGoal(self,node_param):
-        """:params node_param : a node
-        :returns : straight line distance from state of the parameter to the goal"""
-        goalId = self.dictionary['final']
-        thisIsWhatIWanted = [d for d in self.dictionary['intersections'] if d['identifier'] ==goalId ][0]
-        x2 = thisIsWhatIWanted.get("longitude")
-        y2 = thisIsWhatIWanted.get("latitude")
-        x1 = node_param.state.longitude
-        y1 = node_param.state.latitude
-        return math.sqrt((x2-x1)+(y2-y1))
+        

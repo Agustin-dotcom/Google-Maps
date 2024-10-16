@@ -12,7 +12,7 @@ class Node:
         self.state = state # we want it to be type State
         self.action = action # the same with action is going to be a class
         self.depth = depth
-        self.heuristic = 0 # we initialize it in problem with function 'straightLineDistanceToTheGoal'
+        #self.heuristic = 0 # we initialize it in problem with function 'straightLineDistanceToTheGoal'
         self.accumulatedCost = accumulatedCost # this way it's easier to compute g(n) on f(n) = g(n)+h(n)
     def __str__(self):
         stringToReturn = (
