@@ -5,6 +5,7 @@ from DepthFirst import DepthFirst
 from collections import deque
 from BestFirst import BestFirst
 from AStar import AStar
+from Search import Search
 
 def main():
     #os.chdir("C:\googleMapsVS\Google-Maps")
@@ -73,6 +74,7 @@ def main():
     #print(';'.join(map(str, problema.search(BreadthFirst()))))
     problem = Problem('alabacete_simo_abril')
     search = Search(problem)
-    
+    problem.search(search)
+
     
 main()
