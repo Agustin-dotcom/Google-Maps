@@ -41,7 +41,7 @@ class Problem:
         exploredNodes = 0
         #if not isinstance(search_param,Search) and not isinstance(search_param,BreadthFirst) and not isinstance(search_param,DepthFirst) and not isinstance(search_param,BestFirst) and not isinstance(search_param,AStar):
         #    raise TypeError(f"Introduce a Search object, not a {type(search_param).__name__}")
-        explored = []
+        explored = {}
         search_param.insert(self.root)
         while len(search_param.openDS)!=0:
             #if  isinstance(search_param,DepthFirst):# solo si estamos con LIFO #“Notes: The order of the actions is determined by the destination state whose identifier is the lowest, that is, if different (partial) destinations can be reached at a given point (intersection), they will be visited in increasing numerical order”.
