@@ -38,8 +38,8 @@ class Problem:
         
         
     def initializeOpen(self,initial):
-        #if not isinstance(initial,int):
-        #    raise TypeError(f"Introduce an int, not a {type(initial).__name__}")
+        if not isinstance(initial,int):
+            raise TypeError(f"Introduce an int, not a {type(initial).__name__}")
         longitudeInitialNode = [d['longitude'] for d in self.dictionary['intersections'] if d['identifier'] == initial][0]
         latitudeInitialNode = [d['latitude'] for d in self.dictionary['intersections'] if d['identifier'] == initial][0]
         self.root = Node(None,State(initial,longitudeInitialNode,latitudeInitialNode),Action(None,initial,0),0,0) # no estoy seguro si para llegar al nodo raiz action == None
@@ -85,8 +85,8 @@ class Problem:
     ####################             testGoal              ############################
     #################################################################################
     def testGoal(self,node):
-        #if not isinstance(node,Node):
-        #    raise TypeError(f"Introduce a Node, not a {type(node).__name__}")
+        if not isinstance(node,Node):
+            raise TypeError(f"Introduce a Node, not a {type(node).__name__}")
         return self.dictionary.get('final') == node.state.state# node.state es de tipo State y node.state.state es de tipo int
     #################################################################################
     ####################             expand             ############################
@@ -95,8 +95,8 @@ class Problem:
         """ 
         :param Node_param: nodo al que apuntamos 
         :returns: list of nodes """
-        #if not isinstance(Node_param,Node):
-        #    raise TypeError(f"Introduce a Node object, not a {type(Node_param).__name__}")
+        if not isinstance(Node_param,Node):
+            raise TypeError(f"Introduce a Node object, not a {type(Node_param).__name__}")
         successors = []
         currentIntersection = self.dictionary['intersections'].get(Node_param.state.state,[])
 
