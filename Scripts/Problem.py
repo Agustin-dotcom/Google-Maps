@@ -57,14 +57,14 @@ class Problem:
                     print(f'Expanded nodes ; explored nodes ; depthOfSolution ; nodesGenerated ; cost)')
                     print(f'{expandedNodes};{exploredNodes};{node.depth};{self.nodesGenerated};{node.accumulatedCost}')
                     return self.recoverPath(node,[],0)
-                successors = self.expand(node,isinstance(search_param,AStar))
+                successors = self.expand(node)
                 if (len(successors)>0):
                     expandedNodes+=1
                 for  successor in successors:
                     #search_param.insert(successor,successors)
                     search_param.insert(successor)
                 explored.append(node.state.state) #  node.state es el objeto y node.state.state es la variable en el objeto state
-        print("Solución no encontrada y hemos recorrido todo el árbol :[")
+        print("Solución no encontrada y hemos recorrido todo el árbol")
         return search_param.openDS
 
      #################################################################################
@@ -77,28 +77,30 @@ class Problem:
     #################################################################################
     ####################             expand             ############################
     #################################################################################
-    def expand(self,Node_param,search_param2):
+    def expand(self,Node_param):
         """ 
         :param Node_param: nodo al que apuntamos 
-        :param search_param: estrategia de búsqueda
-        
         :returns: list of nodes """
         #if not isinstance(Node_param,Node):
         #    raise TypeError(f"Introduce a Node object, not a {type(Node_param).__name__}")
         successors = []
-        possibleActions = []
-        dictionaryOfDictionaries = [[d['longitude'],d['latitude'],d['whereto']] for d in self.dictionary['intersections'] if d['identifier'] == Node_param.state.state][0] # we get a dictionary of dictionaries
-        for dictionary in dictionaryOfDictionaries[2]:
+        currentIntersection = self.dictionary['intersections'].get(Node_param.state.state,[])
+
+        if not currentIntersection:
+            return []
+        #possibleActions = []
+        #dictionaryOfDictionaries = {d['identifier']: d for d in self.dictionary['intersections']}# Node_param.state.state # we get a dictionary of dictionaries
+        for destination in self.currentIntersection.get("whereto",[]): # si el codigo falla devuelve una lista vacia
             """dictionaryOfDictionaries = [-1.858676,
                                         38.9876469,
             [{'id': 1256026663, 'cost': 1.7331}, {'id': 1531659796, 'cost': 2.346}]]"""
             newAction = Action(
                     Node_param.state.state, #origen
-                    dictionary.get("id"), # destino
-                    dictionary.get("cost") #coste
+                    destination.get("id"), # destino
+                    destination.get("cost") #coste
                 )
-            possibleActions.append(newAction) # we insert into our open list the next nodes
-            newState = State(newAction.destination,dictionaryOfDictionaries[0],dictionaryOfDictionaries[1]) #self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
+            successors.append(newAction) # we insert into our open list the next nodes
+            newState = State(newAction.destination,self.dictionary['intersections'].get(destination).get('longitude'),dictionaryOfDictionaries[1]) #self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
             newNode = Node(Node_param,newState,newAction,Node_param.depth+1,Node_param.accumulatedCost+newAction.cost)
             #newNode.heuristic = self.straightLineDistanceToTheGoal(newNode)
             self.nodesGenerated+=1
