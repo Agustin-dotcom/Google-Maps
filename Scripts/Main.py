@@ -1,3 +1,4 @@
+import time
 import os
 from Problem import Problem
 from BreadthFirst import BreadthFirst
@@ -22,6 +23,7 @@ def main():
     #agus = Node(None,State(12),Action(None,12,0),0)
     #print(agus.state.state)
     #os.curdir()
+    start = time.time()
     directorio = "C:\\googleMapsVS\\Google-Maps\\problems\\small"
     archivos = os.listdir(directorio)
     #print(archivos)
@@ -49,13 +51,13 @@ def main():
         print(f"#################################################")
         print(f"#                       {i}                     #")
         print(f"#################################################")
-        print(';'.join(map(str,problem.search(BestFirst()))))
+        print(';'.join(map(str,problem.search(BestFirst(problem)))))
         print(f"#################################################")
         print(f"#                       A*                      #")
         print(f"#################################################")
         print(f"#                       {i}                     #")
         print(f"#################################################")
-        print(';'.join(map(str,problem.search(BestFirst()))))
+        print(';'.join(map(str,problem.search(AStar(problem)))))
     #problem.search(DepthFirst())
     #######
     #problem = Problem('paseo_simón_abril_albacete_250_1.json')
@@ -72,9 +74,11 @@ def main():
     # Ejecuta la búsqueda y muestra los resultados
     #print(';'.join(map(str, problem.search(DepthFirst()))))
     #print(';'.join(map(str, problema.search(BreadthFirst()))))
-    problem = Problem('alabacete_simo_abril')
-    search = Search(problem)
-    problem.search(search)
+    #problem = Problem('alabacete_simo_abril')
+    #search = Search(problem)
+    #problem.search(search)
+    end = time.time()
+    print(f'\n Execution time --> {end-start}')
 
     
 main()

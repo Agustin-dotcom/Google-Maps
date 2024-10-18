@@ -17,38 +17,52 @@ class Problem:
         with open(file_name,'r') as file:
             self.dictionary = json.load(file)
             # Conversión de velocidad de km/h a m/s y cálculo del coste
-        self.dictionary.get('segments')['whereto'] = 
-            d['origin']: {
-                **d,  # Mantener los valores originales
-                'speed_mps': d['speed'] * (1000/3600),  # Convertir velocidad a m/s (1000m/3600s)
-                'cost': d['distance'] / (d['speed'] * (1000/3600))  # Calcular el coste como tiempo en segundos
-            ]
-            for d in self.dictionary['segments']
-            }
-        # Convertir la lista de intersecciones a un diccionario donde la clave sea el 'identifier'
-        self.dictionary['intersections'] = {intersection['identifier']: {**intersection, 'whereto': set()} for intersection in self.dictionary.get('intersections')}
+       # Convert the list of intersections to a dictionary of dictionaries
+        self.dictionary['intersections'] = {inter['identifier']: inter for inter in self.dictionary.get('intersections')}
+
+        # Add the 'whereto' attribute to each intersection
+        for inter in self.dictionary['intersections'].values():
+            inter['whereto'] = []
+
+        # Populate the 'whereto' attribute based on the segments
+        for segment in self.dictionary.get('segments'):
+            origin = segment['origin']
+            destination = segment['destination']
+            distance = segment['distance']
+            speed_kmh = segment['speed']
+
+            # Convert speed from km/h to m/s
+            speed_ms = speed_kmh * (1000 / 3600)
+    
+            # Calculate the cost
+            cost = distance / speed_ms
+    
+            # Add the destination and cost to the 'whereto' attribute of the origin intersection
+            if origin in self.dictionary.get('intersections'):
+                self.dictionary.get('intersections').get(origin).get('whereto').append({'id': destination, 'cost': cost})
+                # Convertir la lista de intersecciones a un diccionario donde la clave sea el 'identifier'
+                #self.dictionary['intersections'] = {intersection['identifier']: {**intersection, 'whereto': set()} for intersection in self.dictionary.get('intersections')}
         self.initializeOpen(self.dictionary.get('initial')) # inicializo nodo raiz
         
-        
     def initializeOpen(self,initial):
-        if not isinstance(initial,int):
-            raise TypeError(f"Introduce an int, not a {type(initial).__name__}")
-        longitudeInitialNode = [d['longitude'] for d in self.dictionary['intersections'] if d['identifier'] == initial][0]
-        latitudeInitialNode = [d['latitude'] for d in self.dictionary['intersections'] if d['identifier'] == initial][0]
+        #if not isinstance(initial,int):
+        #    raise TypeError(f"Introduce an int, not a {type(initial).__name__}")
+        longitudeInitialNode = self.dictionary.get('intersections').get(initial).get('longitude')
+        latitudeInitialNode = self.dictionary.get('intersections').get(initial).get('latitude')
         self.root = Node(None,State(initial,longitudeInitialNode,latitudeInitialNode),Action(None,initial,0),0,0) # no estoy seguro si para llegar al nodo raiz action == None
         self.nodesGenerated+=1
     #################################################################################
     ####################             search              ############################
     #################################################################################
     def search(self,search_param): # Search asumimos que es o BreadthFirst o DepthFirst
-        """:param search_param: o BFS o DPS
+        """:param search_param: strategy to use
         
-        :returns: o fallo o una lista de acciones"""
+        :returns: empty list of list of actions"""
         expandedNodes = 0
         exploredNodes = 0
         #if not isinstance(search_param,Search) and not isinstance(search_param,BreadthFirst) and not isinstance(search_param,DepthFirst) and not isinstance(search_param,BestFirst) and not isinstance(search_param,AStar):
         #    raise TypeError(f"Introduce a Search object, not a {type(search_param).__name__}")
-        explored = {}
+        explored = set()
         search_param.insert(self.root)
         while len(search_param.openDS)!=0:
             #if  isinstance(search_param,DepthFirst):# solo si estamos con LIFO #“Notes: The order of the actions is determined by the destination state whose identifier is the lowest, that is, if different (partial) destinations can be reached at a given point (intersection), they will be visited in increasing numerical order”.
@@ -59,8 +73,8 @@ class Problem:
                 #search_param.openDS = np.array(search_param.openDS) #dando la vuelta el array para coger con el id mas peque;o    
             node = search_param.extract()
             exploredNodes +=1
-            if node.state.state not in explored:
-                if(self.testGoal(node)):
+            if node.state.state not in explored: #node[1] bc is a tuple (heuristic,node)
+                if(self.testGoal(node)): # remember that node is a tuple
                     print(f'Expanded nodes ; explored nodes ; depthOfSolution ; nodesGenerated ; cost)')
                     print(f'{expandedNodes};{exploredNodes};{node.depth};{self.nodesGenerated};{node.accumulatedCost}')
                     return self.recoverPath(node,[],0)
@@ -88,26 +102,26 @@ class Problem:
         """ 
         :param Node_param: nodo al que apuntamos 
         :returns: list of nodes """
-        if not isinstance(Node_param,Node):
-            raise TypeError(f"Introduce a Node object, not a {type(Node_param).__name__}")
+        #if not isinstance(Node_param,Node):
+        #    raise TypeError(f"Introduce a Node object, not a {type(Node_param).__name__}")
         successors = []
-        currentIntersection = self.dictionary['intersections'].get(Node_param.state.state,[])
+        currentIntersection = self.dictionary.get('intersections').get(Node_param.state.state)
 
-        if not currentIntersection:
-            return []
+        #if not currentIntersection:
+        #    return []
         #possibleActions = []
         #dictionaryOfDictionaries = {d['identifier']: d for d in self.dictionary['intersections']}# Node_param.state.state # we get a dictionary of dictionaries
-        for destination in self.currentIntersection.get("whereto",[]): # si el codigo falla devuelve una lista vacia
-            """dictionaryOfDictionaries = [-1.858676,
-                                        38.9876469,
-            [{'id': 1256026663, 'cost': 1.7331}, {'id': 1531659796, 'cost': 2.346}]]"""
+        for destination in currentIntersection.get("whereto"):
+            """currentIntersection.get("whereto")
+            [{'id': 1256026663, 'cost': 1.7331}, {'id': 1531659796, 'cost': 2.346}]"""
             newAction = Action(
                     Node_param.state.state, #origen
                     destination.get("id"), # destino
                     destination.get("cost") #coste
                 )
-            successors.append(newAction) # we insert into our open list the next nodes
-            newState = State(newAction.destination,self.dictionary['intersections'].get(destination).get('longitude'),dictionaryOfDictionaries[1]) #self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
+            #successors.append(newAction) # we insert into our open list the next nodes
+            # REMEMBER THAT destination is A DICTIONARY {"id":,"cost":}
+            newState = State(newAction.destination,self.dictionary.get('intersections').get(destination.get('id')).get('longitude'),self.dictionary.get('intersections').get(destination.get('id')).get('latitude')) #self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
             newNode = Node(Node_param,newState,newAction,Node_param.depth+1,Node_param.accumulatedCost+newAction.cost)
             #newNode.heuristic = self.straightLineDistanceToTheGoal(newNode)
             self.nodesGenerated+=1
