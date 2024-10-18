@@ -16,10 +16,24 @@ class Problem:
         self.nodesGenerated = 0
         with open(file_name,'r') as file:
             self.dictionary = json.load(file)
-        for i in self.dictionary.get('intersections'):
-            i['whereto'] = [{"id":j.get('destination'),"cost":j.get('distance')/j.get('speed')} for j in self.dictionary.get('segments') if j.get('origin') == i.get('identifier')]
-        self.dictionary['intersections'] = sorted(self.dictionary['intersections'], key = lambda x : x['identifier'])
-        # and here I guess we are ready to start the problem
+            # Conversión de velocidad de km/h a m/s y cálculo del coste
+        self.dictionary['segments'] = {
+            d['origin']: {
+                **d,  # Mantener los valores originales
+                'speed_mps': d['speed'] * (1000/3600),  # Convertir velocidad a m/s (1000m/3600s)
+                'cost': d['distance'] / (d['speed'] * (1000/3600))  # Calcular el coste como tiempo en segundos
+            }
+            for d in self.dictionary['segments']
+        }
+        # Convertir la lista de intersecciones a un diccionario donde la clave sea el 'identifier'
+        self.dictionary['intersections'] = {intersection['identifier']: {**intersection, 'whereto': set()} for intersection in self.dictionary.get('intersections')}
+
+        # Para cada segmento, si el origen es una intersección válida, agregamos el destino en el atributo 'whereto'
+        for segment in self.dictionary.get('segments'):
+            origin = segment['origin']
+            destination = segment['destination']
+            if origin in self.dictionary['intersections']:
+                self.dictionary.get('intersections')[origin]['whereto'].add(destination)
         self.initializeOpen(self.dictionary.get('initial')) # inicializo nodo raiz
         
         
@@ -63,7 +77,7 @@ class Problem:
                 for  successor in successors:
                     #search_param.insert(successor,successors)
                     search_param.insert(successor)
-                explored.append(node.state.state) #  node.state es el objeto y node.state.state es la variable en el objeto state
+                explored.add(node.state.state) #  node.state es el objeto y node.state.state es la variable en el objeto state
         print("Solución no encontrada y hemos recorrido todo el árbol")
         return search_param.openDS
 
