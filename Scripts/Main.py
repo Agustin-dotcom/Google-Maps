@@ -23,8 +23,8 @@ def main():
     #agus = Node(None,State(12),Action(None,12,0),0)
     #print(agus.state.state)
     #os.curdir()
-    start = time.time()
-    directorio = "C:\\googleMapsVS\\Google-Maps\\problems\\small"
+    
+    directorio = "C:\\googleMapsVS\\Google-Maps\\problems\\huge"
     archivos = os.listdir(directorio)
     #print(archivos)
     print(f"#################################################")
@@ -33,7 +33,7 @@ def main():
 
     for i in archivos:
         os.chdir(directorio)
-        problem = Problem(i)
+        problem = Problem('calle_del_virrey_morcillo_albacete_2000_4.json')
         #print(f"#################################################")
         #print(f"#            DEPTH FIRST SEARCH                 #")
         #print(f"#################################################")
@@ -51,13 +51,19 @@ def main():
         print(f"#################################################")
         print(f"#                       {i}                     #")
         print(f"#################################################")
-        print(';'.join(map(str,problem.search(BestFirst(problem)))))
+        start = time.time()
+        print(','.join(map(str,problem.search(BestFirst(problem)))))
+        end = time.time()
+        print(f'\n Execution time --> {end-start}')
         print(f"#################################################")
         print(f"#                       A*                      #")
         print(f"#################################################")
         print(f"#                       {i}                     #")
         print(f"#################################################")
-        print(';'.join(map(str,problem.search(AStar(problem)))))
+        start = time.time()
+        print(','.join(map(str,problem.search(AStar(problem)))))
+        end = time.time()
+        print(f'\n Execution time --> {end-start}')
     #problem.search(DepthFirst())
     #######
     #problem = Problem('paseo_simón_abril_albacete_250_1.json')
@@ -77,8 +83,7 @@ def main():
     #problem = Problem('alabacete_simo_abril')
     #search = Search(problem)
     #problem.search(search)
-    end = time.time()
-    print(f'\n Execution time --> {end-start}')
+    
 
     
 main()

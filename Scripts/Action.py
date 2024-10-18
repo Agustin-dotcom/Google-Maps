@@ -11,6 +11,5 @@ class Action: # Maybe we can receive a state and return a new one
         self.cost = cost
     def __str__(self):
         return(
-            f'\n ######### \n'
-            f' (Origin, Destination, Cost) → ({self.origin},{self.destination},{self.cost})\n'
+            f' {self.origin} → {self.destination} ({self.cost})'
         )

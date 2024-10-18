@@ -23,4 +23,6 @@ class Node:
         )
         return stringToReturn
     def __lt__(self,obj):
-        return self.accumulatedCost < obj.accumulatedCost
+        if self.parent != None and obj.parent!=None:
+            return (self.parent<obj.parent) and (self.state < obj.state) and (self.action < obj.action) and (self.depth < obj.depth) and (self.accumulatedCost < obj.accumulatedCost)
+        return (self.state < obj.state) and (self.action < obj.action) and (self.depth < obj.depth) and (self.accumulatedCost < obj.accumulatedCost)
