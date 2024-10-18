@@ -17,23 +17,16 @@ class Problem:
         with open(file_name,'r') as file:
             self.dictionary = json.load(file)
             # Conversión de velocidad de km/h a m/s y cálculo del coste
-        self.dictionary['segments'] = {
+        self.dictionary.get('segments')['whereto'] = 
             d['origin']: {
                 **d,  # Mantener los valores originales
                 'speed_mps': d['speed'] * (1000/3600),  # Convertir velocidad a m/s (1000m/3600s)
                 'cost': d['distance'] / (d['speed'] * (1000/3600))  # Calcular el coste como tiempo en segundos
-            }
+            ]
             for d in self.dictionary['segments']
-        }
+            }
         # Convertir la lista de intersecciones a un diccionario donde la clave sea el 'identifier'
         self.dictionary['intersections'] = {intersection['identifier']: {**intersection, 'whereto': set()} for intersection in self.dictionary.get('intersections')}
-
-        # Para cada segmento, si el origen es una intersección válida, agregamos el destino en el atributo 'whereto'
-        for segment in self.dictionary.get('segments'):
-            origin = segment['origin']
-            destination = segment['destination']
-            if origin in self.dictionary['intersections']:
-                self.dictionary.get('intersections')[origin]['whereto'].add(destination)
         self.initializeOpen(self.dictionary.get('initial')) # inicializo nodo raiz
         
         
