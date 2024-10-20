@@ -1,0 +1,1 @@
+setx PATH "%PATH%;C:\Users\Agus\Downloads\sqlite-tools-win-x64-3460100"
