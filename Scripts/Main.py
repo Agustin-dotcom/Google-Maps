@@ -25,13 +25,13 @@ class Main:
         # Crear la tabla
         c.execute('''CREATE TABLE resultados (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    tipo_problema TEXT,
-                    nodos_explorados INTEGER,
-                    nodos_generados INTEGER,
-                    tiempo_ejecucion REAL,
-                    profundidad_solucion INTEGER,
-                    costo_solucion REAL,
-                    algoritmo TEXT
+                    typeOfProblem TEXT,
+                    nodesExplored INTEGER,
+                    nodesGenerated INTEGER,
+                    executionTime REAL,
+                    depthOfSolution INTEGER,
+                    SolutionCost REAL,
+                    algorithm TEXT
                     )''')
         print("Tabla 'resultados' creada o ya existe.")
 
@@ -137,8 +137,14 @@ class Main:
         with sqlite3.connect(db_path) as db:
             c = db.cursor()
         c.execute('''INSERT INTO resultados 
-                         (tipo_problema, nodos_explorados, nodos_generados, tiempo_ejecucion, 
-                         profundidad_solucion, costo_solucion, algoritmo) 
+                         (
+                    typeOfProblem,
+                    nodesExplored,
+                    nodesGenerated,
+                    executionTime,
+                    depthOfSolution,
+                    SolutionCost,
+                    algorithm) 
                          VALUES (?, ?, ?, ?, ?, ?, ?)''', 
                      (tipo_problema, problem.exploredNodes, problem.nodesGenerated, 
                      tiempo_ejecucion, problem.depth, 
