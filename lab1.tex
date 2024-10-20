@@ -113,25 +113,15 @@ The following optimizations have been applied to improve the efficiency of the b
 	\begin{algorithmic}[1]
 		\Function{Main}{}
 		\State Create DataBase
-		\For{i \ \gets \ small \ \textbf{to} \ huge} \\
-            \ \For{i \ \gets \ 0 \ \textbf{to} \ $numberFiles-1$}  \
-                \State 
-                \State    $problemNameFile$
-                \State declare $problem$
-                \State declare $searchStrategy$
-                \State \Call{Search}{}
-                \State write results on the DataBase
-            \EndFor
-        \EndFor
-		%\State Sort $weights[]$ in non-increasing order
-		%\State Initialize $selected[][]$ to false
-		%\State $result \gets$ \Call{CanPlaceGoods}{$weights[], %lorries[], 0, n, max\_capacity, selected[][]$}
-		%\If{$result$}
-		%\State \textbf{return} "Goods can be distributed"
-		%\Else
-		%\State \textbf{return} "Distribution not possible"
-		%\EndIf
-		%\EndIf
+		\For{i \gets small \textbf{to} huge}
+			\For{i \gets 0 \textbf{to} $numberFiles-1$}
+				\State read $problemNameFile$
+				\State declare $problem$
+				\State declare $searchStrategy$
+				\State \Call{Search}{}
+				\State write results on the DataBase
+			\EndFor
+		\EndFor
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
@@ -338,6 +328,14 @@ cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC * 1000.0;
 			      \centering
 			      \includegraphics[scale=0.7]{images/mi_grafica.png}
 			      \caption{Graphic showing the cost of each strategy compared within each dimensionality of the problems.}
+			      \label{fig:complexity-graph}
+		      \end{figure}
+	      \end{center}
+        \begin{center}
+		      \begin{figure}[!ht]
+			      \centering
+			      \includegraphics[scale=0.7]{images/algorithmVSnodesGenerated.png}
+			      \caption{Density graphic showing the nodes generated of each Search Strategy.}
 			      \label{fig:complexity-graph}
 		      \end{figure}
 	      \end{center}
