@@ -41,7 +41,7 @@
         tabsize=2
 }
 
-\title{BACKTRACKING ALGORITHMS ASSIGNMENT}
+\title{LAB 1 ASSIGNMENT}
 \author{Sanz Alonso Jesús, Prieto Páez Agustín}
 \date{\today}
 
@@ -52,18 +52,13 @@
 \maketitle
 \tableofcontents
 
-\section{Problem statement}
-We have to implement four different kind of state space search algorithms in order to reach a goal, in our case a location. We must implement Breadth-First Search, Depth-First Search, A* and Best-First Search (Heuristics). We must give an Algorithmic complexity analysis and some illustrative graphs in order to compare strategies and reach conclusions.
+\section{Description}
+We have to implement four different kind of state space search algorithms in order to reach a goal state. We must implement \textbf{Breadth-First Search}, \textbf{Depth-First Search}, \textbf{A*} and \textbf{Best-First Search} (Heuristics).
 
-\section{Group members}
-\begin{itemize}
-	\item Sanz Alonso Jesús
-	\item Prieto Páez Agustín
-\end{itemize}
-
-\section{Solution}
+\section{Statistical Analysis}
 \subsection{Description of the algorithm}
 \subsubsection{Base solution}
+
 \begin{itemize}
 	\item Rough description of the main ideas of the algorithm to solve this problem as it would
 	      be explained to a class mate that does not know what a backtracking programming way of solving problems is.
@@ -71,7 +66,8 @@ We have to implement four different kind of state space search algorithms in ord
 	      \textbf{Answer}:\quad The algorithm aims to distribute goods among a limited number of trucks, ensuring
 	      that each truck's weight limit is not exceeded. It begins by checking if such a distribution is feasible.
 	      If so, it sorts the goods by weight and recursively attempts to place them in trucks, backtracking when necessary.
-
+       
+\section{Algorithmic complexity}
 	\item Formal description of the backtracking programming algorithm that solves the problem, so previously
 	      identifying the key elements we have been working with in class:
 	      \begin{itemize}
@@ -87,6 +83,14 @@ We have to implement four different kind of state space search algorithms in ord
 		            any capacity, a solution is found.
 	      \end{itemize}
 \end{itemize}
+ \begin{center}
+		      \begin{figure}[!ht]
+			      \centering
+			      \includegraphics[scale=0.7]{images/costOfAlgorithmsInEachGroupOfProblems.png}
+			      \caption{Cost of each strategy used for problems with different dimensions.}
+			      \label{fig:complexity-graph-comparison}
+		      \end{figure}
+	      \end{center}
 
 \subsubsection{Optimization}
 The following optimizations have been applied to improve the efficiency of the backtracking algorithm:
@@ -108,20 +112,26 @@ The following optimizations have been applied to improve the efficiency of the b
 	\label{algo:main}
 	\begin{algorithmic}[1]
 		\Function{Main}{}
-		\State Read $n$
-		\State Read goods weights into $weights[]$
-		\If{\textbf{not} \Call{FeasibilityCheck}{$weights[], n$}}
-		\State \textbf{return} 0
-		\Else
-		\State Sort $weights[]$ in non-increasing order
-		\State Initialize $selected[][]$ to false
-		\State $result \gets$ \Call{CanPlaceGoods}{$weights[], lorries[], 0, n, max\_capacity, selected[][]$}
-		\If{$result$}
-		\State \textbf{return} "Goods can be distributed"
-		\Else
-		\State \textbf{return} "Distribution not possible"
-		\EndIf
-		\EndIf
+		\State Create DataBase
+		\For{i \ \gets \ small \ \textbf{to} \ huge} \\
+            \ \For{i \ \gets \ 0 \ \textbf{to} \ $numberFiles-1$}  \
+                \State 
+                \State    $problemNameFile$
+                \State declare $problem$
+                \State declare $searchStrategy$
+                \State \Call{Search}{}
+                \State write results on the DataBase
+            \EndFor
+        \EndFor
+		%\State Sort $weights[]$ in non-increasing order
+		%\State Initialize $selected[][]$ to false
+		%\State $result \gets$ \Call{CanPlaceGoods}{$weights[], %lorries[], 0, n, max\_capacity, selected[][]$}
+		%\If{$result$}
+		%\State \textbf{return} "Goods can be distributed"
+		%\Else
+		%\State \textbf{return} "Distribution not possible"
+		%\EndIf
+		%\EndIf
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
@@ -220,287 +230,6 @@ The following optimizations have been applied to improve the efficiency of the b
 \end{algorithm}
 
  Note: On \textbf{Algorithm 3} \textit{FeasiblityCheck Algorithm} we have got an implicit conversion from integer, \textit{n}, to boolean. We must mention that 0 is false, true otherwise.
-\subsection{Implementation in C}
-\begin{lstlisting}[language=C++, caption=Implementation in C of PseudoCode \ref{algo:main}., label=lst:code1]
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-
-// optimization type
-#define OPTIMIZATION_TYPE 1 // 0: Snake, 1: Sum
-
-#define NUM_LORRIES 3
-#define LOAD_CAPACITY 20000
-#define BUDGET 3141.59
-#define COST_PER_KG 0.0 // 6.0
-
-// macro definitions
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-
-#define INCREMENT_SNAKE(i, index) \
-    MAX(0, ((index % 2 == 0) ? -1 : 1) * (((i) + 1) % NUM_LORRIES))
-
-#define INCREMENT_SUM(i, increment) \
-    (i + increment == NUM_LORRIES ? 0 : (i + increment == -1 ? NUM_LORRIES - 1 : i + increment))
-
-bool feasibilityCheck(int weights[], int n, int max_capacity, int max_lorries, double budget, double cost_per_kg)
-{
-    int sum = 0;
-    while (n && sum <= max_lorries * max_capacity && weights[n - 1] <= max_capacity && sum * cost_per_kg <= budget)
-    {
-        n--;
-        sum += weights[n];
-    }
-    return (!n && sum <= max_lorries * max_capacity && sum * cost_per_kg <= budget);
-}
-
-void swap(int *a, int *b) // O(1)
-{
-    int temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-int partitionLomuto(int *arr, int lo, int hi) // O(n), where n := hi - lo
-{
-    int pivot = arr[hi];
-    int i = lo;
-    for (int j = lo; j < hi; j++)
-    { // n * O(1) --> O(n)
-        if (arr[j] > pivot)
-        {                           // Change here to compare for greater than
-            swap(arr + i, arr + j); // O(1)
-            i++;
-        }
-    }
-    swap(arr + i, arr + hi); // O(1)
-    return i;
-}
-
-void quickSort(int *arr, int lo, int hi) // O(nlogn) on average, O(n^2) in worst case
-{
-    if (lo < hi)
-    {
-        int pivot = partitionLomuto(arr, lo, hi);
-        quickSort(arr, lo, pivot - 1);
-        quickSort(arr, pivot + 1, hi);
-    }
-}
-
-bool canPlaceGoods_balancedSum(int weights[], int lorries[], int index, int n, int max_capacity, bool selected[][n])
-{
-    if (index == n)
-    {
-        return true; // All goods are placed
-    }
-
-    int start, increment;
-    if (lorries[0] <= lorries[1] && lorries[0] <= lorries[2])
-    {
-        start = 0;
-        if (lorries[1] <= lorries[2])
-            increment = 1;
-        else
-            increment = -1;
-    }
-    else if (lorries[1] <= lorries[0] && lorries[1] <= lorries[2])
-    {
-        start = 1;
-        if (lorries[0] <= lorries[2])
-            increment = -1;
-        else
-            increment = 1;
-    }
-    else
-    {
-        start = 2;
-        if (lorries[0] <= lorries[1])
-            increment = 1;
-        else
-            increment = -1;
-    }
-
-    for (int i = start, j = 0; j < NUM_LORRIES; i = INCREMENT_SUM(i, increment), j++)
-    {
-        if (lorries[i] + weights[index] <= max_capacity)
-        {
-            lorries[i] += weights[index]; // Place current good in lorry i
-            if (canPlaceGoods_balancedSum(weights, lorries, index + 1, n, max_capacity, selected))
-            {
-                selected[i][index] = true;
-                return true;
-            }
-            lorries[i] -= weights[index]; // Backtrack
-        }
-
-        if (lorries[i] == 0) // Avoid redundant permutations
-        {
-            break;
-        }
-    }
-
-    return false;
-}
-
-bool canPlaceGoods_snake(int weights[], int lorries[], int index, int n, int max_capacity, bool selected[][n])
-{
-    if (index == n)
-    {
-        return true; // All goods are placed
-    }
-
-    for (int i = index % 3, j = 0; j < NUM_LORRIES; i = INCREMENT_SNAKE(i, index), j++)
-    {
-        if (lorries[i] + weights[index] <= max_capacity)
-        {
-            lorries[i] += weights[index]; // Place current good in lorry i
-            if (canPlaceGoods_snake(weights, lorries, index + 1, n, max_capacity, selected))
-            {
-                selected[i][index] = true;
-                return true;
-            }
-            lorries[i] -= weights[index]; // Backtrack
-        }
-
-        if (lorries[i] == 0) // Avoid redundant permutations
-        {
-            break;
-        }
-    }
-
-    return false;
-}
-
-int main(int argc, char *argv[])
-{
-    int n, lorries[NUM_LORRIES] = {0};
-
-    printf("Enter the number of goods: ");
-    scanf("%d", &n);
-
-    printf("Load capacity of each lorry: %d kg \n\n", LOAD_CAPACITY);
-
-    int weights[n];
-    bool selected[NUM_LORRIES][n];
-    for (int i = 0; i < NUM_LORRIES; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            selected[i][j] = false;
-        }
-    }
-
-    printf("Enter the weights of the goods \n");
-    for (int i = 0; i < n; i++)
-    {
-        printf("Weight of good %d: ", i + 1);
-        scanf("%d", &weights[i]);
-    }
-
-    if (!feasibilityCheck(weights, n, LOAD_CAPACITY, NUM_LORRIES, BUDGET, COST_PER_KG))
-    {
-        printf("\nIt's not possible to distribute all goods in 3 lorries without exceeding the capacity of 20 Tm each.\n");
-        return 0;
-    }
-    else
-    {
-        quickSort(weights, 0, n - 1);       // O(nlogn)
-        
-        bool result;
-        if (OPTIMIZATION_TYPE == 0)
-        {
-            result = canPlaceGoods_snake(weights, lorries, 0, n, LOAD_CAPACITY, selected); // O(3^n)
-            printf("Snake optimization\n");
-        }
-        else
-        {
-            result = canPlaceGoods_balancedSum(weights, lorries, 0, n, LOAD_CAPACITY, selected); // O(3^n)
-            printf("Balanced sum optimization\n");
-        }
-        if (result)
-        {
-            printf("\nGoods can be distributed in %d lorries as follows:\n", NUM_LORRIES);
-            for (int i = 0; i < NUM_LORRIES; i++)
-            {
-                printf("Lorry %d: %d kg\n", i + 1, lorries[i]);
-                for (int j = 0; j < n; j++)
-                {
-                    if (selected[i][j])
-                    {
-                        printf("\tWeight: %d kg\n", weights[j]);
-                    }
-                }
-            }
-            printf("\nTotal cost: %.2f euro\n", (lorries[0] + lorries[1] + lorries[2]) * COST_PER_KG);
-        }
-        else
-        {
-            printf("\nIt's not possible to distribute all goods in 3 lorries without exceeding the capacity of 20 Tm each.\n");
-        }
-    }
-
-    return 0;
-}
-\end{lstlisting}
-
-\subsection{Compiling, running \& input example}
-To compile and run the \texttt{assignment\_3.c} file on Linux (Ubuntu), macOS, and Windows, specific commands are used depending on the system.
-\begin{enumerate}
-	\item \textbf{Open} a terminal and navigate your directory tree until you are located on the directory that contains your \textit{C} file.
-
-	\item \textbf{Compile} the code using the following command on \emph{Linux} (\emph{Ubuntu}), \emph{macOS} and \emph{Windows}
-	      \begin{verbatim}
-        gcc assignment_3.c -o assignment_3.exe
-        \end{verbatim}
-
-	\item \textbf{Run} the executable code using the following command
-	      \begin{itemize}
-		      \item \emph{Linux} (\emph{Ubuntu}) and \emph{macOS}:
-		            \begin{verbatim}
-        ./assignment_3.exe
-        \end{verbatim}
-		      \item \emph{Windows}:
-		            \begin{verbatim}
-        assignment_3.exe
-        \end{verbatim}
-		            Note: you may use any terminal of your preference; let it be \emph{PowerShell}, \emph{Command Line} or
-		            a \emph{Terminal on Ubuntu Virtual Machine}.
-	      \end{itemize}
-
-	\item \textbf{Input example}, as shown in Listing \ref{lst:code2}
-	      \begin{enumerate}
-		      \item First, the system prompts the user to introduce the number of objects or items to be considered, \textit{n}.
-		      \item Then, we must introduce the corresponding weights for each one of the \textit{n} elements.
-		      \item Ultimately, the system outputs the weights of the chosen items after having executed the Backtraking Algorithm.
-	      \end{enumerate}
-
-	      \begin{lstlisting}[language=bash,caption={Example of compiling and running \texttt{assignment\_3.c} in \emph{Ubuntu}, input size $n=5$.},label={lst:code2}]
-gcc -o assignment_3 assignment_3.c
-./assignment_3.exe
-
-Enter the number of goods: 5
-Load capacity of each lorry: 20000 kg 
-
-Enter the weights of the goods 
-Weight of good 1: 19000
-Weight of good 2: 1000
-Weight of good 3: 20000
-Weight of good 4: 500
-Weight of good 5: 2000
-
-Goods can be distributed in 3 lorries as follows:
-Lorry 1: 20000 kg
-        Weight: 20000 kg
-Lorry 2: 20000 kg
-        Weight: 19000 kg
-Lorry 3: 2500 kg
-        Weight: 2000 kg
-        Weight: 1000 kg
-        Weight: 500 kg
-
-Total cost: 0.00 euro
-\end{lstlisting}
-\end{enumerate}
 
 \subsection{Complexity analysis}
 \begin{itemize}
@@ -607,11 +336,8 @@ cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC * 1000.0;
 	      \begin{center}
 		      \begin{figure}[!ht]
 			      \centering
-			      \includegraphics[scale=0.7]{complexity-test/img/graph.pdf}
-			      \caption{Efficiency graph of an optimized backtracking algorithm, where the expected theoretical
-				      complexity is \( O(3^n) \). 
-                      Nevertheless, due to specific optimizations implemented, the actual CPU time used
-				      demonstrates sovralinear relationship with the number of items \( n\log n \), as shown by the data points.}
+			      \includegraphics[scale=0.7]{images/mi_grafica.png}
+			      \caption{Graphic showing the cost of each strategy compared within each dimensionality of the problems.}
 			      \label{fig:complexity-graph}
 		      \end{figure}
 	      \end{center}
@@ -619,13 +345,8 @@ cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC * 1000.0;
 	      \begin{center}
 		      \begin{figure}[!ht]
 			      \centering
-			      \includegraphics[scale=0.7]{complexity-test/img/comparison.pdf}
-			      \caption{Comparison of the three different optimization of this backtracking algorithm.
-                            As shown in the legend of the graph, there are three optimization listed here in order of 
-                            efficiency: the \textit{Balanced Sum}, \textit{Snake Selection}, and \textit{Sorting Only} 
-                            optimization (no greedy optimization in the child choice).
-                            All three optimizations that we propose relies on the same Backtracking algorithm and the same Sorting algorithm.
-                            The Sorting algorithm increse the lower bound complexity from the $\Omega(n)$ of the backtracking to the $\theta(n\log n)$ of the sorting.}
+			      \includegraphics[scale=0.7]{images/negativeExecutionTimeForAStarMakesNoSense.png}
+			      \caption{Negative execution time for A* strategy on huge dimensionality of problems.}
 			      \label{fig:complexity-graph-comparison}
 		      \end{figure}
 	      \end{center}
