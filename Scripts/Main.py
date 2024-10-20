@@ -10,9 +10,10 @@ from AStar import AStar
 from Search import Search
 class Main:
     def main(self):
-        os.chdir('C:\\googleMapsVS\\Google-Maps')
+        #print(os.getcwd())
+        #os.chdir('C:\\googleMapsVS\\Google-Maps')
         __file__ = "resultados_programa.db"
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        BASE_DIR = "C:\\googleMapsVS\\Google-Maps\\"
         db_path = os.path.join(BASE_DIR, "resultados_programa.db")
         with sqlite3.connect(db_path) as db:
             c = db.cursor()
@@ -130,6 +131,7 @@ class Main:
             #problem.search(search)`
     def guardar_en_base_de_datos(self,problem,tiempo_ejecucion,tipo_problema,algoritmo):
         os.chdir('C:\\googleMapsVS\\Google-Maps')
+        __file__ = "resultados_programa.db"
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         db_path = os.path.join(BASE_DIR, "resultados_programa.db")
         with sqlite3.connect(db_path) as db:
