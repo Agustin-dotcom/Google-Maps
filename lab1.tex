@@ -334,7 +334,7 @@ cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC * 1000.0;
         \begin{center}
 		      \begin{figure}[!ht]
 			      \centering
-			      \includegraphics[scale=0.7]{images/algorithmVSnodesGenerated.png}
+			      \includegraphics[scale=0.7]{images/nodesGeneratedOnDifferentStrategies.png}
 			      \caption{Density graphic showing the nodes generated of each Search Strategy.}
 			      \label{fig:complexity-graph}
 		      \end{figure}
@@ -343,7 +343,7 @@ cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC * 1000.0;
 	      \begin{center}
 		      \begin{figure}[!ht]
 			      \centering
-			      \includegraphics[scale=0.7]{images/negativeExecutionTimeForAStarMakesNoSense.png}
+			      \includegraphics[scale=0.7]{images/differentAlgorithmsExecutionTime.png}
 			      \caption{Negative execution time for A* strategy on huge dimensionality of problems.}
 			      \label{fig:complexity-graph-comparison}
 		      \end{figure}
@@ -355,5 +355,12 @@ cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC * 1000.0;
 	      the impact of practical enhancements in algorithm implementation. Assuming the number of operations is proportional to the
 	      number of items, the empirical complexity could be approximated as \( O(n) \), a significant improvement over the theoretical expectation.
 \end{itemize}
-
+\begin{center}
+		      \begin{figure}[!ht]
+			      \centering
+			      \includegraphics[scale=0.7]{images/nodes_generated_comparison.png}
+			      \caption{Average Nodes Generated on different search strategies across problems with different dimensionality.}
+			      \label{fig:complexity-graph-comparison}
+		      \end{figure}
+	      \end{center}
 \end{document}

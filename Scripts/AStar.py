@@ -16,4 +16,5 @@ class AStar(InformedSearch):# takes into account g(n), not only h(n)
         have to convert deque() into a list"""
         self.openDS = list(self.openDS)
         heuristic = super().computeHeuristic(element)+element.accumulatedCost
+        #print('\n-----------\n'.join(map(str,self.openDS)))
         heapq.heappush(self.openDS,(heuristic,element)) # element is going to be a paired value (h,Node)

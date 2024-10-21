@@ -52,3 +52,19 @@ ggplot(DATA,aes(x = typeOfProblem,y=SolutionCost,fill = algorithm))+
 
 summary(DATA)
 .desc.numeric(DATA$executionTime,DATA$algorithm)
+
+ggplot(DATA,aes(y = typeOfProblem, y = executionTime, fill = algorithm))+
+  geom_boxplot(stat = "identity", position = "dodge")
+
+ggplot(DATA,aes(x = nodesGenerated,fill = algorithm))+
+  geom_density(alpha = 0.7)+
+xlim(0,10000)
+
+View(DATA)
+nameIWant <- names(table(DATA$algorithm))[2]
+nameIWantNow <- names(table(DATA$algorithm))[1]
+nowIWantThisName <- names(table(DATA$algorithm))[2]
+DATA[DATA$algorithm == nameIWant,]
+DATA[DATA$algorithm == nameIWantNow,]
+DATA[DATA$algorithm == nowIWantThisName,]
+DATA[DATA$nameProblem == "calle_cardenal_tabera_y_araoz_albacete_2000_1.json",]

@@ -9,11 +9,11 @@ class Action: # Maybe we can receive a state and return a new one
         self.origin = origin
         self.destination = destination
         self.cost = cost
-    #def __str__(self):
-    #    return(
-    #        f' {self.origin} → {self.destination} ({self.cost})'
-    #    )
-    def __lt__(self,obj):
-        if self.origin != None and obj.origin != None:
-            return (self.origin,self.destination,self.cost) < (obj.origin,obj.destination,obj.cost)
-        return (self.destination,self.cost) < (obj.destination,obj.cost)
+    def __str__(self):
+       return(
+           f' {self.origin} → {self.destination} ({self.cost})'
+       )
+    # def __lt__(self,obj):
+    #     if self.origin != None and obj.origin != None:
+    #         return (self.origin,self.destination,self.cost) < (obj.origin,obj.destination,obj.cost)
+    #     return (self.destination,self.cost) < (obj.destination,obj.cost)

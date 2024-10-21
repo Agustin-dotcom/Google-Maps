@@ -22,8 +22,9 @@ class Problem:
             self.dictionary = json.load(file)
             # Conversión de velocidad de km/h a m/s y cálculo del coste
        # Convert the list of intersections to a dictionary of dictionaries
+        self.dictionary['maxSpeedOfAllSpeeds'] = float('-inf')
         self.dictionary['intersections'] = {inter['identifier']: inter for inter in self.dictionary.get('intersections')}
-
+        
         # Add the 'whereto' attribute to each intersection
         for inter in self.dictionary['intersections'].values():
             inter['whereto'] = []
@@ -37,6 +38,10 @@ class Problem:
 
             # Convert speed from km/h to m/s
             speed_ms = speed_kmh * (1000 / 3600)
+
+            # Si tenemos una velocidad mayor a la predeterminada, la cogemos
+            if(speed_ms > self.dictionary.get('maxSpeedOfAllSpeeds')):
+                self.dictionary['maxSpeedOfAllSpeeds'] = speed_ms
     
             # Calculate the cost
             cost = distance / speed_ms
@@ -55,6 +60,7 @@ class Problem:
         latitudeInitialNode = self.dictionary.get('intersections').get(initial).get('latitude')
         self.root = Node(None,State(initial,longitudeInitialNode,latitudeInitialNode),Action(None,initial,0),0,0) # no estoy seguro si para llegar al nodo raiz action == None
         self.nodesGenerated+=1
+        self.root.momento = self.nodesGenerated
     #################################################################################
     ####################             search              ############################
     #################################################################################
@@ -131,6 +137,7 @@ class Problem:
             newNode = Node(Node_param,newState,newAction,Node_param.depth+1,Node_param.accumulatedCost+newAction.cost)
             #newNode.heuristic = self.straightLineDistanceToTheGoal(newNode)
             self.nodesGenerated+=1
+            newNode.momento = self.nodesGenerated
             #h = self.decideWhetherAStarOrBestFirst(newNode,search_param2)#Also known as f(n)
             successors.append(newNode)
         return successors

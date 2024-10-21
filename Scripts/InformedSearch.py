@@ -1,3 +1,4 @@
+import math
 import heapq
 from Search import Search
 class InformedSearch(Search):
@@ -15,3 +16,14 @@ class InformedSearch(Search):
     #     self.openDS = list(self.openDS)
     #     heuristic = super().computeHeuristic(element)
     #     heapq.heappush(self.openDS,(heuristic,element)) # element is going to be a paired value (h,Node)
+    def computeHeuristic(self,node_param):
+        """:params node_param : a node
+        :returns : straight line distance from state of the parameter to the goal"""
+        goalId = self.problem.dictionary['final']
+        #thisIsWhatIWanted = {d['identifier'] : d for d in self.problem.dictionary['intersections']}
+        
+        x2 = self.problem.dictionary.get('intersections').get(goalId).get('longitude') #thisIsWhatIWanted.get("longitude")
+        y2 =  self.problem.dictionary.get('intersections').get(goalId).get('latitude') #thisIsWhatIWanted.get("latitude")
+        x1 = node_param.state.longitude
+        y1 = node_param.state.latitude
+        return math.sqrt((x2-x1)**2+(y2-y1)**2)

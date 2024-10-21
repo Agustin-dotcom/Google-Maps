@@ -14,6 +14,7 @@ class Node:
         self.depth = depth
         #self.heuristic = 0 # we initialize it in problem with function 'straightLineDistanceToTheGoal'
         self.accumulatedCost = accumulatedCost # this way it's easier to compute g(n) on f(n) = g(n)+h(n)
+        self.momento = 0
     def __str__(self):
         stringToReturn = (
         f'parent --> { self.parent}\n'
@@ -21,8 +22,7 @@ class Node:
         f'action --> (origin, destination,cost) --> ({self.action.origin} , {self.action.destination}, {self.action.cost})\n'
         f'depth -->  {self.depth}'
         )
+        # stringToReturn = f"{self.state.state}"
         return stringToReturn
     def __lt__(self,obj):
-        if self.parent != None and obj.parent!=None:
-            return (self.parent<obj.parent) and (self.state < obj.state) and (self.action < obj.action) and (self.depth < obj.depth) and (self.accumulatedCost < obj.accumulatedCost)
-        return (self.state < obj.state) and (self.action < obj.action) and (self.depth < obj.depth) and (self.accumulatedCost < obj.accumulatedCost)
+        return self.momento < obj.momento
