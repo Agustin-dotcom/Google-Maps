@@ -32,7 +32,7 @@ summary(DATA)
 library(ggplot2)
 ggplot(DATA, aes(y = executionTime, fill = algorithm))+
   geom_boxplot(alpha = 0.7)+
-  ylim(-0.04,0.04)
+  ylim(0,0.015)
 .desc.numeric(DATA$executionTime)$min
 DATA[DATA$executionTime <0,]
 
@@ -48,7 +48,7 @@ ggplot(DATA,aes(y=DATA$SolutionCost, fill = DATA$algorithm))+
   ylim(0,1000)
 
 ggplot(DATA,aes(x = typeOfProblem,y=SolutionCost,fill = algorithm))+
-  geom_bar(stat = "identity",position = "dodge")
+  geom_bar(stat = "identity",position = "dodge",alpha = 0.8)
 
 summary(DATA)
 .desc.numeric(DATA$executionTime,DATA$algorithm)
@@ -68,3 +68,5 @@ DATA[DATA$algorithm == nameIWant,]
 DATA[DATA$algorithm == nameIWantNow,]
 DATA[DATA$algorithm == nowIWantThisName,]
 DATA[DATA$nameProblem == "calle_cardenal_tabera_y_araoz_albacete_2000_1.json",]
+
+DATA[DATA$nameProblem =="plaza_isabel_ii_albacete_250_0.json",]

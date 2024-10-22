@@ -1,3 +1,4 @@
+from AStarGeodesicWithMostRepeatedSpeed import AStarGeodesicWithMostRepeatedSpeed
 from AStarAssumingOneHundredAndTwentyKilometersPerHour import AStarAssumingOneHundredAndTwentyKilometersPerHour
 from AStarOptimisticButRealistic import AStarOptimisticButRealistic
 import sqlite3
@@ -140,6 +141,20 @@ class Main:
                 print(f"#################################################")
                 start = time.perf_counter()
                 busqueda = AStarAssumingOneHundredAndTwentyKilometersPerHour(problem)
+                problem.search(busqueda)
+                print(','.join(map(str,problem.search(busqueda))))
+                end = time.perf_counter()
+                execution_time = end - start
+                self.guardar_en_base_de_datos(i,problem,execution_time,j,busqueda.__class__.__name__)
+                print(f'\n Execution time --> {execution_time}')
+                #############################################################################
+                print(f"#################################################")
+                print(f"#                       Geodesic + Mode of speed                      #")
+                print(f"#################################################")
+                print(f"#                       {i}                     #")
+                print(f"#################################################")
+                start = time.perf_counter()
+                busqueda = AStarGeodesicWithMostRepeatedSpeed(problem)
                 problem.search(busqueda)
                 print(','.join(map(str,problem.search(busqueda))))
                 end = time.perf_counter()

@@ -1,3 +1,5 @@
+
+import statistics
 import math
 from BestFirst import BestFirst
 from AStar import AStar
@@ -22,7 +24,8 @@ class Problem:
             self.dictionary = json.load(file)
             # Conversión de velocidad de km/h a m/s y cálculo del coste
        # Convert the list of intersections to a dictionary of dictionaries
-        self.dictionary['maxSpeedOfAllSpeeds'] = float('-inf')
+        self.dictionary['maxSpeedOfAllSpeeds'] = float('-inf') # definiendo la maxima velocida a menos infinito
+        self.dictionary['mostRepeatedSpeed'] = []
         self.dictionary['intersections'] = {inter['identifier']: inter for inter in self.dictionary.get('intersections')}
         
         # Add the 'whereto' attribute to each intersection
@@ -38,7 +41,8 @@ class Problem:
 
             # Convert speed from km/h to m/s
             speed_ms = speed_kmh * (1000 / 3600)
-
+            self.dictionary['mostRepeatedSpeed'].append(speed_ms)
+            self.dictionary['mostRepeatedSpeed'] = statistics.multimode(self.dictionary.get('mostRepeatedSpeed'))
             # Si tenemos una velocidad mayor a la predeterminada, la cogemos
             if(speed_ms > self.dictionary.get('maxSpeedOfAllSpeeds')):
                 self.dictionary['maxSpeedOfAllSpeeds'] = speed_ms
