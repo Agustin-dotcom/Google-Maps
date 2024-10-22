@@ -113,11 +113,11 @@ The following optimizations have been applied to improve the efficiency of the b
 	\begin{algorithmic}[1]
 		\Function{Main}{}
 		\State Create DataBase
-		\For{i \gets small \textbf{to} huge}
-			\For{i \gets 0 \textbf{to} $numberFiles-1$}
-				\State read $problemNameFile$
-				\State declare $problem$
-				\State declare $searchStrategy$
+		\For{$i \gets small \textbf {to}  huge$}
+			\For{$i \gets 0 \textbf{to} numberFiles-1$}
+				\State \textbf{read} $problemNameFile$
+				\State \textbf{declare} $problem$
+				\State \textbf{declare} $searchStrategy$
 				\State \Call{Search}{}
 				\State write results on the DataBase
 			\EndFor
@@ -127,10 +127,10 @@ The following optimizations have been applied to improve the efficiency of the b
 \end{algorithm}
 
 \begin{algorithm}
-	\caption{CanPlaceGoodsSnake Algorithm}
-	\label{algo:canplacegoods}
+	\caption{Search Algorithm}
+	\label{algo:search}
 	\begin{algorithmic}[1]
-		\Function{CanPlaceGoodsSnake}{$weights[], lorries[], index, n, max\_capacity, selected[][]$}
+		\Function{search}{$StrategyToUse$}
 		\If{$index = n$}
 		\State \textbf{return} true
 		\EndIf
@@ -327,7 +327,7 @@ cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC * 1000.0;
 		      \begin{figure}[!ht]
 			      \centering
 			      \includegraphics[scale=0.7]{images/mi_grafica.png}
-			      \caption{Graphic showing the cost of each strategy compared within each dimensionality of the problems.}
+			      \caption{Graphic showing the cost of each strategy compared within each dimension of the problems.}
 			      \label{fig:complexity-graph}
 		      \end{figure}
 	      \end{center}
@@ -344,7 +344,7 @@ cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC * 1000.0;
 		      \begin{figure}[!ht]
 			      \centering
 			      \includegraphics[scale=0.7]{images/differentAlgorithmsExecutionTime.png}
-			      \caption{Negative execution time for A* strategy on huge dimensionality of problems.}
+			      \caption{Negative execution time for A* strategy on huge dimension of problems.}
 			      \label{fig:complexity-graph-comparison}
 		      \end{figure}
 	      \end{center}
