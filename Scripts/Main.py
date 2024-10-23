@@ -33,7 +33,7 @@ class Main:
                     nodesGenerated INTEGER,
                     nodesExpanded INTEGER,
                     executionTime REAL,
-                    formattedTime TEXT,
+                    formattedCostTime TEXT,
                     depthOfSolution INTEGER,
                     SolutionCost REAL,
                     algorithm TEXT
@@ -173,25 +173,6 @@ class Main:
                 execution_time = end - start
                 self.guardar_en_base_de_datos(i,problem,execution_time,j,busqueda.__class__.__name__)
                 print(f'\n Execution time --> {execution_time}')
-            #problem.search(DepthFirst())
-            #######
-            #problem = Problem('paseo_simón_abril_albacete_250_1.json')
-            #print(';'.join(map(str,problem.search(BreadthFirst()))))
-            #os.chdir(directorio)
-            #problem = Problem('paseo_simoÌn_abril_250_0.json')
-            #print(';'.join(map(str,problem.search(DepthFirst()))))
-            # Obtiene el directorio actual donde está ejecutándose el script
-            # o pide al usuario que lo proporcione
-            
-            #C:\googleMapsVS\Google-Maps\Scripts\problemas\
-            #problema = Problem("calle_mariÌa_mariÌn_500_0.json")
-                
-            # Ejecuta la búsqueda y muestra los resultados
-            #print(';'.join(map(str, problem.search(DepthFirst()))))
-            #print(';'.join(map(str, problema.search(BreadthFirst()))))
-            #problem = Problem('alabacete_simo_abril')
-            #search = Search(problem)
-            #problem.search(search)`
     def guardar_en_base_de_datos(self,nombre_problema,problem,tiempo_ejecucion,tipo_problema,algoritmo):
         os.chdir('C:\\googleMapsVS\\Google-Maps')
         __file__ = "resultados_programa.db"
@@ -205,13 +186,13 @@ class Main:
                     nodesGenerated,
                     nodesExpanded,
                     executionTime,
-                    formattedTime,
+                    formattedCostTime,
                     depthOfSolution,
                     SolutionCost,
                     algorithm) 
                          VALUES (?,?,?,?, ?, ?, ?, ?, ?)''', 
                      (nombre_problema,tipo_problema, problem.nodesGenerated,problem.expandedNodes, 
-                     tiempo_ejecucion,self.formatear_segundos(tiempo_ejecucion), problem.depth, 
+                     tiempo_ejecucion,self.formatear_segundos(problem.totalCost), problem.depth, 
                      problem.totalCost, algoritmo))
         db.commit()
         #db.close()

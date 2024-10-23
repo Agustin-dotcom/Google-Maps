@@ -73,3 +73,4 @@ DATA[DATA$nameProblem == "calle_cardenal_tabera_y_araoz_albacete_2000_1.json",]
 DATA[DATA$nameProblem =="plaza_isabel_ii_albacete_250_0.json",]
 
 DATA[DATA$nameProblem =="calle_herreros_albacete_2000_2.json",]
+View(DATA)
