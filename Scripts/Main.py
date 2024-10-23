@@ -33,6 +33,7 @@ class Main:
                     nodesGenerated INTEGER,
                     nodesExpanded INTEGER,
                     executionTime REAL,
+                    formattedTime TEXT,
                     depthOfSolution INTEGER,
                     SolutionCost REAL,
                     algorithm TEXT
@@ -64,13 +65,12 @@ class Main:
             print(f"#################################################")
 
             for i in archivos:
-                os.chdir(directorio)
-                
                 print(f"#################################################")
                 print(f"#            DEPTH FIRST SEARCH                 #")
                 print(f"#################################################")
                 print(f"#                       {i}                     #")
                 print(f"#################################################")
+                os.chdir(directorio)
                 problem = Problem(i)
                 start = time.time()
                 busqueda = DepthFirst(problem)
@@ -205,12 +205,18 @@ class Main:
                     nodesGenerated,
                     nodesExpanded,
                     executionTime,
+                    formattedTime TEXT,
                     depthOfSolution,
                     SolutionCost,
                     algorithm) 
-                         VALUES (?,?, ?, ?, ?, ?, ?, ?)''', 
+                         VALUES (?,?,?,?, ?, ?, ?, ?, ?)''', 
                      (nombre_problema,tipo_problema, problem.nodesGenerated,problem.expandedNodes, 
-                     tiempo_ejecucion, problem.depth, 
-                     problem.totalCost/60, algoritmo))
+                     tiempo_ejecucion,self.formatear_segundos(tiempo_ejecucion), problem.depth, 
+                     problem.totalCost, algoritmo))
         db.commit()
         #db.close()
+    def formatear_segundos(segundos):
+        horas = segundos // 3600
+        minutos = (segundos % 3600) // 60
+        segundos_restantes = segundos % 60
+        return f"{horas:02}:{minutos:02}:{segundos_restantes:02}"
