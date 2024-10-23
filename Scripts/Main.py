@@ -205,7 +205,7 @@ class Main:
                     nodesGenerated,
                     nodesExpanded,
                     executionTime,
-                    formattedTime TEXT,
+                    formattedTime,
                     depthOfSolution,
                     SolutionCost,
                     algorithm) 
@@ -215,7 +215,7 @@ class Main:
                      problem.totalCost, algoritmo))
         db.commit()
         #db.close()
-    def formatear_segundos(segundos):
+    def formatear_segundos(self,segundos):
         horas = segundos // 3600
         minutos = (segundos % 3600) // 60
         segundos_restantes = segundos % 60
