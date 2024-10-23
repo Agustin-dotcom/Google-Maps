@@ -72,33 +72,20 @@ class Problem:
         """:param search_param: strategy to use
         
         :returns: empty list of list of actions"""
-        #expandedNodes = 0
-        #exploredNodes = 0
-        #if not isinstance(search_param,Search) and not isinstance(search_param,BreadthFirst) and not isinstance(search_param,DepthFirst) and not isinstance(search_param,BestFirst) and not isinstance(search_param,AStar):
-        #    raise TypeError(f"Introduce a Search object, not a {type(search_param).__name__}")
         explored = set()
         search_param.insert(self.root)
-        while len(search_param.openDS)!=0:
-            #if  isinstance(search_param,DepthFirst):# solo si estamos con LIFO #“Notes: The order of the actions is determined by the destination state whose identifier is the lowest, that is, if different (partial) destinations can be reached at a given point (intersection), they will be visited in increasing numerical order”.
-                #temp = deque(search_param.openDS)
-                #search_param.openDS = []
-                #while len(temp)!=0:
-                    #search_param.openDS.append(temp.pop())
-                #search_param.openDS = np.array(search_param.openDS) #dando la vuelta el array para coger con el id mas peque;o    
+        while len(search_param.openDS)!=0:    
             node = search_param.extract()
             self.exploredNodes +=1
-            if node.state.state not in explored: #node[1] bc is a tuple (heuristic,node)
-                if(self.testGoal(node)): # remember that node is a tuple
-                    #print(f'Generated nodes ; expandedNodes ; depthOfSolution ; cost ; exploredNodes)')
-                    #print(f'{self.nodesGenerated};{self.expandedNodes};{node.depth};{node.accumulatedCost};{self.exploredNodes}')
+            if node.state.state not in explored:
+                if(self.testGoal(node)): 
                     self.depth = node.depth
                     self.totalCost = node.accumulatedCost
                     return self.recoverPath(node,[],0)
-                successors = self.expand(node)
-                if (len(successors)>0):
+                successors1 = self.expand(node)
+                if (len(successors1)>0):
                     self.expandedNodes+=1
-                for  successor in successors:
-                    #search_param.insert(successor,successors)
+                for  successor in successors1:
                     search_param.insert(successor)
                 explored.add(node.state.state) #  node.state es el objeto y node.state.state es la variable en el objeto state
         print("Solución no encontrada y hemos recorrido todo el árbol")
@@ -127,7 +114,8 @@ class Problem:
         #    return []
         #possibleActions = []
         #dictionaryOfDictionaries = {d['identifier']: d for d in self.dictionary['intersections']}# Node_param.state.state # we get a dictionary of dictionaries
-        for destination in currentIntersection.get("whereto"):
+        listOrdered = sorted(currentIntersection.get("whereto"), key = lambda x:x['id'])
+        for destination in listOrdered:
             """currentIntersection.get("whereto")
             [{'id': 1256026663, 'cost': 1.7331}, {'id': 1531659796, 'cost': 2.346}]"""
             newAction = Action(

@@ -30,7 +30,6 @@ class Main:
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     nameProblem VARCHAR(50),
                     typeOfProblem TEXT,
-                    nodesExplored INTEGER,
                     nodesGenerated INTEGER,
                     nodesExpanded INTEGER,
                     executionTime REAL,
@@ -60,47 +59,52 @@ class Main:
             directorio = "C:\\googleMapsVS\\Google-Maps\\problems\\"+j
             archivos = os.listdir(directorio)
             #print(archivos)
-            #print(f"#################################################")
-            #print(f"#                    COMENZAMOS                 #")
-            #print(f"#################################################")
+            print(f"#################################################")
+            print(f"#                    COMENZAMOS                 #")
+            print(f"#################################################")
 
             for i in archivos:
                 os.chdir(directorio)
-                problem = Problem(i)
+                
                 print(f"#################################################")
                 print(f"#            DEPTH FIRST SEARCH                 #")
                 print(f"#################################################")
                 print(f"#                       {i}                     #")
                 print(f"#################################################")
+                problem = Problem(i)
                 start = time.time()
                 busqueda = DepthFirst(problem)
-                problem.search(busqueda)
-                print(';'.join(map(str,problem.search(busqueda))))
+                result = problem.search(busqueda)
+                print(';'.join(map(str,result)))
                 end = time.time()
                 self.guardar_en_base_de_datos(i,problem,end-start,j,busqueda.__class__.__name__)
                 print(f'\n Execution time --> {end-start}')
                 print(f"#################################################")
                 print(f"#            BREADTH FIRST SEARCH                 #")
                 print(f"#################################################")
-                print(f"#                       {i}                     #")
+                #print(f"#                       {i}                     #")
                 print(f"#################################################")
+                os.chdir(directorio)
+                problem = Problem(i)
                 start = time.time()
                 busqueda = BreadthFirst(problem)
-                problem.search(busqueda)
-                print(','.join(map(str,problem.search(busqueda))))
+                result = problem.search(busqueda)
+                print(','.join(map(str,result)))
                 end = time.time()
                 self.guardar_en_base_de_datos(i,problem,end-start,j,busqueda.__class__.__name__)
                 print(f'\n Execution time --> {end-start}')
-                #############################################################################
+                ############################################################################
                 print(f"#################################################")
                 print(f"#            BEST FIRST SEARCH                  #")
                 print(f"#################################################")
                 print(f"#                       {i}                     #")
                 print(f"#################################################")
+                os.chdir(directorio)
+                problem = Problem(i)
                 start = time.perf_counter()
                 busqueda = BestFirst(problem)
-                problem.search(busqueda)
-                print(','.join(map(str,problem.search(busqueda))))
+                result = problem.search(busqueda)
+                print(','.join(map(str,result)))
                 end = time.perf_counter()
                 execution_time = end - start
                 self.guardar_en_base_de_datos(i,problem,execution_time,j,busqueda.__class__.__name__)
@@ -111,10 +115,12 @@ class Main:
                 print(f"#################################################")
                 print(f"#                       {i}                     #")
                 print(f"#################################################")
+                os.chdir(directorio)
+                problem = Problem(i)
                 start = time.perf_counter()
                 busqueda = AStar(problem)
-                problem.search(busqueda)
-                print(','.join(map(str,problem.search(busqueda))))
+                result = problem.search(busqueda)
+                print(','.join(map(str,result)))
                 end = time.perf_counter()
                 execution_time = end - start
                 self.guardar_en_base_de_datos(i,problem,execution_time,j,busqueda.__class__.__name__)
@@ -125,10 +131,12 @@ class Main:
                 print(f"#################################################")
                 print(f"#                       {i}                     #")
                 print(f"#################################################")
+                os.chdir(directorio)
+                problem = Problem(i)
                 start = time.perf_counter()
                 busqueda = AStarOptimisticButRealistic(problem)
-                problem.search(busqueda)
-                print(','.join(map(str,problem.search(busqueda))))
+                result = problem.search(busqueda)
+                print(','.join(map(str,result)))
                 end = time.perf_counter()
                 execution_time = end - start
                 self.guardar_en_base_de_datos(i,problem,execution_time,j,busqueda.__class__.__name__)
@@ -139,10 +147,12 @@ class Main:
                 print(f"#################################################")
                 print(f"#                       {i}                     #")
                 print(f"#################################################")
+                os.chdir(directorio)
+                problem = Problem(i)
                 start = time.perf_counter()
                 busqueda = AStarAssumingOneHundredAndTwentyKilometersPerHour(problem)
-                problem.search(busqueda)
-                print(','.join(map(str,problem.search(busqueda))))
+                result = problem.search(busqueda)
+                print(','.join(map(str,result)))
                 end = time.perf_counter()
                 execution_time = end - start
                 self.guardar_en_base_de_datos(i,problem,execution_time,j,busqueda.__class__.__name__)
@@ -153,10 +163,12 @@ class Main:
                 print(f"#################################################")
                 print(f"#                       {i}                     #")
                 print(f"#################################################")
+                os.chdir(directorio)
+                problem = Problem(i)
                 start = time.perf_counter()
                 busqueda = AStarGeodesicWithMostRepeatedSpeed(problem)
-                problem.search(busqueda)
-                print(','.join(map(str,problem.search(busqueda))))
+                result = problem.search(busqueda)
+                print(','.join(map(str,result)))
                 end = time.perf_counter()
                 execution_time = end - start
                 self.guardar_en_base_de_datos(i,problem,execution_time,j,busqueda.__class__.__name__)
@@ -190,16 +202,15 @@ class Main:
         c.execute('''INSERT INTO resultados 
                          (nameProblem,
                     typeOfProblem,
-                    nodesExplored,
                     nodesGenerated,
                     nodesExpanded,
                     executionTime,
                     depthOfSolution,
                     SolutionCost,
                     algorithm) 
-                         VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)''', 
-                     (nombre_problema,tipo_problema, problem.exploredNodes, problem.nodesGenerated,problem.expandedNodes, 
+                         VALUES (?,?, ?, ?, ?, ?, ?, ?)''', 
+                     (nombre_problema,tipo_problema, problem.nodesGenerated,problem.expandedNodes, 
                      tiempo_ejecucion, problem.depth, 
-                     problem.totalCost, algoritmo))
+                     problem.totalCost/60, algoritmo))
         db.commit()
         #db.close()
