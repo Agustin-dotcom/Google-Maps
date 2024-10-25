@@ -20,6 +20,7 @@ class Problem:
         self.expandedNodes = 0
         self.depth = 0
         self.totalCost = 0.0
+        self.explored = set()
         with open(file_name,'r') as file:
             self.dictionary = json.load(file)
             # Conversión de velocidad de km/h a m/s y cálculo del coste
@@ -42,7 +43,6 @@ class Problem:
             # Convert speed from km/h to m/s
             speed_ms = speed_kmh * (1000 / 3600)
             self.dictionary['mostRepeatedSpeed'].append(speed_ms)
-            self.dictionary['mostRepeatedSpeed'] = statistics.multimode(self.dictionary.get('mostRepeatedSpeed'))
             # Si tenemos una velocidad mayor a la predeterminada, la cogemos
             if(speed_ms > self.dictionary.get('maxSpeedOfAllSpeeds')):
                 self.dictionary['maxSpeedOfAllSpeeds'] = speed_ms
@@ -55,6 +55,7 @@ class Problem:
                 self.dictionary.get('intersections').get(origin).get('whereto').append({'id': destination, 'cost': cost})
                 # Convertir la lista de intersecciones a un diccionario donde la clave sea el 'identifier'
                 #self.dictionary['intersections'] = {intersection['identifier']: {**intersection, 'whereto': set()} for intersection in self.dictionary.get('intersections')}
+        self.dictionary['mostRepeatedSpeed'] = statistics.multimode(self.dictionary.get('mostRepeatedSpeed'))
         self.initializeOpen(self.dictionary.get('initial')) # inicializo nodo raiz
         
     def initializeOpen(self,initial):
@@ -72,12 +73,12 @@ class Problem:
         """:param search_param: strategy to use
         
         :returns: empty list of list of actions"""
-        explored = set()
+        #explored = set()
         search_param.insert(self.root)
         while len(search_param.openDS)!=0:    
             node = search_param.extract()
             self.exploredNodes +=1
-            if node.state.state not in explored:
+            if node.state.state not in self.explored:
                 if(self.testGoal(node)): 
                     self.depth = node.depth
                     self.totalCost = node.accumulatedCost
@@ -87,7 +88,7 @@ class Problem:
                     self.expandedNodes+=1
                 for  successor in successors1:
                     search_param.insert(successor)
-                explored.add(node.state.state) #  node.state es el objeto y node.state.state es la variable en el objeto state
+                self.explored.add(node.state.state) #  node.state es el objeto y node.state.state es la variable en el objeto state
         print("Solución no encontrada y hemos recorrido todo el árbol")
         return search_param.openDS
 
@@ -118,6 +119,8 @@ class Problem:
         for destination in listOrdered:
             """currentIntersection.get("whereto")
             [{'id': 1256026663, 'cost': 1.7331}, {'id': 1531659796, 'cost': 2.346}]"""
+            if destination.get('id') in self.explored:
+                continue
             newAction = Action(
                     Node_param.state.state, #origen
                     destination.get("id"), # destino

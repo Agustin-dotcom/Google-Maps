@@ -82,7 +82,7 @@ class Main:
                 print(f"#################################################")
                 print(f"#            BREADTH FIRST SEARCH                 #")
                 print(f"#################################################")
-                #print(f"#                       {i}                     #")
+                print(f"#                       {i}                     #")
                 print(f"#################################################")
                 os.chdir(directorio)
                 problem = Problem(i)
