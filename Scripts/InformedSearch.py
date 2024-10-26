@@ -1,5 +1,7 @@
 import heapq
 from Search import Search
+import sys
+sys.path.append('c:\\users\\agus\\appdata\\local\\programs\\python\\python312\\lib\\site-packages')
 from geographiclib.geodesic import Geodesic # pip install geographiclib
 class InformedSearch(Search):
     """notice that we work with a tuple
