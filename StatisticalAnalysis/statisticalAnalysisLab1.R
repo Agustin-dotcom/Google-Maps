@@ -40,11 +40,11 @@ DATA[DATA$executionTime <0,]
 
 summary(DATA)
 
-ggplot(DATA,aes(x = DATA$SolutionCost, fill = DATA$algorithm))+
+ggplot(DATA,aes(x = SolutionCost, fill = algorithm))+
   geom_density(alpha = 0.7)+
   xlim(0,2000)
 
-ggplot(DATA,aes(y=DATA$SolutionCost, fill = DATA$algorithm))+
+ggplot(DATA,aes(y=SolutionCost, fill = algorithm))+
   geom_boxplot(alpha = 0.8)+
   ylim(0,1000)
 
@@ -55,6 +55,9 @@ summary(DATA)
 .desc.numeric(DATA$executionTime,DATA$algorithm)
 
 ggplot(DATA,aes(x = typeOfProblem,y = nodesGenerated, fill = algorithm))+
+  geom_bar(stat = "identity", position = "dodge")
+
+ggplot(DATA,aes(x = typeOfProblem,y = nodesExpanded, fill = algorithm))+
   geom_bar(stat = "identity", position = "dodge")
 
 ggplot(DATA,aes(x = nodesGenerated,fill = algorithm))+
@@ -87,7 +90,7 @@ ggplot(DATA,aes(x = nodesGenerated, fill = algorithm))+
 
 ggplot(DATA,aes(y = nodesGenerated, fill = algorithm))+
   geom_boxplot(alpha = 0.7)+
-  ylim(0,500)
+  ylim(0,200)
 
 #ggplot(DATA,aes(x = (nameProblem,DATA$algorithm), y = nodesGenerated))+
 #  geom_line(alpha = 0.7)
@@ -437,3 +440,32 @@ ggplot(df, aes(x = as.factor(nameProblem), y = nodesGenerated, color = algorithm
   scale_y_continuous(breaks = seq(3000, max(df$nodesGenerated), by = 1000)) +  # Mostrar solo etiquetas del eje y a partir de 3000
   labs(NULL)+
   theme_minimal()
+######################################################################################3
+# Crear la gráfica
+ggplot(df, aes(x = as.factor(nameProblem), y = nodesExpanded, color = algorithm, group = algorithm)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Number of Generated Nodes for each problem applying different strategies",
+       x = "Problems",
+       y = "Nodes Generated",
+       color = "Algorithm") +
+  theme(axis.text.x = element_blank(),  # Ocultar los valores del eje x
+        axis.ticks.x = element_blank()) +
+  scale_color_brewer(palette = "Dark2") +  # Usar una paleta de colores más oscuros
+  scale_x_discrete(label = NULL)+
+  theme_minimal()
+#### EXPERIMENTO ###################  
+# Suponiendo que df tiene una columna 'typeProblem' que categoriza los problemas
+ggplot(df, aes(x = as.factor(nameProblem), y = nodesExpanded, color = algorithm, group = algorithm)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Number of Generated Nodes for each problem applying different strategies",
+       x = "Problems",
+       y = "Nodes Generated",
+       color = "Algorithm") +
+  theme(axis.text.x = element_blank(),  # Ocultar los valores del eje x
+        axis.ticks.x = element_blank()) +
+  scale_color_brewer(palette = "Dark2") +  # Usar una paleta de colores más oscuros
+  scale_x_discrete(label = NULL)+
+  theme_minimal() +
+  facet_wrap(~ typeOfProblem, scales = "free_x", nrow = 1)  # Agrupar por tipo de problema
