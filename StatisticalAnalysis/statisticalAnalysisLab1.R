@@ -2,7 +2,7 @@ rm(list=ls())
 
 source("C:/Users/Agus/OneDrive - Universidad de Castilla-La Mancha/Escritorio/2do año/2do cuatri/Statistics (Fernando)/R/Libraries/getMe.libraries.R")
 getMe.libraries()
-install.packages("RSQLite")
+#install.packages("RSQLite")
 library(RSQLite)
 
 # Especifica la ruta a tu archivo .db
@@ -49,6 +49,7 @@ ggplot(DATA,aes(y=SolutionCost, fill = algorithm))+
   ylim(0,1000)
 
 ggplot(DATA,aes(x = typeOfProblem,y=SolutionCost,fill = algorithm))+
+  scale_fill_viridis(discrete = TRUE) +
   geom_bar(stat = "identity",position = "dodge",alpha = 0.8)
 
 summary(DATA)
@@ -63,7 +64,20 @@ ggplot(DATA,aes(x = typeOfProblem,y = nodesExpanded, fill = algorithm))+
 ggplot(DATA,aes(x = nodesGenerated,fill = algorithm))+
   geom_density(alpha = 0.7)+
 xlim(0,2500)
+library(ggplot2)
+library(viridis)
 
+ggplot(DATA, aes(x = nodesGenerated, fill = algorithm)) +
+  geom_density(alpha = 0.7) +
+  scale_fill_viridis(discrete = TRUE) +
+  xlim(0, 2500)
+library(ggplot2)
+library(RColorBrewer)
+
+ggplot(DATA, aes(x = nodesGenerated, fill = algorithm)) +
+  geom_density(alpha = 0.7) +
+  scale_fill_brewer(palette = "Set1") +
+  xlim(0, 2500)
 View(DATA)
 nameIWant <- names(table(DATA$algorithm))[2]
 nameIWantNow <- names(table(DATA$algorithm))[1]
@@ -469,3 +483,8 @@ ggplot(df, aes(x = as.factor(nameProblem), y = nodesExpanded, color = algorithm,
   scale_x_discrete(label = NULL)+
   theme_minimal() +
   facet_wrap(~ typeOfProblem, scales = "free_x", nrow = 1)  # Agrupar por tipo de problema
+
+
+# I forgot to compare variables
+
+.desc.numeric(DATA$nodesGenerated, DATA$algorithm)
