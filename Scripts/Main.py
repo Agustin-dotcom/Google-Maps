@@ -38,7 +38,7 @@ class Main:
         # Guardar los cambios
         db.commit()
         for j in ['huge','large','medium','small']:
-            directorio = "C:\\googleMapsVS\\Google-Maps\\problems\\"+j #TODO: CHANGE PATH
+            directorio = "C:\\Users\\Agus\\Downloads\\SUBMISSION\\problems\\"+j #TODO: CHANGE PATH
             archivos = os.listdir(directorio)
             print(f"#################################################")
             print(f"#                    COMENZAMOS                 #")
@@ -47,7 +47,7 @@ class Main:
             for i in archivos:
                 os.chdir(directorio)
                 problem = Problem(i)
-                start = time.time()
+                start = time.perf_counter()
                 busqueda = AStar(problem)
                 print(f"#################################################")
                 print(f"#                       {busqueda.__class__.__name__}                      #")
@@ -55,7 +55,7 @@ class Main:
                 print(f"#                       {i}                     #")
                 print(f"#################################################")
                 result = problem.search(busqueda)
-                end = time.time()
+                end = time.perf_counter()
                 print(f'Generated nodes: {problem.nodesGenerated}\n')
                 print(f'Expanded nodes: {problem.expandedNodes}\n')
                 print(f'Execution time: {self.formatear_segundos(end-start)}\n')
@@ -68,7 +68,7 @@ class Main:
                 ############################################################################
                 os.chdir(directorio)
                 problem = Problem(i)
-                start = time.time()
+                start = time.perf_counter()
                 busqueda = BreadthFirst(problem)
                 print(f"#################################################")
                 print(f"#                       {busqueda.__class__.__name__}                      #")
@@ -76,7 +76,7 @@ class Main:
                 print(f"#                       {i}                     #")
                 print(f"#################################################")
                 result = problem.search(busqueda)
-                end = time.time()
+                end = time.perf_counter()
                 print(f'Generated nodes: {problem.nodesGenerated}\n')
                 print(f'Expanded nodes: {problem.expandedNodes}\n')
                 print(f'Execution time: {self.formatear_segundos(end-start)}\n')
@@ -89,7 +89,7 @@ class Main:
                 ############################################################################
                 os.chdir(directorio)
                 problem = Problem(i)
-                start = time.time()
+                start = time.perf_counter()
                 busqueda = DepthFirst(problem)
                 print(f"#################################################")
                 print(f"#                       {busqueda.__class__.__name__}                      #")
@@ -97,7 +97,7 @@ class Main:
                 print(f"#                       {i}                     #")
                 print(f"#################################################")
                 result = problem.search(busqueda)
-                end = time.time()
+                end = time.perf_counter()
                 print(f'Generated nodes: {problem.nodesGenerated}\n')
                 print(f'Expanded nodes: {problem.expandedNodes}\n')
                 print(f'Execution time: {self.formatear_segundos(end-start)}\n')
@@ -110,7 +110,7 @@ class Main:
                 #############################################################################
                 os.chdir(directorio)
                 problem = Problem(i)
-                start = time.time()
+                start = time.perf_counter()
                 busqueda = BestFirst(problem)
                 print(f"#################################################")
                 print(f"#                       {busqueda.__class__.__name__}                      #")
@@ -118,7 +118,7 @@ class Main:
                 print(f"#                       {i}                     #")
                 print(f"#################################################")
                 result = problem.search(busqueda)
-                end = time.time()
+                end = time.perf_counter()
                 print(f'Generated nodes: {problem.nodesGenerated}\n')
                 print(f'Expanded nodes: {problem.expandedNodes}\n')
                 print(f'Execution time: {self.formatear_segundos(end-start)}\n')
