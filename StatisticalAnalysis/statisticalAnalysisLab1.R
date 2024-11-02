@@ -36,7 +36,19 @@ ggplot(DATA, aes(y = executionTime, fill = algorithm))+
   ylim(0,0.015)
 .desc.numeric(DATA$executionTime)$min
 DATA[DATA$executionTime <0,]
+# Probando algo de Bing AI
+library(ggplot2)
+library(dplyr)
 
+# Suponiendo que tu dataframe se llama DATA
+summarized_data <- DATA %>%
+  group_by(algorithm) %>%
+  summarize(total_executionTime = sum(executionTime))
+
+ggplot(summarized_data, aes(x = algorithm, y = total_executionTime, fill = algorithm)) +
+  geom_bar(stat = "identity", alpha = 0.7) +
+  ylim(0, 0.015) +
+  labs(y = "Total Execution Time")
 
 summary(DATA)
 

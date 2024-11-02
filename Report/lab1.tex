@@ -15,7 +15,8 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{caption}
-
+% \usepackage[ruled,vlined]{algorithm2e}
+% \newcommand{\ForEach}[2]{\State \textbf{for each} #1 \textbf{in} #2 \textbf{do}}
 \hypersetup{
     colorlinks=true,
     linkcolor=black,
@@ -59,6 +60,91 @@
 
 \section{Introduction}
 The term Heuristics comes from the greek expression Heurisken \cite{lamport1994latex}, which means to discover. The same with the expression "Eureka!" that Archimedes claimed when he came out of the river and set his famous Fluids Principle that was named after him. Informed Strategies are more efficient since they can weight different decisions based on a function $f(n)$. This function is going to vary depending on whether we are on A* ($f(n) = g(n) + h(n)$ where  $g(n)$ is the accumulated cost on our current node and $h(n)$ is the calculated \textbf{heuristics}) or we are working with a greedy approach (our function $f(n)$ is going to be determined just by $h(n)$ ($f(n) = h(n)$)). On Uninformed Strategies, we could say $f(n) = 0$.    
+\section{Overview}
+It is nice to comment that we have used the concept of inheritance to make the code more readable and also not to repeat redundant code. This not only helps for scalability but also for readability. See the inheritance overview in Figure \ref{fig:inheritance}.
+\begin{center}
+		      \begin{figure}[!ht]
+			      \centering
+			      \caption{Class Diagram showing Inheritance.}\includegraphics[scale=0.7]{images/lab1intelligentsystems Class diagram.png}
+			      
+			      \label{fig:inheritance}
+		      \end{figure}
+	      \end{center}
+\newpage
+\section{Pseudocode}
+The two most important functions or methods in this assignment are called \textbf{expand} and \textbf{search}. Both are in the \textbf{Problem} class.
+\begin{algorithm}
+	\caption{Main Algorithm}
+	\label{algo:main}
+	\begin{algorithmic}[1]
+		\Function{Main}{}
+		\State Create DataBase
+  
+		\For{$ \textbf{each} \ directory \ \textbf{in} \ currentDirectory $}
+			\For{$ \textbf{each} \ problem \ \textbf{in} \ directory $}
+				\State \textbf{read} $problem$
+				\State \textbf{declare} $problem$
+				\State \textbf{declare} $searchStrategy$
+				\State \Call{search}{problem}
+				\State write results on the DataBase
+			\EndFor
+		\EndFor
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\caption{Search Algorithm}
+	\label{algo:search}
+	\begin{algorithmic}[1]
+		\Function{search}{} \Comment{O(n)}
+        \State open $\gets$ $\Call{CreateNode}{Initial-State}$
+		% \State Insert root into open
+        \State explored $\gets$ $\emptyset$
+        \While{$open \ \neq \ \emptyset$}
+        % \State node $\gets$ extract a node from open
+        \State node $\gets$ $\Call{Extract}{open}$
+        % \State Increase  the counter of explored nodes
+        \If{node.STATE $\notin $ explored}
+        \If{$\Call{TestGoal}{node.STATE}$}
+            \State \Return $\Call{RecoverPath}{node}$
+        \EndIf
+        \State successors $\gets$ $\Call{Expand}{node}$ \Comment{O(n)}
+        \For{\textbf{each} successor \textbf{in} successors} \Comment{O(n)}
+        \State $\Call{Insert}{successor, open}$
+        \EndFor
+        \State $\Call{Insert}{node.STATE, explored}$
+        \EndIf
+        \EndWhile
+        \State \Return failure
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+\begin{algorithm}
+	\caption{Expand Algorithm}
+	\label{algo:feasibilitycheck}
+	\begin{algorithmic}[1]
+		\Function{expand}{node} \Comment{O(n)}
+		\State successors $\gets$ $\emptyset$
+  \State currentIntersection $\gets$ dictionary.$\Call{get}{'intersections'}$.$\Call{get}{node.STATE}$
+  \State listOrdered $\gets$ $\Call{sorted}{currentIntersection.destinations}$ \Comment{O(n*log(n))}
+  \For{destination $\in$ listOrdered} \Comment{O(n)}
+  \If{destination.$\Call{get}{'id'} \in $ explored}
+  \State \textbf{continue}
+  \EndIf
+  \State newAction $\gets$ $\Call{Action}{node.STATE, destination.GET('id'),destination.GET('cost')}$
+  \State newState $\gets \Call{State}{node.DESTINATION, destination.GET('longitude'),destination.GET('latitude')}$
+  \State newNode $\gets \Call{node}{node, newState,newAction, node.depth+1, node.ACCUMULATED\_COST + newAction.COST}$
+  \State NODES\_GENERATED+= 1
+  \State MOMENTO $\gets$ NODES\_GENERATED
+  \State successors.$\Call{append}{newNode}$
+  \EndFor
+  \State \Return successors
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\newpage
 
 \section{Statistical Analysis}
 We have got several parameters we can use to our benefit to compare different strategies based on different metrics. Take Figure \ref{fig:boxplot} below, for instance. We can see how \textbf{DepthFirst} search is the strategy with most generated nodes considering all problems of different dimensions. We can see, specifically, in Figure \ref{fig:depthFirstSucks} how \textbf{DepthFirst} is really bad at huge problems finding paths with really high costs compared to all other search strategies.
@@ -71,24 +157,26 @@ We have got several parameters we can use to our benefit to compare different st
 		      \end{figure}
 	      \end{center}
       % \newpage
-       In the above graphic we can see how all the strategies generate the same number of nodes in small problems. Nevertheless, as the dimension of the problems grow, each strategy generate a different number of nodes. Note that the BestFirst strategy is the best one since it generates almost none nodes compared to BreadthFirst or DepthFirst.
+       % In the above graphic we can see how all the strategies generate the same number of nodes in small problems. Nevertheless, as the dimension of the problems grow, each strategy generate a different number of nodes. Note that the BestFirst strategy is the best one since it generates almost none nodes compared to BreadthFirst or DepthFirst.
+       In Figure \ref{fig:executionTimeBoxplot} we can see the execution time on different strategies. Even though there is not much difference between each one, we can say that \textbf{DepthFirst} is the more rapid one while \textbf{BestFirst} seems to be the one that takes longer. Maybe that is the price we pay for having strategies that are informed, they cost more in terms of Time Complexity. 
        \begin {center}
        \begin{figure}[!ht]
 			      \centering
           \caption{Graphic showing the different execution times of different strategies.}
 			      \includegraphics[scale=0.7]{images/BoxplotOnExecutionTimeOnDifferentStrategies.png}
 			     
-			      \label{fig:complexity-graph}
+			      \label{fig:executionTimeBoxplot}
 		      \end{figure}
 	      \end{center}
-       In this other graphic we can appreciate the number of nodes that are expanded by each search strategy within each dimension of the problem. We can see how in small problems we can't really see the difference but if the problem grows the search strategies that are most dominant (by not expanding nodes almost) are the \textbf{BestFirst} and \textbf{AStarGeodesicWithMostRepeatedSpeed}.
-       It's interesting to mention that \textbf{AStarGeodesicWithMostRepeatedSpeed} strategy beats most of the times \textbf{AStar} and anyone else in terms of generated nodes, expanded nodes and  depth of solution having a little bit more of solution cost than other strategies (insignificant).
+       % In this other graphic we can appreciate the number of nodes that are expanded by each search strategy within each dimension of the problem. We can see how in small problems we can't really see the difference but if the problem grows the search strategies that are most dominant (by not expanding nodes almost) are the \textbf{BestFirst} and \textbf{AStarGeodesicWithMostRepeatedSpeed}.
+       % It's interesting to mention that \textbf{AStarGeodesicWithMostRepeatedSpeed} strategy beats most of the times \textbf{AStar} and anyone else in terms of generated nodes, expanded nodes and  depth of solution having a little bit more of solution cost than other strategies (insignificant).
+       In figure \ref{fig:solutionCostOnBoxplot} there is not much difference on the cost of the solution on each strategy. \textbf{DepthFirst}  
        \begin {center}
        \begin{figure}[!ht]
 			      \centering
-			      \includegraphics[scale=0.7]{images/BoxplotOnSolutionCostOnDifferentStrategies.png}
-			      \caption{Boxplot on different solution costs by each search strategy.}
-			      \label{fig:complexity-graph}
+			      \caption{Boxplot on different solution costs by each search strategy.}\includegraphics[scale=0.7]{images/BoxplotOnSolutionCostOnDifferentStrategies.png}
+			      
+			      \label{fig:solutionCostOnBoxplot}
 		      \end{figure}
 	      \end{center}
        One more time, we can appreciate how \textbf{BestFirst} search strategy generates less nodes as any other search strategy. 
@@ -103,7 +191,15 @@ We have got several parameters we can use to our benefit to compare different st
 	      % \textbf{Answer}:\quad The algorithm aims to distribute goods among a limited number of trucks, ensuring
 	      % that each truck's weight limit is not exceeded. It begins by checking if such a distribution is feasible.
 	      % If so, it sorts the goods by weight and recursively attempts to place them in trucks, backtracking when necessary.
- 
+ \begin{center}
+		      \begin{figure}[!ht]
+			      \centering
+			      \caption{Density graph on the nodes generated by each strategy.}\includegraphics[scale=0.7]{images/densityOnNodesGeneratedOnDifferentStrategies.png}
+			      
+			      \label{fig:complexity-graph-comparison}
+		      \end{figure}
+	      \end{center}
+       \newpage
        
 \section{Algorithmic complexity}
 	% \item Formal description of the backtracking programming algorithm that solves the problem, so previously
@@ -121,14 +217,7 @@ We have got several parameters we can use to our benefit to compare different st
 		            any capacity, a solution is found.
 	      \end{itemize}
 % \end{itemize}
- \begin{center}
-		      \begin{figure}[!ht]
-			      \centering
-			      \includegraphics[scale=0.7]{images/densityOnNodesGeneratedOnDifferentStrategies.png}
-			      \caption{Density graph on the nodes generated by each strategy.}
-			      \label{fig:complexity-graph-comparison}
-		      \end{figure}
-	      \end{center}
+ 
 
 \subsubsection{Optimization}
 The following optimizations have been applied to improve the efficiency of the backtracking algorithm:
@@ -144,120 +233,6 @@ The following optimizations have been applied to improve the efficiency of the b
 	\item \textbf{Avoiding Redundant Permutations}: When checking if a lorry has a load capacity of 0, it breaks the loop to avoid redundant permutations. This helps in reducing unnecessary computations.
 \end{enumerate}
 
-\subsection{Pseudocode}
-\begin{algorithm}
-	\caption{Main Algorithm}
-	\label{algo:main}
-	\begin{algorithmic}[1]
-		\Function{Main}{}
-		\State Create DataBase
-		\For{$i \gets small \textbf {to}  huge$}
-			\For{$i \gets 0 \textbf{to} numberFiles-1$}
-				\State \textbf{read} $problemNameFile$
-				\State \textbf{declare} $problem$
-				\State \textbf{declare} $searchStrategy$
-				\State \Call{Search}{}
-				\State write results on the DataBase
-			\EndFor
-		\EndFor
-		\EndFunction
-	\end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}
-	\caption{Search Algorithm}
-	\label{algo:search}
-	\begin{algorithmic}[1]
-		\Function{search}{$StrategyToUse$}
-		\If{$index = n$}
-		\State \textbf{return} true
-		\EndIf
-            \State$i \gets index\%3$
-		\For{$j \gets 0 \ \textbf{to} \  
-    NUM\_LORRIES - 1, \ j \gets j+1$}
-		\If{$lorries[i] + weights[index] \leq max\_capacity$}
-		\State $lorries[i] \gets lorries[i] + weights[index]$
-		\If{\Call{CanPlaceGoodsSnake}{$weights[], lorries[], index + 1, n, max\_capacity, selected[][]$}}
-            \State $selected[i][index] \gets true$
-		\State \textbf{return} true
-		\EndIf
-		\State $lorries[i] \gets lorries[i] - weights[index]$
-		\EndIf
-		\If{$lorries[i] = 0$}
-		\State \textbf{break}
-		\EndIf
-  \State$ i \gets INCREMENT\_SNAKE(i,index)$
-		\EndFor
-		\State \textbf{return} false
-		\EndFunction
-	\end{algorithmic}
-\end{algorithm}
-\begin{algorithm}
-	\caption{FeasibilityCheck Algorithm}
-	\label{algo:feasibilitycheck}
-	\begin{algorithmic}[1]
-		\Function{FeasibilityCheck}{$weights[], n$}
-		\State $sum \gets 0$
-		\For{$,n \  \textbf{and} \ sum \leq NUM\_LORRIES \times max\_capacity \ \textbf{and} \ weights[n - 1] \leq max\_capacity \ \textbf{and} \ sum \times cost\_per\_kg \leq budget,$}
-            \State $n \gets n - 1$
-            \State $sum \gets sum + weights[n]$
-            \EndFor
-		\State \textbf{return $\textbf{not} \ n \ \textbf{and} \  sum \leq NUM\_LORRIES \times max\_capacity \ \textbf{and} \   sum \times cost\_per\_kg \leq budget $}
-		\EndFunction
-	\end{algorithmic}
-\end{algorithm}
-
-
-\begin{algorithm}
-	\caption{CanPlaceGoodsBalancedSum Algorithm}
-	\label{algo:canplacegoodsbalancedsum}
-	\begin{algorithmic}[1]
-		\Function{CanPlaceGoodsBalancedSum}{$weights[], lorries[], index, n, max\_capacity, selected[][]$}
-		\If{$index = n$}
-		\State \textbf{return} true
-		\EndIf
-            \State $Define\ \textit{start}\ and\ \textit{increment}\ as\ integers$
-            \If{$lorries[0] \leq lorries[1] \And lorries[0] \leq lorries[2]$}
-            \State $start \gets 0$
-            \If{$lorries[1] \leq lorries[2]$}
-            \State $increment \gets 1 $
-            \Else \State $increment \gets -1$
-            \EndIf
-            \Else \If{$lorries[1] \leq lorries[0] \And lorries[1] \leq lorries[2]$}
-            \State $start \gets 1$
-            \If{$lorries[0] \leq lorries[2]$}
-            \State $increment \gets 1 $
-            \Else \State $increment \gets -1$
-            \EndIf
-            \Else \State $start \gets 2$
-            \If{$lorries[0] \leq lorries[1]$}
-            \State $increment \gets 1 $
-            \Else \State $increment \gets -1$
-            \EndIf
-            \EndIf
-            \EndIf
-            \State $i \gets start$  
-		\For{$ j \gets 0$ \textbf{to} $NUM\_LORRIES - 1, \ j \gets j+1 $}
-            
-		\If{$lorries[i] + weights[index] \leq max\_capacity$}
-		\State $lorries[i] \gets lorries[i] + weights[index]$
-		\If{\Call{CanPlaceGoodsBalancedSum}{$weights[], lorries[], index + 1, n, max\_capacity, selected[][]$}}
-            \State $selected[i][index] \gets true$
-		\State \textbf{return} true
-		\EndIf
-		\State $lorries[i] \gets lorries[i] - weights[index]$
-		\EndIf
-		\If{$lorries[i] = 0$}
-		\State \textbf{break}
-		\EndIf
-  \State $i \gets INCREMENT\_SUM(i,increment)$
-		\EndFor
-		\State \textbf{return} false
-		\EndFunction
-	\end{algorithmic}
-\end{algorithm}
-
- Note: On \textbf{Algorithm 3} \textit{FeasiblityCheck Algorithm} we have got an implicit conversion from integer, \textit{n}, to boolean. We must mention that 0 is false, true otherwise.
 
 \subsection{Complexity analysis}
 \begin{itemize}
@@ -402,5 +377,6 @@ cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC * 1000.0;
 			      \label{fig:complexity-graph-comparison}
 		      \end{figure}
 	      \end{center}
+       \section{References}
        \printbibliography
 \end{document}
