@@ -2,6 +2,7 @@
 \usepackage[backend=biber]{biblatex}
 \addbibresource{biblio.bib}
 \usepackage[letterpaper,top=2cm,bottom=1.5cm,left=2cm,right=2cm,marginparwidth=1.75cm]{geometry}
+\usepackage{multicol}
 \usepackage[english]{babel}
 \usepackage{tcolorbox}
 \usepackage{xcolor}
@@ -57,24 +58,30 @@
 \fancyfoot[C]{\thepage}
 \maketitle
 \tableofcontents
-
+\begin{multicols}{2}
 \section{Introduction}
 The term Heuristics comes from the greek expression Heurisken \cite{lamport1994latex}, which means to discover. The same with the expression "Eureka!" that Archimedes claimed when he came out of the river and set his famous Fluids Principle that was named after him. Informed Strategies are more efficient since they can weight different decisions based on a function $f(n)$. This function is going to vary depending on whether we are on A* ($f(n) = g(n) + h(n)$ where  $g(n)$ is the accumulated cost on our current node and $h(n)$ is the calculated \textbf{heuristics}) or we are working with a greedy approach (our function $f(n)$ is going to be determined just by $h(n)$ ($f(n) = h(n)$)). On Uninformed Strategies, we could say $f(n) = 0$.    
 \section{Overview}
 It is nice to comment that we have used the concept of inheritance to make the code more readable and also not to repeat redundant code. This not only helps for scalability but also for readability. See the inheritance overview in Figure \ref{fig:inheritance}.
-\begin{center}
-		      \begin{figure}[!ht]
+%\begin{center}
+		      \begin{minipage}{0.5\textwidth}
+        % \begin{flushright}
+        \raggedright
 			      \centering
-			      \caption{Class Diagram showing Inheritance.}\includegraphics[scale=0.7]{images/lab1intelligentsystems Class diagram.png}
+			      \captionof{figure}{Class Diagram showing Inheritance.}\includegraphics[width=\textwidth]{images/lab1intelligentsystems Class diagram.png}
 			      
 			      \label{fig:inheritance}
-		      \end{figure}
-	      \end{center}
+         % \end{flushright}
+		      \end{minipage}
+	      %\end{center}
 \newpage
 \section{Pseudocode}
 The two most important functions or methods in this assignment are called \textbf{expand} and \textbf{search}. Both are in the \textbf{Problem} class.
+\end{multicols}
+
 \begin{algorithm}
 	\caption{Main Algorithm}
+ \hfill
 	\label{algo:main}
 	\begin{algorithmic}[1]
 		\Function{Main}{}
@@ -145,39 +152,78 @@ The two most important functions or methods in this assignment are called \textb
 \end{algorithm}
 
 \newpage
-
+\begin{multicols}{2}
+    
+%\end{multicols}
 \section{Statistical Analysis}
-We have got several parameters we can use to our benefit to compare different strategies based on different metrics. Take Figure \ref{fig:boxplot} below, for instance. We can see how \textbf{DepthFirst} search is the strategy with most generated nodes considering all problems of different dimensions. We can see, specifically, in Figure \ref{fig:depthFirstSucks} how \textbf{DepthFirst} is really bad at huge problems finding paths with really high costs compared to all other search strategies.
- \begin{center}
-		      \begin{figure}[h]
+We have got several parameters we can use to our benefit to compare different strategies based on different metrics. Take Figure \ref{fig:boxplot} below, for instance. We can see how \textbf{DepthFirst} search is the strategy with most generated nodes considering all problems of different dimensions. We can see, specifically, in Figure \ref{fig:depthFirstSucks} how \textbf{DepthFirst} is really bad at huge problems finding paths with really high costs compared to all other search strategies.\\\\
+ %\begin{center}
+		      \begin{minipage}{0.5\textwidth}
+        % \raggedright
 			      \centering
-			      \caption{Graphic showing the nodes generated of each strategy.}\includegraphics[scale=0.7]{images/boxplotNodesGeneratedDifferentStrategies.png}
+			      \captionof{figure}{Graphic showing the nodes generated of each strategy.}\includegraphics[width = \textwidth]{images/boxplotNodesGeneratedDifferentStrategies.png}
 			      
 			      \label{fig:boxplot}
-		      \end{figure}
-	      \end{center}
+		      \end{minipage}
+        \\ \\
+%	      \end{center}
       % \newpage
        % In the above graphic we can see how all the strategies generate the same number of nodes in small problems. Nevertheless, as the dimension of the problems grow, each strategy generate a different number of nodes. Note that the BestFirst strategy is the best one since it generates almost none nodes compared to BreadthFirst or DepthFirst.
        In Figure \ref{fig:executionTimeBoxplot} we can see the execution time on different strategies. Even though there is not much difference between each one, we can say that \textbf{DepthFirst} is the more rapid one while \textbf{BestFirst} seems to be the one that takes longer. Maybe that is the price we pay for having strategies that are informed, they cost more in terms of Time Complexity. 
-       \begin {center}
-       \begin{figure}[!ht]
+       %\begin {center}
+       \begin{minipage}{0.5\textwidth}
 			      \centering
-          \caption{Graphic showing the different execution times of different strategies.}
-			      \includegraphics[scale=0.7]{images/BoxplotOnExecutionTimeOnDifferentStrategies.png}
+          \captionof{figure}{Graphic showing the different execution times of different strategies.}
+			      \includegraphics[width=\textwidth]{images/BoxplotOnExecutionTimeOnDifferentStrategies.png}
 			     
 			      \label{fig:executionTimeBoxplot}
-		      \end{figure}
+		      \end{minipage}
+	  %    \end{center}
+   % \begin{center}
+		      \begin{minipage}{0.5\textwidth}
+			      \centering
+			      \captionof{figure}{Average Nodes Generated on different search strategies across problems with different dimensionality.}\includegraphics[width = \textwidth]{images/densityOnNodesGeneratedOnDifferentStrategies.png}
+			      
+			      \label{fig:complexity-graph-comparison}
+		      \end{minipage}
+         \begin{center}
+		      \begin{minipage}{0.5\textwidth}
+			      \centering
+         \captionof{figure}{Graphic showing the cost of each strategy.}
+			      \includegraphics[scale=0.7]{images/DensityOnSolutionCostOnDifferentStrategies.png}
+			      
+			      \label{fig:complexity-graph}
+		      \end{minipage}
 	      \end{center}
+        % \begin{center}
+		      \begin{minipage}{0.5\textwidth}
+        \captionof{figure}{Density graphic showing solution cost of each strategy within a certain type of problem.
+			      \centering
+			      \includegraphics[width=\textwidth]{images/GeomBarDodgeOnStrategies.png}
+			      }
+			      \label{fig:depthFirstSucks}
+		      \end{minipage}
+	      % \end{center}
+
+	      % \begin{center}
+		      \begin{minipage}{0.5\textwidth}
+			      \centering
+			       \captionof{figure}{Negative execution time for A* strategy on huge dimension of problems.}\includegraphics[width=\textwidth]{images/GeomBarDodgeOnStrategies.png}
+			     
+			      \label{fig:complexity-graph-comparison}
+		      \end{minipage}
+	      % \end{center}
+	      % \end{center}
        % In this other graphic we can appreciate the number of nodes that are expanded by each search strategy within each dimension of the problem. We can see how in small problems we can't really see the difference but if the problem grows the search strategies that are most dominant (by not expanding nodes almost) are the \textbf{BestFirst} and \textbf{AStarGeodesicWithMostRepeatedSpeed}.
        % It's interesting to mention that \textbf{AStarGeodesicWithMostRepeatedSpeed} strategy beats most of the times \textbf{AStar} and anyone else in terms of generated nodes, expanded nodes and  depth of solution having a little bit more of solution cost than other strategies (insignificant).
        In figure \ref{fig:solutionCostOnBoxplot} there is not much difference on the cost of the solution on each strategy. \textbf{DepthFirst}  
        \begin {center}
-       \begin{figure}[!ht]
+       \begin{minipage}{0.5\textwidth}
 			      \centering
-			      \caption{Boxplot on different solution costs by each search strategy.}\includegraphics[scale=0.7]{images/BoxplotOnSolutionCostOnDifferentStrategies.png}
+			      \captionof{figure}{Boxplot on different solution costs by each search strategy.}\includegraphics[scale=0.7]{images/BoxplotOnSolutionCostOnDifferentStrategies.png}
 			      
 			      \label{fig:solutionCostOnBoxplot}
-		      \end{figure}
+		      \end{minipage}
 	      \end{center}
        One more time, we can appreciate how \textbf{BestFirst} search strategy generates less nodes as any other search strategy. 
      %\begin{center}
@@ -191,14 +237,14 @@ We have got several parameters we can use to our benefit to compare different st
 	      % \textbf{Answer}:\quad The algorithm aims to distribute goods among a limited number of trucks, ensuring
 	      % that each truck's weight limit is not exceeded. It begins by checking if such a distribution is feasible.
 	      % If so, it sorts the goods by weight and recursively attempts to place them in trucks, backtracking when necessary.
- \begin{center}
-		      \begin{figure}[!ht]
+ % \begin{center}
+		      \begin{minipage}{0.5\textwidth}
 			      \centering
-			      \caption{Density graph on the nodes generated by each strategy.}\includegraphics[scale=0.7]{images/densityOnNodesGeneratedOnDifferentStrategies.png}
+			      \captionof{figure}{Density graph on the nodes generated by each strategy.}\includegraphics[scale=0.7]{images/densityOnNodesGeneratedOnDifferentStrategies.png}
 			      
 			      \label{fig:complexity-graph-comparison}
-		      \end{figure}
-	      \end{center}
+		      \end{minipage}
+	      % \end{center}
        \newpage
        
 \section{Algorithmic complexity}
@@ -234,7 +280,7 @@ The following optimizations have been applied to improve the efficiency of the b
 \end{enumerate}
 
 
-\subsection{Complexity analysis}
+\section{Complexity analysis}
 \begin{itemize}
 	\item Analysis of the \textbf{computational complexity} of the algorithm in terms of the number of operations
 	      executed by the algorithm as a function of the input size \textit{n}.
@@ -336,47 +382,17 @@ end = clock();
 cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC * 1000.0;
 \end{lstlisting}
 
-	      \begin{center}
-		      \begin{figure}[!ht]
-			      \centering
-			      \includegraphics[scale=0.7]{images/DensityOnSolutionCostOnDifferentStrategies.png}
-			      \caption{Graphic showing the cost of each strategy.}
-			      \label{fig:complexity-graph}
-		      \end{figure}
-	      \end{center}
-        \begin{center}
-		      \begin{figure}[!ht]
-        \caption{Density graphic showing solution cost of each strategy within a certain type of problem.
-			      \centering
-			      \includegraphics[scale=0.7]{images/GeomBarDodgeOnStrategies.png}
-			      }
-			      \label{fig:depthFirstSucks}
-		      \end{figure}
-	      \end{center}
-
-	      \begin{center}
-		      \begin{figure}[!ht]
-			      \centering
-			      \includegraphics[scale=0.7]{images/differentAlgorithmsExecutionTime.png}
-			      \caption{Negative execution time for A* strategy on huge dimension of problems.}
-			      \label{fig:complexity-graph-comparison}
-		      \end{figure}
-	      \end{center}
-
-	\item \textbf{Conclusion}: The empirical CPU time used by the optimized backtracking algorithm exhibits an unexpected trend
-	      when compared to the predicted exponential complexity of \( O(3^n) \). The graph suggests a performance that is closer to
-	      linear, possibly due to effective optimizations. This discrepancy between theoretical and observed complexity underscores
-	      the impact of practical enhancements in algorithm implementation. Assuming the number of operations is proportional to the
-	      number of items, the empirical complexity could be approximated as \( O(n) \), a significant improvement over the theoretical expectation.
+	     
+\newpage
+	 \item \textbf{Conclusion}: 
+ %The empirical CPU time used by the optimized backtracking algorithm exhibits an unexpected trend
+	%       when compared to the predicted exponential complexity of \( O(3^n) \). The graph suggests a performance that is closer to
+	%       linear, possibly due to effective optimizations. This discrepancy between theoretical and observed complexity underscores
+	%       the impact of practical enhancements in algorithm implementation. Assuming the number of operations is proportional to the
+	%       number of items, the empirical complexity could be approximated as \( O(n) \), a significant improvement over the theoretical expectation.
 \end{itemize}
-            \begin{center}
-		      \begin{figure}[!ht]
-			      \centering
-			      \includegraphics[scale=0.7]{images/BarPlotDodgeNodesExpandedWithinEachTypeOfProblem.png}
-			      \caption{Average Nodes Generated on different search strategies across problems with different dimensionality.}
-			      \label{fig:complexity-graph-comparison}
-		      \end{figure}
-	      \end{center}
+            
        \section{References}
        \printbibliography
+\end{multicols}
 \end{document}
