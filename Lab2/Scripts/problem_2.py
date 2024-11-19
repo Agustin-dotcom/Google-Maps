@@ -4,7 +4,7 @@ class Problem_2:
         with (file_name,'r') as file:
             self.dictionary = json.load(file)
         self.dictionary['intersections'] = {inter['identifier']: inter for inter in self.dictionary.get('intersections')}# O(m)
-        
+        self.dictionary['maxSpeedOfAllSpeeds'] = float('-inf') # definiendo la maxima velocida a menos infinito
         # Add the 'whereto' attribute to each intersection
         for inter in self.dictionary['intersections'].values():# O(m)
             inter['whereto'] = []
@@ -20,8 +20,8 @@ class Problem_2:
             speed_ms = speed_kmh * (1000 / 3600)
             #self.dictionary['mostRepeatedSpeed'].append(speed_ms)
             # Si tenemos una velocidad mayor a la predeterminada, la cogemos
-            #if(speed_ms > self.dictionary.get('maxSpeedOfAllSpeeds')):#O(1)
-            #    self.dictionary['maxSpeedOfAllSpeeds'] = speed_ms
+            if(speed_ms > self.dictionary.get('maxSpeedOfAllSpeeds')):#O(1)
+                self.dictionary['maxSpeedOfAllSpeeds'] = speed_ms
     
             # Calculate the cost
             cost = distance / speed_ms
