@@ -63,9 +63,17 @@ class Search(ABC):
         # if in our list or dictionary (current configuration) we have more stations
         # than possible, we remove some
         counterStations = self.dictionary.get('number_stations')
-        numberOfOnesInOurSolution = getNumberOfOnes(currentConfiguration)
+        numberOfOnesInOurSolution = self.getNumberOfOnes(currentConfiguration)
         for i in self.problem.get('candidates'):
             while ( numberOfOnesInOurSolution < counterStations):
 
                 counterStations+=1
+    def getNumberOfOnes(self,configuration):
+        """
+        :param configuration: configuration to explore
+        """
+        for i in len(configuration)
+    def generateRandomSolution():
+        pass
     def evaluation(self):
+        pass
