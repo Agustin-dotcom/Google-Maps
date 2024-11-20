@@ -4,6 +4,9 @@ class Problem_2:
         with (file_name,'r') as file:
             self.dictionary = json.load(file)
         self.dictionary['intersections'] = {inter['identifier']: inter for inter in self.dictionary.get('intersections')}# O(m)
+        # en la linea de abajo estamos convirtiendo una lista de listas en un diccionario de diccionarios
+        # no creo que haga mucha diferencia pero ya veremos
+        self.dictionary['candidates'] = {candidate[0]:{"identifier":candidate[0],"population":candidate[1]} for candidate in self.dictionary.get('candidates')}
         self.dictionary['maxSpeedOfAllSpeeds'] = float('-inf') # definiendo la maxima velocida a menos infinito
         # Add the 'whereto' attribute to each intersection
         for inter in self.dictionary['intersections'].values():# O(m)
