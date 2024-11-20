@@ -56,12 +56,16 @@ class Search(ABC):
         # Distancia en metros
         distancia = resultado['s12'] 
         return distancia
-    def correctPossibleNumberStations(currentConfiguration):
+    def correctPossibleNumberStations(self,currentConfiguration):
         """
-        :params currentConfiguration:  
+        :params currentConfiguration:  a dictionary that represents a given solution
         """
         # if in our list or dictionary (current configuration) we have more stations
         # than possible, we remove some
-        counterStations = 0
-        for i in self.problem.get('candidates')
-        while (!counterStations < ) 
+        counterStations = self.dictionary.get('number_stations')
+        numberOfOnesInOurSolution = getNumberOfOnes(currentConfiguration)
+        for i in self.problem.get('candidates'):
+            while ( numberOfOnesInOurSolution < counterStations):
+
+                counterStations+=1
+    def evaluation(self):
