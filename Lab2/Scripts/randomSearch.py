@@ -1,4 +1,4 @@
-from search import Search
+from Search import Search
 class RandomSearch(Search):
     def search(self,MaxIters):
         """

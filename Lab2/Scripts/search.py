@@ -2,14 +2,16 @@ import sys
 sys.path.append('c:\\users\\agus\\appdata\\local\\programs\\python\\python312\\lib\\site-packages')
 from geographiclib.geodesic import Geodesic # pip install geographiclib
 import heapq
+import numpy as np
+
 from abc import ABC,abstractmethod
-class Search(ABC):
+class Search:
     def __init__(self,problem):
         self.problem = problem
         self.openDS = [] # open_data_structure
         self.nodesGenerated = 0
-        self.initial = 0
-        self.final = 0
+        #self.initial = 0
+        #self.final = 0
     def insert(self,element): # siempre insertamos de la misma forma
         self.openDS.append(element)
     #@abstractmethod
@@ -37,11 +39,11 @@ class Search(ABC):
             pop = i.get('population')
             total_population += pop
             initial = i.get('identifier')
-            self.initial = initial
+            #self.initial = initial
         
             for j in self.problem.dictionary.get('candidates').values():    
                 final = j.get('identifier')
-                self.final = final
+                #self.final = final
                 time_a_star = self.get_time_a_star(initial,final)
                 weight_per_station += time_a_star * pop * solution[i]
                 
@@ -76,14 +78,11 @@ class Search(ABC):
         {'candidate1':{'identifier':,'population':,'time': {'identifier':,'A*':}},
         'candidate2':{'identifier':,'population':,'time':{'identifier':,'A*':}}}
         """
+        from AStar import AStar
         instance_of_search = AStar(self.problem)
         time_a_star = instance_of_search.search(initial,final)
-        if('time' in self.problem.dictionary.get('candidates').get(initial)):
-            # just append it as it already exists
-            self.problem.dictionary.get('candidates').get(initial).get('time')[final] = {'identifier':final,'A*':time_a_star}
-            return time_a_star
-        #create the attribute and store it
-        self.problem.dictionary.get('candidates').get(initial)['time'] = dict()
+        if(not 'time' in self.problem.dictionary.get('candidates').get(initial)):
+            self.problem.dictionary.get('candidates').get(initial)['time'] = dict()        
         self.problem.dictionary.get('candidates').get(initial).get('time')[final] ={'identifier':final,'A*':time_a_star}
         return time_a_star
             
@@ -160,10 +159,10 @@ class Search(ABC):
         for i in range(0,len(currentSolution)): # for the length of the array
             neighbour_ = currentSolution.copy()
 
-            negihbour_[i] = 1 - neighbour_[i] # 1-0 is 1 and 1-1 = 0 so that we change the bit 
-            condition = checkIfThisIsASolution(neighbour_) # if it is a valid solution
+            neighbour_[i] = 1 - neighbour_[i] # 1-0 is 1 and 1-1 = 0 so that we change the bit 
+            condition = self.checkIfThisIsASolution(neighbour_) # if it is a valid solution
             if (condition):
-                neighbours.append(negihbour_) # we put it into our bag of solutions
+                neighbours.append(neighbour_) # we put it into our bag of solutions
                 
         return np.array(neighbours)
     ##############################################################################################

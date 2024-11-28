@@ -1,5 +1,5 @@
 import heapq
-from search import Search
+from Search import Search
 
 class AStar(Search):# takes into account g(n), not only h(n)
     ##############################################################################################
@@ -22,11 +22,11 @@ class AStar(Search):# takes into account g(n), not only h(n)
     ##############################################################################################
     ######################################## computeHeuristic ####################################
     ##############################################################################################
-    def computeHeuristic(self,node_param): #O(1)
+    def computeHeuristic(self,node_param,goalId): #O(1)
         """self.openDS is by default a deque() (see Search __init__) so we
         have to convert deque() into a list"""
         self.openDS = list(self.openDS) # medios para obtener lo que queremos
-        goalId = self.final # Obtenemos estado final
+        #goalId = self.final # Obtenemos estado final
         coord_1 = (node_param.state.longitude, node_param.state.latitude) # (longitude,latitude)
         coord_2 = (self.problem.dictionary.get('intersections').get(goalId).get('longitude'), 
         self.problem.dictionary.get('intersections').get(goalId).get('latitude'))  # (longitude,latitude)
@@ -71,6 +71,9 @@ class AStar(Search):# takes into account g(n), not only h(n)
     def initializeOpen(self,initial): # O(1)
         longitudeInitialNode = self.problem.dictionary.get('intersections').get(initial).get('longitude')
         latitudeInitialNode = self.problem.dictionary.get('intersections').get(initial).get('latitude')
+        from Node import Node
+        from State import State
+        from Action import Action
         self.root = Node(None,State(initial,longitudeInitialNode,latitudeInitialNode),Action(None,initial,0),0,0) # no estoy seguro si para llegar al nodo raiz action == None
         self.nodesGenerated+=1
         self.root.momento = self.nodesGenerated
