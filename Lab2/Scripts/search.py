@@ -1,7 +1,8 @@
 import sys
-sys.path.append('c:\\users\\agus\\appdata\\local\\programs\\python\\python312\\lib\\site-packages')
-from geographiclib.geodesic import Geodesic # pip install geographiclib
+#sys.path.append('c:\\users\\agus\\appdata\\local\\programs\\python\\python312\\lib\\site-packages')
+#from geographiclib.geodesic import Geodesic # pip install geographiclib
 import heapq
+sys.path.append('c:\\users\\agus\\appdata\\local\\programs\\python\\python312\\lib\\site-packages')
 import numpy as np
 
 from abc import ABC,abstractmethod
@@ -9,6 +10,7 @@ class Search:
     def __init__(self,problem):
         self.problem = problem
         self.openDS = [] # open_data_structure
+        self.explored = {0}
         self.nodesGenerated = 0
         #self.initial = 0
         #self.final = 0
@@ -31,23 +33,34 @@ class Search:
         1/10 < 1/9. 10 is a better grade than 9 and as you want to keep the same information but minimizing,
         that is why we do the ratio. So, maybe we are going to have to do this here. We want to minimize the time
         we spend to go to a certain Service Station.
+
+        Somehow here you are taking the best station. We are doing the minimum between the different sums of all the 
+        times that take all the candidates to reach a given station. I don't think I am making myself clear. 
+        We compute the time it takes every candidate to go to a given station and sum this times. We repeat the
+        process for the rest of the candidates and we take the minimum. In essence, we are taking the candidate
+        that minimizes this time (the sum of the time it takes the rest of candidates to reach this station). 
         :param solution: a given solution to be evaluated 
         """
-        total_population = 0
-        weight_per_station = 0
-        for i in self.problem.dictionary.get('candidates').values():
+        total_population = 0 # this is for the denominator
+        weight_per_station = 0 # this is for the summing all the times of the candidates to a given station
+        min_of_all_stations_weight = float('inf') # this is for the second summatory on the evaluation function
+        for id,i in enumerate(self.problem.dictionary.get('candidates').values()):
+            if solution[id] == 0: # if the solution does not inlude this candidate
+                continue # skip it
             pop = i.get('population')
-            total_population += pop
-            initial = i.get('identifier')
-            #self.initial = initial
+            total_population += pop # this is just getting the total population for the denominator on the evaluation function
+            station = i.get('identifier') # we fix a pointer into a candidate and we call it station
+            self.final = station
         
-            for j in self.problem.dictionary.get('candidates').values():    
-                final = j.get('identifier')
-                #self.final = final
-                time_a_star = self.get_time_a_star(initial,final)
-                weight_per_station += time_a_star * pop * solution[i]
-                
-        return weight_per_station / total_population
+            for j in self.problem.dictionary.get('candidates').values(): # we go through the candidates
+                candidate = j.get('identifier')
+                self.initial = candidate
+                time_a_star = self.get_time_a_star(candidate,station) # and we calculate the time it takes every candidate to reach the pointed station
+                weight_per_station += time_a_star * pop * solution[id]
+            if weight_per_station < min_of_all_stations_weight:
+                min_of_all_stations_weight = weight_per_station
+            weight_per_station = 0                
+        return min_of_all_stations_weight / total_population # we return the correct ratio
   ##############################################################################################
     ######################################### get_time_a_star #########################################
     ##############################################################################################
@@ -177,4 +190,35 @@ class Search:
         number_of_ones_in_this_solution = np.count_nonzero(solution==1) # gets the number of zeros we have in the solution passed by parameter
         return number_of_ones_in_this_solution == self.problem.dictionary.get('number_stations') # returns true if it has the number of stations 
         #we must submit
+    #################################################################################
+    ####################             expand             ############################
+    #################################################################################
+    def expand(self,Node_param): #O(n)
+        """ 
+        :param Node_param: nodo al que apuntamos 
+        :returns: list of nodes """
+        successors = []
+        currentIntersection = self.problem.dictionary.get('intersections').get(Node_param.state.state) # O(1)
+
+        listOrdered = sorted(currentIntersection.get("whereto"), key = lambda x:x['id']) # O(n*log(n)) # Timsort
+        for destination in listOrdered: # O(n)
+            """currentIntersection.get("whereto")
+            [{'id': 1256026663, 'cost': 1.7331}, {'id': 1531659796, 'cost': 2.346}]"""
+            if destination.get('id') in self.explored: # O(1) # preguntamos si ya lo hemos recorrido
+                continue
+            from Action import Action
+            newAction = Action(# O(1)
+                    Node_param.state.state, #origen
+                    destination.get("id"), # destino
+                    destination.get("cost") #coste
+                )
+            # REMEMBER THAT destination is A DICTIONARY {"id":,"cost":}
+            from State import State
+            newState = State(newAction.destination,self.problem.dictionary.get('intersections').get(destination.get('id')).get('longitude'),self.problem.dictionary.get('intersections').get(destination.get('id')).get('latitude')) #self.applyAction(Node_param.state,action) # Node.state es un objeto de tipo state
+            from Node import Node
+            newNode = Node(Node_param,newState,newAction,Node_param.depth+1,Node_param.accumulatedCost+newAction.cost)
+            self.nodesGenerated+=1
+            newNode.momento = self.nodesGenerated
+            successors.append(newNode)
+        return successors
     

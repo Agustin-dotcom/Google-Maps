@@ -1,16 +1,19 @@
 import heapq
 from Search import Search
+import sys
+sys.path.append('c:\\users\\agus\\appdata\\local\\programs\\python\\python312\\lib\\site-packages')
+from geographiclib.geodesic import Geodesic # pip install geographiclib
 
 class AStar(Search):# takes into account g(n), not only h(n)
     ##############################################################################################
     ############################################# insert #########################################
     ##############################################################################################
-    def insert(self,element):
+    def insert(self,element,goalId):
          # element is a node
         """self.openDS is by default a deque() (see Search __init__) so we
         have to convert deque() into a list"""
         self.openDS = list(self.openDS)
-        heuristic = (self.computeHeuristic(element)/self.problem.dictionary.get('maxSpeedOfAllSpeeds'))+element.accumulatedCost
+        heuristic = (self.computeHeuristic(element,goalId)/self.problem.dictionary.get('maxSpeedOfAllSpeeds'))+element.accumulatedCost
         #print('\n-----------\n'.join(map(str,self.openDS)))
         heapq.heappush(self.openDS,(heuristic,element)) # element is going to be a paired value (h,Node)
     ##############################################################################################
@@ -44,20 +47,20 @@ class AStar(Search):# takes into account g(n), not only h(n)
         
         :returns: empty list of list of actions"""
         self.initializeOpen(initial) # inicializo nodo raiz # O(1)
-        self.insert(self.root)
+        self.insert(self.root,final)
         while len(self.openDS)!=0:    
             node = self.extract() # O(1) 
-            self.exploredNodes +=1
+            #self.exploredNodes +=1
             if node.state.state not in self.explored:
                 if(self.testGoal(node,final)): 
                     self.depth = node.depth
                     self.totalCost = node.accumulatedCost
                     return node.accumulatedCost # the accumulated cost of the last node is the total cost of the path and that is exactly what we want
                 successors1 = self.expand(node) # O(n)
-                if (len(successors1)>0):
-                    self.expandedNodes+=1
+                #if (len(successors1)>0):
+                #    self.expandedNodes+=1
                 for  successor in successors1: # O(n)
-                    self.insert(successor) # O(1)
+                    self.insert(successor,final) # O(1)
                 self.explored.add(node.state.state) #  node.state es el objeto y node.state.state es la variable en el objeto state
         print("Solución no encontrada y hemos recorrido todo el árbol")
         # if A* gives an NaN result, we are going to be here since there is no path
