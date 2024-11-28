@@ -41,6 +41,7 @@ class Search:
         that minimizes this time (the sum of the time it takes the rest of candidates to reach this station). 
         :param solution: a given solution to be evaluated 
         """
+        print(f'Solucion antes de evaluarla {solution}')
         total_population = 0 # this is for the denominator
         weight_per_station = 0 # this is for the summing all the times of the candidates to a given station
         min_of_all_stations_weight = float('inf') # this is for the second summatory on the evaluation function
@@ -165,18 +166,18 @@ class Search:
     ##############################################################################################
     def generateNeighbours(self,currentSolution):
         """
-        We generate neighbours by just changing one bit at a time. Permutation.
-        Notice that all the neighbours are not valid solutions. Maybe we can optimize this in a future.
+        We use shuffle which has O(n) complexity. 
+        Shotout to Fisher-Yates algorithm.
+        This is cheaper than permutating for sure and we 
+        needn't check if the number of ones is the same as the number of stations.
         """
         neighbours = []
-        for i in range(0,len(currentSolution)): # for the length of the array
+        import math
+        number_of_possible_neighbours =math.comb(len(currentSolution),self.problem.dictionary.get('number_stations')) # this is material for the report --> intersection with math
+        for _ in range(number_of_possible_neighbours): # for the length of the array
             neighbour_ = currentSolution.copy()
-
-            neighbour_[i] = 1 - neighbour_[i] # 1-0 is 1 and 1-1 = 0 so that we change the bit 
-            condition = self.checkIfThisIsASolution(neighbour_) # if it is a valid solution
-            if (condition):
-                neighbours.append(neighbour_) # we put it into our bag of solutions
-                
+            np.random.shuffle(neighbour_)
+            neighbours.append(neighbour_.tolist())    
         return np.array(neighbours)
     ##############################################################################################
     ######################################## checkIfThisIsASolution ##############################

@@ -14,6 +14,7 @@ class RandomSearch(Search):
         iteration = 0
         while (iteration < MaxIters):
             x = self.generateARandomSolution()
+            print(f'Esta es la solucion random que acabamos de crear{x}')
             x_ = self.hillClimbing(x)
             if(self.evaluation(x_) > self.evaluation(solution)):
                 solution = x_
