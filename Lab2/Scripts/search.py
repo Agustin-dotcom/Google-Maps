@@ -61,7 +61,7 @@ class Search:
             if weight_per_station < min_of_all_stations_weight:
                 min_of_all_stations_weight = weight_per_station
             weight_per_station = 0                
-        return min_of_all_stations_weight / total_population # we return the correct ratio
+        return 1/(min_of_all_stations_weight / total_population) # we return the correct ratio
   ##############################################################################################
     ######################################### get_time_a_star #########################################
     ##############################################################################################
