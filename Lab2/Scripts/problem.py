@@ -1,7 +1,7 @@
 import json
-class Problem_2:
+class Problem:
     def __init__(self,file_name):
-        with (file_name,'r') as file:
+        with open(file_name,'r') as file:
             self.dictionary = json.load(file)
         self.dictionary['intersections'] = {inter['identifier']: inter for inter in self.dictionary.get('intersections')}# O(m)
         # en la linea de abajo estamos convirtiendo una lista de listas en un diccionario de diccionarios
@@ -34,3 +34,5 @@ class Problem_2:
             self.dictionary.get('intersections').get(origin).get('whereto').append({'id': destination, 'cost': cost})
         for i in self.dictionary.get('intersections'):
             self.dictionary['intersections'][i]['whereto'] = sorted(self.dictionary.get('intersections').get(i).get('whereto'),key = lambda x:x['id'])
+        
+    
