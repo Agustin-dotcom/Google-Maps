@@ -44,8 +44,8 @@ class Search:
         total_population = 0 # this is for the denominator
         weight_per_station = 0 # this is for the summing all the times of the candidates to a given station
         min_of_all_stations_weight = float('inf') # this is for the second summatory on the evaluation function
-        for id,i in enumerate(self.problem.dictionary.get('candidates').values()):
-            if solution[id] == 0: # if the solution does not inlude this candidate
+        for idx,i in enumerate(self.problem.dictionary.get('candidates').values()):
+            if solution[idx] == 0: # if the solution does not inlude this candidate
                 continue # skip it
             pop = i.get('population')
             total_population += pop # this is just getting the total population for the denominator on the evaluation function
@@ -56,7 +56,7 @@ class Search:
                 candidate = j.get('identifier')
                 self.initial = candidate
                 time_a_star = self.get_time_a_star(candidate,station) # and we calculate the time it takes every candidate to reach the pointed station
-                weight_per_station += time_a_star * pop * solution[id]
+                weight_per_station += time_a_star * pop * solution[idx]
             if weight_per_station < min_of_all_stations_weight:
                 min_of_all_stations_weight = weight_per_station
             weight_per_station = 0                
