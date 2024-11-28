@@ -64,7 +64,7 @@ class AStar(Search):# takes into account g(n), not only h(n)
                 self.explored.add(node.state.state) #  node.state es el objeto y node.state.state es la variable en el objeto state
         print("Solución no encontrada y hemos recorrido todo el árbol")
         # if A* gives an NaN result, we are going to be here since there is no path
-        return float('inf')
+        return 0 # we return 0 to not take into account this solution as there is no path really
     """notice that we work with a tuple
     so if we want to return a node we must say tuple[1]
     where the tuple is (heuristic,node)"""
