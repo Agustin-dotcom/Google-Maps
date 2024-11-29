@@ -10,7 +10,7 @@ class RandomSearch(Search):
         :param MaxIters: maximum of iterations you want to compute.
         """
         # Lesson 7 slide 27
-        solution = None
+        solution = self.generateARandomSolution()
         iteration = 0
         while (iteration < MaxIters):
             x = self.generateARandomSolution()
@@ -18,4 +18,5 @@ class RandomSearch(Search):
             x_ = self.hillClimbing(x)
             if(self.evaluation(x_) > self.evaluation(solution)):
                 solution = x_
+            iteration += 1
         return solution

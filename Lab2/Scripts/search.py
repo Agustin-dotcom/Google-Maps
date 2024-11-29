@@ -41,11 +41,11 @@ class Search:
         that minimizes this time (the sum of the time it takes the rest of candidates to reach this station). 
         :param solution: a given solution to be evaluated 
         """
-        print(f'Solucion antes de evaluarla {solution}')
+        print(f'def evaluation: Solucion antes de evaluarla {solution}')
         total_population = 0 # this is for the denominator
-        weight_per_station = 0 # this is for the summing all the times of the candidates to a given station
         min_of_all_stations_weight = float('inf') # this is for the second summatory on the evaluation function
         for idx,i in enumerate(self.problem.dictionary.get('candidates').values()):
+            weight_per_station = 0  # this is for the summing all the times of the candidates to a given station
             if solution[idx] == 0: # if the solution does not inlude this candidate
                 continue # skip it
             pop = i.get('population')
@@ -57,10 +57,13 @@ class Search:
                 candidate = j.get('identifier')
                 self.initial = candidate
                 time_a_star = self.get_time_a_star(candidate,station) # and we calculate the time it takes every candidate to reach the pointed station
-                weight_per_station += time_a_star * pop * solution[idx]
+                weight_per_station += time_a_star * pop
+            if weight_per_station == 0:
+                continue
             if weight_per_station < min_of_all_stations_weight:
                 min_of_all_stations_weight = weight_per_station
-            weight_per_station = 0                
+                          
+        print(f'def evaluation: Solucion despues de haber hecho los calculos {solution}')
         return 1/(min_of_all_stations_weight / total_population) # we return the correct ratio
   ##############################################################################################
     ######################################### get_time_a_star #########################################
@@ -79,6 +82,7 @@ class Search:
         if ('time' in self.problem.dictionary.get('candidates').get(initial)):
             for i in self.problem.dictionary.get('candidates').get(initial).get('time').values():
                 if(i.get('identifier') == final):
+                    print(f'def is_already_in_memory: Ya lo tenemos en memoria!! No hace falta calcularlo!!')
                     return True
         return False
         ##############################################################################################
@@ -95,7 +99,9 @@ class Search:
         from AStar import AStar
         instance_of_search = AStar(self.problem)
         time_a_star = instance_of_search.search(initial,final)
+        print(f' Acabo de llamar a A*, le dije que porfa no vuelva. Y que se vaya a la casa de mi abuela. Que se coma una paella. ')
         if(not 'time' in self.problem.dictionary.get('candidates').get(initial)):
+            print(f' Antes no existia el campo time. ahora si 😎')
             self.problem.dictionary.get('candidates').get(initial)['time'] = dict()        
         self.problem.dictionary.get('candidates').get(initial).get('time')[final] ={'identifier':final,'A*':time_a_star}
         return time_a_star
@@ -160,7 +166,7 @@ class Search:
                     currentSolution = neighbour
                     currentScore = score
                     improves = True
-        return currentScore
+        return currentSolution
     ##############################################################################################
     ######################################## generateNeighbours ##################################
     ##############################################################################################
@@ -176,7 +182,20 @@ class Search:
         number_of_possible_neighbours =math.comb(len(currentSolution),self.problem.dictionary.get('number_stations')) # this is material for the report --> intersection with math
         for _ in range(number_of_possible_neighbours): # for the length of the array
             neighbour_ = currentSolution.copy()
-            np.random.shuffle(neighbour_)
+            # Encuentra los índices de todos los 1s y 0s en el array
+            indices_unos = np.where(neighbour_ == 1)[0]
+            indices_ceros = np.where(neighbour_ == 0)[0]
+            print(f'indices_unos {indices_unos}')
+            print(f'indices_ceros {indices_ceros}')
+            
+            
+            # Selecciona un índice aleatorio de los 1s y un índice aleatorio de los 0s
+            indice_uno = np.random.choice(indices_unos)
+            indice_cero = np.random.choice(indices_ceros)
+            
+            # Intercambia los bits seleccionados
+            neighbour_[indice_uno], neighbour_[indice_cero] = neighbour_[indice_cero], neighbour_[indice_uno]
+            
             neighbours.append(neighbour_.tolist())    
         return np.array(neighbours)
     ##############################################################################################
