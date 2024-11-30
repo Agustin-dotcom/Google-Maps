@@ -35,7 +35,7 @@ class GeneticAlgorithm(Search):
         heapq_list = []
         import heapq
         for i in range(len(population)):
-            heapq.heappush(heapq_list,(self.evaluation(population[i]),population[i])) # (score,solution)
+            heapq.heappush(heapq_list,(1/self.evaluation(population[i]),population[i])) # (score,solution)
         return heapq_list
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               select_population
@@ -57,7 +57,7 @@ class GeneticAlgorithm(Search):
     def crossover(self,population):
         from collections import deque
         deque_list = deque(population)
-        if len(population) %2 != 0:
+        if len(population) % 2 != 0:
             deque_list.popleft()
         first_half = []
         for _ in len(deque_list)/2:
@@ -65,15 +65,24 @@ class GeneticAlgorithm(Search):
         first_half = deque(first_half)
         final_crossover = []
         for _ in len(deque_list):
-            final_crossover.append(self.join_these_two(deque_list.pop(),first_half.pop()))
+            list_of_two_children = self.join_these_two(deque_list.pop(),first_half.pop())
+            for i in len(list_of_two_children):
+                final_crossover.append(list_of_two_children[i])
         return final_crossover
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               join_these_two
     #//////////////////////////////////////////////////////////////////////
-    # 1. Pick a random split
-        places_in_which_we_can_split = len(self.problem.dictionary.get('candidates'))
+    def join_these_two(self,parent_one,parent_two):
+        # 1. Pick a random split
+        places_in_which_we_can_split = len(self.problem.dictionary.get('candidates')) -1
+        point_in_which_we_split = np.random.choice(range(places_in_which_we_can_split)+1)
         #2. Cross parents
-        pass
+        list_of_children = []
+        first_child = parent_one[:point_in_which_we_split] + parent_two[point_in_which_we_split:]
+        list_of_children.append(first_child)
+        second_child = parent_one[point_in_which_we_split:] + parent_two [:point_in_which_we_split]
+        list_of_children.append(second_child)
+        return list_of_children
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       mutation
     #//////////////////////////////////////////////////////////////////////
@@ -84,7 +93,7 @@ class GeneticAlgorithm(Search):
         for i in len(population): # going through solutions
             for j in len(population[i]): # going through bits
                 if random.uniform(0,1) <= mutation_rate:
-                    population[i][j] = 1 - population[i][j] # mutate gene
+                    population[i][j] = 1 - population[i].item(j) # mutate gene
         return population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       combine
