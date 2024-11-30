@@ -8,15 +8,17 @@ class GeneticAlgorithm(Search):
     #/////////////////////////////////////////////////////////////////////
     def search(self,population_size):
         #Lesson 8 Slide 18
-        stop_condition = False
+        
         p = self.generate_population(population_size) # create candidate solutions (individuals)
         p = self.evaluate(p) # obtains  their score
-        while(stop_condition==False):
+
+        while(population_size != 0 ):
             p_ = self.select_population(p) # Selects some individuals by score
             p_ = self.crossover(p_) #crosses pairs of selected individuals
             p_ = self.mutation(p_) # mutates the crossed individuals
             p_ = self.evaluate(p_) # obtains the score of the new individuals
-            p = self.combine(p,p_) # forms the new generation
+            p = self.combine(p,p_) # forms the new generation            
+            population_size-=1
         return p
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       generate_population
@@ -35,7 +37,7 @@ class GeneticAlgorithm(Search):
         heapq_list = []
         import heapq
         for i in range(len(population)):
-            heapq.heappush(heapq_list,(1/self.evaluation(population[i]),population[i])) # (score,solution)
+            heapq.heappush(heapq_list,((1/self.evaluation(population[i])),tuple(population[i]))) # (score,solution)
         return heapq_list
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               select_population
@@ -48,26 +50,33 @@ class GeneticAlgorithm(Search):
         elite_population = []
         import heapq
         import numpy as np
-        for _ in np.random.choice(range(len(population)))+1:
-            elite_population.append(heapq.heappop(population))[1]
+        for _ in range(
+            np.random.choice(
+                range(
+                    int(len(population)/2),
+                    len(population)
+                )
+            ).item()
+        ):
+            elite_population.append((heapq.heappop(population))[1])
         return elite_population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               crossover
     #//////////////////////////////////////////////////////////////////////
     def crossover(self,population):
-        from collections import deque
-        deque_list = deque(population)
         if len(population) % 2 != 0:
-            deque_list.popleft()
+            population = population[:-1]
         first_half = []
-        for _ in len(deque_list)/2:
-            first_half.append(deque_list.pop())
-        first_half = deque(first_half)
+        # print(len(deque_list))
+        # print(len(deque_list)/2)
+        for i in range(int(len(population)/2)):
+            first_half.append(population[i])
+            population = population[:-1]
         final_crossover = []
-        for _ in len(deque_list):
-            list_of_two_children = self.join_these_two(deque_list.pop(),first_half.pop())
-            for i in len(list_of_two_children):
-                final_crossover.append(list_of_two_children[i])
+        for i in range(len(population)):
+            list_of_two_children = self.join_these_two(population[i],first_half[i])
+            for j in range(len(list_of_two_children)):
+                final_crossover.append(list_of_two_children[j])
         return final_crossover
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               join_these_two
@@ -75,12 +84,13 @@ class GeneticAlgorithm(Search):
     def join_these_two(self,parent_one,parent_two):
         # 1. Pick a random split
         places_in_which_we_can_split = len(self.problem.dictionary.get('candidates')) -1
-        point_in_which_we_split = np.random.choice(range(places_in_which_we_can_split)+1)
+        import numpy as np
+        point_in_which_we_split = np.random.choice(range(places_in_which_we_can_split))+1
         #2. Cross parents
         list_of_children = []
-        first_child = parent_one[:point_in_which_we_split] + parent_two[point_in_which_we_split:]
+        first_child = np.concatenate((parent_one[:point_in_which_we_split] ,parent_two[point_in_which_we_split:]),axis=None)
         list_of_children.append(first_child)
-        second_child = parent_one[point_in_which_we_split:] + parent_two [:point_in_which_we_split]
+        second_child =np.concatenate(( parent_one[point_in_which_we_split:] , parent_two [:point_in_which_we_split]),axis=None)
         list_of_children.append(second_child)
         return list_of_children
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -90,8 +100,8 @@ class GeneticAlgorithm(Search):
         mutation_rate = 0.1
         import random
         
-        for i in len(population): # going through solutions
-            for j in len(population[i]): # going through bits
+        for i in range(len(population)): # going through solutions
+            for j in range(len(population[i])): # going through bits
                 if random.uniform(0,1) <= mutation_rate:
                     population[i][j] = 1 - population[i].item(j) # mutate gene
         return population
@@ -106,7 +116,7 @@ class GeneticAlgorithm(Search):
         import heapq
         if  len(population_one) % 2 != 0:
             truncation_policy_list.append(heapq.heappop(population_one)[1])
-        for _ in len(population_one)//2:
+        for _ in range(int(len(population_one)/2)):
             truncation_policy_list.append(heapq.heappop(population_one)[1])
             truncation_policy_list.append(heapq.heappop(population_two)[1])
-        return truncation_policy_list
+        return self.evaluate(truncation_policy_list)
