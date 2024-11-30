@@ -55,8 +55,22 @@ class GeneticAlgorithm(Search):
     #                               crossover
     #//////////////////////////////////////////////////////////////////////
     def crossover(self,population):
-        
-        # 1. Pick a random split
+        from collections import deque
+        deque_list = deque(population)
+        if len(population) %2 != 0:
+            deque_list.popleft()
+        first_half = []
+        for _ in len(deque_list)/2:
+            first_half.append(deque_list.pop())
+        first_half = deque(first_half)
+        final_crossover = []
+        for _ in len(deque_list):
+            final_crossover.append(self.join_these_two(deque_list.pop(),first_half.pop()))
+        return final_crossover
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #                               join_these_two
+    #//////////////////////////////////////////////////////////////////////
+    # 1. Pick a random split
         places_in_which_we_can_split = len(self.problem.dictionary.get('candidates'))
         #2. Cross parents
         pass
