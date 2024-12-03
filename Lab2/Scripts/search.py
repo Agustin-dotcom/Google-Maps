@@ -23,39 +23,22 @@ class Search:
     ##############################################################################################
     ######################################### evaluation #########################################
     ##############################################################################################
-    def evaluation(self,solution):
-        """
-        Here is where we are going to store in memory the results of A* so that if in a near future we need it,
-        we can go and look in memory, not performing all the calculations again. Also, bear in mind what was mentioned
-        in the lab that if we are trying to minimize then we must take f_ = 1/f. In other words, if you want the
-        highest score of the class, you want to transform a 10 to a 1/10 so that it is the smallest one of all.
-        If you divide 1 over a number that is greater, then the ratio is going to be smaller.
-        1/10 < 1/9. 10 is a better grade than 9 and as you want to keep the same information but minimizing,
-        that is why we do the ratio. So, maybe we are going to have to do this here. We want to minimize the time
-        we spend to go to a certain Service Station.
-
-        Somehow here you are taking the best station. We are doing the minimum between the different sums of all the 
-        times that take all the candidates to reach a given station. I don't think I am making myself clear. 
-        We compute the time it takes every candidate to go to a given station and sum this times. We repeat the
-        process for the rest of the candidates and we take the minimum. In essence, we are taking the candidate
-        that minimizes this time (the sum of the time it takes the rest of candidates to reach this station). 
-        :param solution: a given solution to be evaluated 
-        """
+    def evaluation(self,solution):#O(n^2)
         print(f'def evaluation: Solucion antes de evaluarla {solution}')
         total_population = 0 # this is for the denominator
         min_of_all_stations_weight = float('inf') # this is for the second summatory on the evaluation function
-        for idx,i in enumerate(self.problem.dictionary.get('candidates').values()):
+        for idx,i in enumerate(self.problem.dictionary.get('candidates').values()): # O(n^2)
             weight_per_station = 0  # this is for the summing all the times of the candidates to a given station
             if solution[idx] == 0: # if the solution does not inlude this candidate
                 continue # skip it
             pop = i.get('population')
             total_population += pop # this is just getting the total population for the denominator on the evaluation function
             station = i.get('identifier') # we fix a pointer into a candidate and we call it station
-            self.final = station
+            #self.final = station
         
-            for j in self.problem.dictionary.get('candidates').values(): # we go through the candidates
+            for j in self.problem.dictionary.get('candidates').values(): # O(n) # we go through the candidates
                 candidate = j.get('identifier')
-                self.initial = candidate
+                #self.initial = candidate
                 time_a_star = self.get_time_a_star(candidate,station) # and we calculate the time it takes every candidate to reach the pointed station
                 weight_per_station += time_a_star * pop
             if weight_per_station == 0:
@@ -99,7 +82,7 @@ class Search:
         from AStar import AStar
         instance_of_search = AStar(self.problem)
         time_a_star = instance_of_search.search(initial,final)
-        print(f' Acabo de llamar a A*, le dije que porfa no vuelva. Y que se vaya a la casa de mi abuela. Que se coma una paella. ')
+        print(f' We just made a call to A* ')
         if(not 'time' in self.problem.dictionary.get('candidates').get(initial)):
             print(f' Antes no existia el campo time. ahora si 😎')
             self.problem.dictionary.get('candidates').get(initial)['time'] = dict()        

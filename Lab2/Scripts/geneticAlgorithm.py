@@ -9,10 +9,10 @@ class GeneticAlgorithm(Search):
     def search(self,population_size):
         #Lesson 8 Slide 18
         
-        p = self.generate_population(population_size) # create candidate solutions (individuals)
+        p = self.generate_population(population_size) # O(n) # create candidate solutions (individuals)
         p = self.evaluate(p) # obtains  their score
 
-        while(population_size != 0 ):
+        while(population_size != 0 ):# O(n)
             p_ = self.select_population(p) # Selects some individuals by score
             p_ = self.crossover(p_) #crosses pairs of selected individuals
             p_ = self.mutation(p_) # mutates the crossed individuals
@@ -23,10 +23,17 @@ class GeneticAlgorithm(Search):
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       generate_population
     #////////////////////////////////////////////////////////////////////
-    def generate_population(self,population_size):
+    def generate_population(self,population_size):#O(n)
         population = []
-        for _ in range(population_size):
-            population.append(self.generateARandomSolution())
+        import math
+        no_bigger_than_this = math.comb(len(self.problem.dictionary.get("candidates")),self.problem.dictionary.get("number_stations"))
+
+        if (population_size > no_bigger_than_this):
+            print(f'If you have {population_size} of random solutions, you are going to either have wrong solutions or repeated ones')
+            print(f'Reassigning to {no_bigger_than_this} random solutions')
+            population_size = no_bigger_than_this
+        for _ in range(population_size):#O(n)
+            population.append(self.generateARandomSolution())#O(1)
         return population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                           evaluate
@@ -36,7 +43,7 @@ class GeneticAlgorithm(Search):
          :returns: a heapq of paired value (score,solution)"""
         heapq_list = []
         import heapq
-        for i in range(len(population)):
+        for i in range(len(population)):# O(n)
             heapq.heappush(heapq_list,((1/self.evaluation(population[i])),tuple(population[i]))) # (score,solution)
         return heapq_list
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -74,8 +81,11 @@ class GeneticAlgorithm(Search):
             population = population[:-1]
         final_crossover = []
         for i in range(len(population)):
+            print(f'Parents\n \t\t Parent1:{population[i]}\n\t\t Parent2:{first_half[i]}\n')
             list_of_two_children = self.join_these_two(population[i],first_half[i])
+            print(f'Children \n')
             for j in range(len(list_of_two_children)):
+                print(f'\t\tChild{j+1}:{list_of_two_children[j]}\n')
                 final_crossover.append(list_of_two_children[j])
         return final_crossover
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -112,6 +122,10 @@ class GeneticAlgorithm(Search):
         """
         :returns truncation_policy_list : a population
         """
+        # 1. Truncation: Selects the best individuals among both population (P and P')
+        # 2. Elitism: Preserves the best individual in the former population and sacrifices the worst one in the new one.
+        # In other words, take P' and the worst indivual interchanges with the best in P
+        # 3. Replacement: In this case, the generated population replaces the former one.
         truncation_policy_list = []
         import heapq
         if  len(population_one) % 2 != 0:
