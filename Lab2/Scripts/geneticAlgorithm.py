@@ -29,8 +29,8 @@ class GeneticAlgorithm(Search):
         no_bigger_than_this = math.comb(len(self.problem.dictionary.get("candidates")),self.problem.dictionary.get("number_stations"))
 
         if (population_size > no_bigger_than_this):
-            print(f'If you have {population_size} of random solutions, you are going to either have wrong solutions or repeated ones')
-            print(f'Reassigning to {no_bigger_than_this} random solutions')
+            #print(f'If you have {population_size} of random solutions, you are going to either have wrong solutions or repeated ones')
+            #print(f'Reassigning to {no_bigger_than_this} random solutions')
             population_size = no_bigger_than_this
         for _ in range(population_size):#O(n)
             population.append(self.generateARandomSolution())#O(1)
@@ -81,11 +81,11 @@ class GeneticAlgorithm(Search):
             population = population[:-1]
         final_crossover = []
         for i in range(len(population)):
-            print(f'Parents\n \t\t Parent1:{population[i]}\n\t\t Parent2:{first_half[i]}\n')
+            #print(f'Parents\n \t\t Parent1:{population[i]}\n\t\t Parent2:{first_half[i]}\n')
             list_of_two_children = self.join_these_two(population[i],first_half[i])
-            print(f'Children \n')
+            #print(f'Children \n')
             for j in range(len(list_of_two_children)):
-                print(f'\t\tChild{j+1}:{list_of_two_children[j]}\n')
+                #print(f'\t\tChild{j+1}:{list_of_two_children[j]}\n')
                 final_crossover.append(list_of_two_children[j])
         return final_crossover
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
