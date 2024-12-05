@@ -6,17 +6,18 @@ class GeneticAlgorithm(Search):
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       search
     #/////////////////////////////////////////////////////////////////////
-    def search(self,population_size):
+    from Replacement import Replacement
+    def search(self,population_size,strategy = Replacement.PROPORTION_BASED_SELECTION):
         #Lesson 8 Slide 18
         
         p = self.generate_population(population_size) # O(n) # create candidate solutions (individuals)
-        p = self.evaluate(p) # obtains  their score
+        #p = self.evaluate(p) # obtains  their score
 
         while(population_size != 0 ):# O(n)
-            p_ = self.select_population(p) # Selects some individuals by score
+            p_ = self.select_population(p,strategy) # Selects some individuals by score
             p_ = self.crossover(p_) #crosses pairs of selected individuals
             p_ = self.mutation(p_) # mutates the crossed individuals
-            p_ = self.evaluate(p_) # obtains the score of the new individuals
+            #p_ = self.evaluate(p_) # obtains the score of the new individuals
             p = self.combine(p,p_) # forms the new generation            
             population_size-=1
         return p
@@ -25,13 +26,7 @@ class GeneticAlgorithm(Search):
     #////////////////////////////////////////////////////////////////////
     def generate_population(self,population_size):#O(n)
         population = []
-        import math
-        no_bigger_than_this = math.comb(len(self.problem.dictionary.get("candidates")),self.problem.dictionary.get("number_stations"))
-
-        if (population_size > no_bigger_than_this):
-            #print(f'If you have {population_size} of random solutions, you are going to either have wrong solutions or repeated ones')
-            #print(f'Reassigning to {no_bigger_than_this} random solutions')
-            population_size = no_bigger_than_this
+        
         for _ in range(population_size):#O(n)
             population.append(self.generateARandomSolution())#O(1)
         return population
@@ -41,36 +36,109 @@ class GeneticAlgorithm(Search):
     def evaluate(self,population):
         """:param population : a list 
          :returns: a heapq of paired value (score,solution)"""
-        heapq_list = []
-        import heapq
+        total = 0
+        import numpy as np
+        list_evaluation_of_different_solutions = np.array([])
+        evaluation_value = 0
         for i in range(len(population)):# O(n)
-            heapq.heappush(heapq_list,((1/self.evaluation(population[i])),tuple(population[i]))) # (score,solution)
-        return heapq_list
+            evaluation_value=self.evaluation(population[i])
+            total+=evaluation_value
+            list_evaluation_of_different_solutions.append(1/evaluation_value)
+        for i in range(len(population)):#O(n)
+            list_evaluation_of_different_solutions /= total 
+        return list_evaluation_of_different_solutions
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               select_population
     #/////////////////////////////////////////////////////////////////////////
-    def select_population(self,population):
+    from Replacement import Replacement
+    def select_population(self,population,strategy):
         """
-        :param population: a heapq with paired values (score,solution)
-        :returns elite_population: a list of solutions with randomized length
+        :param population: a set of solutions
+
+        :returns : a generation with elitism and diversity 
         """
-        elite_population = []
-        import heapq
+        from Replacement import Replacement
+        match strategy:
+            case Replacement.PROPORTION_BASED_SELECTION:
+                return self.proportion_based_selection(population)
+            case Replacement.RANK_ASSIGNATION:
+                return self.rank_assignation(population)
+            case Replacement.TOURNAMENT:
+                return self.tournament_assignation(population)
+            case _:
+                return self.proportion_based_selection(population)
+    def proportion_based_selection(self,population):
         import numpy as np
-        for _ in range(
-            np.random.choice(
-                range(
-                    int(len(population)/2),
-                    len(population)
-                )
-            ).item()
-        ):
-            elite_population.append((heapq.heappop(population))[1])
-        return elite_population
+        evaluation = np.array([],dtype=float)
+        total = 0
+        # 1. Evaluate each individual 
+        for i in range(len(population)):#O(n)
+            evaluation = np.append(evaluation,self.evaluation(population[i]))
+            total += evaluation.item(i)
+        
+        #if 0 in evaluation:
+        #    print(f'You tried to divide by zero!')
+        #    return 
+        evaluation = 1/evaluation
+        evaluation /= total
+        import numpy as np
+        # 2. Arrange the wheel
+        evaluation = np.cumsum(evaluation)
+        last = evaluation[len(evaluation)-1]
+        # 3. Replicate individuals according to wheel
+        new_generation = []
+        for i in range(len(population)):#O(n)
+            random_number = np.random.uniform(0,last)
+            solution_to_get = np.where(random_number <= evaluation)[0]
+            new_generation.append(population[solution_to_get])
+        return new_generation
+    def rank_assignation(self,population):
+        evaluation = np.array([],dtype=float)
+        N = len(population)
+        # 1. Evaluate each individual 
+        for i in range(len(population)):#O(n)
+            evaluation.append(self.evaluation(population[i]))
+        evaluation = 1/evaluation
+        indices_where_we_have_the_data_before_making_the_sort = np.argsort(evaluation)[::-1]
+        evaluation = np.sort(evaluation)
+        evaluation = evaluation[::-1]
+        denominator = N ** 2 + N
+        for i in range(len(evaluation)):
+            pos = i+1
+            evaluation[i] = (2*(N-pos+1)/denominator)
+        import numpy as np
+        # 2. Arrange the wheel
+        evaluation = np.cumsum(evaluation)
+        last = evaluation[len(evaluation)-1]
+        # 3. Replicate individuals according to wheel
+        new_generation = []
+        for i in range(len(population)):#O(n)
+            random_number = np.random.uniform(0,last)
+            solution_to_get = np.where(random_number <= evaluation)[0][0].item()
+            new_generation.append(population[indices_where_we_have_the_data_before_making_the_sort[solution_to_get]])
+        return new_generation
+    def tournament_assignation(self,population):
+        k = len(population)
+        new_population = []
+        for _ in range(len(population)):
+            # 1. Take k individuals randomly
+            import numpy as np
+            import heapq
+            number_of_individuals_to_take = np.random.randint(1,k+1)
+            # 2. Play the tournament
+            tournament = []
+            for _ in range(number_of_individuals_to_take):
+                take_this_population = np.random.randint(0,k)
+                heapq.heappush(tournament,(self.evaluation(population[take_this_population]),tuple(population[take_this_population])))
+            new_population.append(heapq.heappop(tournament)[1])
+        return new_population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               crossover
     #//////////////////////////////////////////////////////////////////////
     def crossover(self,population):
+        if (population == None):
+            print(f'population == None')
+            return
         if len(population) % 2 != 0:
             population = population[:-1]
         first_half = []
@@ -93,7 +161,7 @@ class GeneticAlgorithm(Search):
     #//////////////////////////////////////////////////////////////////////
     def join_these_two(self,parent_one,parent_two):
         # 1. Pick a random split
-        places_in_which_we_can_split = len(self.problem.dictionary.get('candidates')) -1
+        places_in_which_we_can_split = len(self.problem.dictionary.get('candidates'))-1
         import numpy as np
         point_in_which_we_split = np.random.choice(range(places_in_which_we_can_split))+1
         #2. Cross parents
@@ -118,7 +186,8 @@ class GeneticAlgorithm(Search):
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       combine
     #/////////////////////////////////////////////////////////////////////////
-    def combine(self,population_one,population_two):
+    from Selection import Selection
+    def combine(self,population_one,population_two,strategy_combine = Selection.REPLACEMENT):
         """
         :returns truncation_policy_list : a population
         """
@@ -130,7 +199,31 @@ class GeneticAlgorithm(Search):
         import heapq
         if  len(population_one) % 2 != 0:
             truncation_policy_list.append(heapq.heappop(population_one)[1])
-        for _ in range(int(len(population_one)/2)):
-            truncation_policy_list.append(heapq.heappop(population_one)[1])
-            truncation_policy_list.append(heapq.heappop(population_two)[1])
-        return self.evaluate(truncation_policy_list)
+        from Selection import Selection
+        match(strategy_combine):
+            case Selection.REPLACEMENT:
+                return population_two
+            case Selection.ELITISM:
+                population_one_with_evaluation = []
+                for i in range(len(population_one)):
+                    heapq.heappush(population_one_with_evaluation,self.evaluation(population_one[i],tuple(population_one[i])))
+                population_two_with_evaluation = []
+                for i in range(len(population_two)):
+                    heapq.heappush(population_two_with_evaluation,self.evaluation(population_two[i],tuple(population_two[i])))
+                for _ in range(int(len(population_one)-1)):
+                    truncation_policy_list.append(heapq.heappop(population_one_with_evaluation)[1])
+                truncation_policy_list.append(heapq.heappop(population_two_with_evaluation)[1])
+                return truncation_policy_list
+            case Selection.TRUNCATION:
+                population_one_with_evaluation = []
+                for i in range(len(population_one)):
+                    heapq.heappush(population_one_with_evaluation,self.evaluation(population_one[i],tuple(population_one[i])))
+                population_two_with_evaluation = []
+                for i in range(len(population_two)):
+                    heapq.heappush(population_two_with_evaluation,self.evaluation(population_two[i],tuple(population_two[i])))
+                for _ in range(int(len(population_one)/2)):
+                    truncation_policy_list.append(heapq.heappop(population_one_with_evaluation)[1])
+                    truncation_policy_list.append(heapq.heappop(population_two_with_evaluation)[1])
+                return truncation_policy_list
+            case _: 
+                return population_two

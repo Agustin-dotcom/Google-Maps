@@ -24,31 +24,29 @@ class Search:
     ######################################### evaluation #########################################
     ##############################################################################################
     def evaluation(self,solution):#O(n^2)
-        print(f'def evaluation: Solucion antes de evaluarla {solution}')
-        total_population = 0 # this is for the denominator
-        min_of_all_stations_weight = float('inf') # this is for the second summatory on the evaluation function
+        total_population = 0 
+        weight_per_station = 0
+        min_of_all_a_star = float('inf') 
+        # 1. Iterate through each station
         for idx,i in enumerate(self.problem.dictionary.get('candidates').values()): # O(n^2)
-            weight_per_station = 0  # this is for the summing all the times of the candidates to a given station
-            if solution[idx] == 0: # if the solution does not inlude this candidate
-                continue # skip it
+            if solution[idx] == 0:
+                continue 
             pop = i.get('population')
-            total_population += pop # this is just getting the total population for the denominator on the evaluation function
-            station = i.get('identifier') # we fix a pointer into a candidate and we call it station
-            #self.final = station
-        
-            for j in self.problem.dictionary.get('candidates').values(): # O(n) # we go through the candidates
+            total_population += pop 
+            station = i.get('identifier') 
+
+            # 2. Calculate the time from each candidate to a fixed station
+            for j in self.problem.dictionary.get('candidates').values(): # O(n) 
                 candidate = j.get('identifier')
-                #self.initial = candidate
-                time_a_star = self.get_time_a_star(candidate,station) # and we calculate the time it takes every candidate to reach the pointed station
-                if weight_per_station < min_of_all_stations_weight:
-                    min_of_all_stations_weight = weight_per_station
-                #weight_per_station += time_a_star * pop
-            if weight_per_station == 0:
-                continue
-            
-                          
-        #print(f'def evaluation: Solucion despues de haber hecho los calculos {solution}')
-        return min_of_all_stations_weight / total_population # we return the correct ratio
+                
+                time_a_star = self.get_time_a_star(candidate,station) 
+
+                if time_a_star < min_of_all_a_star:
+                    min_of_all_a_star = weight_per_station
+
+            weight_per_station += min_of_all_a_star * pop
+           
+        return weight_per_station / total_population 
     ##############################################################################################
     ######################################### get_time_a_star #########################################
     ##############################################################################################

@@ -3,6 +3,8 @@ import os
 
 os.chdir('C:\\googleMapsVS\\Google-Maps\\Lab2')
 from Problem import Problem
+from Selection import Selection
+from Replacement import Replacement 
 problem = Problem('calle_del_virrey_morcillo_albacete_250_3_candidates_15_ns_4.json')
 from RandomSearch import RandomSearch
 agus = RandomSearch(problem)
@@ -27,7 +29,7 @@ print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 print("\t \t GENETIC ALGORITHM")
 print("//////////////////////////////////////////")
 import heapq
-solution = heapq.heappop(me_deberia_devolver_una_populacion)[1]
+solution = me_deberia_devolver_una_populacion[0]
 for id,i in enumerate(agus_dos.problem.dictionary.get('candidates').values()):
     if  solution[id] == 0:
         continue

@@ -14,5 +14,6 @@ class Search_test(unittest.TestCase):
         self.expected_result = Search(problem)
         self.expected_result.problem.dictionary.get('candidates').get(1736146191)['time']={1736146191:{'identifier':435465434,'A*':23.4}}
         self.assertEqual(self.expected_result.is_already_in_memory(1736146191,435465434),True)
+    def test_
 if __name__ == '__main__':
     unittest.main()
