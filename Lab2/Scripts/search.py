@@ -40,12 +40,16 @@ class Search:
                 candidate = j.get('identifier')
                 
                 time_a_star = self.get_time_a_star(candidate,station) 
-
+                if time_a_star == 0:
+                    continue 
                 if time_a_star < min_of_all_a_star:
-                    min_of_all_a_star = weight_per_station
-
+                    min_of_all_a_star = time_a_star
+            if min_of_all_a_star == float('inf'):
+                continue
             weight_per_station += min_of_all_a_star * pop
-           
+        
+        if total_population == 0:
+            return 0
         return weight_per_station / total_population 
     ##############################################################################################
     ######################################### get_time_a_star #########################################

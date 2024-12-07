@@ -22,7 +22,7 @@ for id,i in enumerate(agus.problem.dictionary.get('candidates').values()):
 from GeneticAlgorithm import GeneticAlgorithm
 agus_dos = GeneticAlgorithm(problem=problem)
 # population_size cannot be longer than import math math.comb(n,k) where n is the number of candidates and k the number of stations since you cannot generate more solutions than combinations possible
-me_deberia_devolver_una_populacion = agus_dos.search(20000)
+me_deberia_devolver_una_populacion = agus_dos.search(30)
 # for i in range(len(me_deberia_devolver_una_populacion)):
 #     print(me_deberia_devolver_una_populacion[i])
 print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")

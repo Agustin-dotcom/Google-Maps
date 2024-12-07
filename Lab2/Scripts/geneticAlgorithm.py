@@ -11,13 +11,13 @@ class GeneticAlgorithm(Search):
         #Lesson 8 Slide 18
         
         p = self.generate_population(population_size) # O(n) # create candidate solutions (individuals)
-        #p = self.evaluate(p) # obtains  their score
+        p = self.evaluate(p) # obtains  their score
 
         while(population_size != 0 ):# O(n)
             p_ = self.select_population(p,strategy) # Selects some individuals by score
             p_ = self.crossover(p_) #crosses pairs of selected individuals
             p_ = self.mutation(p_) # mutates the crossed individuals
-            #p_ = self.evaluate(p_) # obtains the score of the new individuals
+            p_ = self.evaluate(p_) # obtains the score of the new individuals
             p = self.combine(p,p_) # forms the new generation            
             population_size-=1
         return p
@@ -37,16 +37,21 @@ class GeneticAlgorithm(Search):
         """:param population : a list 
          :returns: a heapq of paired value (score,solution)"""
         total = 0
-        import numpy as np
-        list_evaluation_of_different_solutions = np.array([])
-        evaluation_value = 0
+        import heapq
+        list_for_heapq = []
+        for i in range(len(population)):
+            total += self.evaluation(population[i])
         for i in range(len(population)):# O(n)
             evaluation_value=self.evaluation(population[i])
-            total+=evaluation_value
-            list_evaluation_of_different_solutions.append(1/evaluation_value)
-        for i in range(len(population)):#O(n)
-            list_evaluation_of_different_solutions /= total 
-        return list_evaluation_of_different_solutions
+            evaluation_value = self.deal_with_division_by_zero(evaluation_value)
+            evaluation_value /= total
+            evaluation_value = -evaluation_value
+            heapq.heappop(list_for_heapq,(evaluation_value,tuple(population[i])))
+        return list_for_heapq
+    def deal_with_division_by_zero(self,evaluation_value):
+        if evaluation_value == 0:
+            return float('inf')
+        return 1/evaluation_value
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               select_population
     #/////////////////////////////////////////////////////////////////////////
@@ -70,27 +75,21 @@ class GeneticAlgorithm(Search):
     def proportion_based_selection(self,population):
         import numpy as np
         evaluation = np.array([],dtype=float)
-        total = 0
-        # 1. Evaluate each individual 
-        for i in range(len(population)):#O(n)
-            evaluation = np.append(evaluation,self.evaluation(population[i]))
-            total += evaluation.item(i)
-        
-        #if 0 in evaluation:
-        #    print(f'You tried to divide by zero!')
-        #    return 
-        evaluation = 1/evaluation
-        evaluation /= total
-        import numpy as np
+        for i in range(len(population)):
+            evaluation.append(-population[i][0])
         # 2. Arrange the wheel
         evaluation = np.cumsum(evaluation)
-        last = evaluation[len(evaluation)-1]
+        last = float('inf')
+        i = -1
+        while last == float('inf'):
+            last = evaluation[len(evaluation)+i]
+            i-=1
         # 3. Replicate individuals according to wheel
         new_generation = []
         for i in range(len(population)):#O(n)
             random_number = np.random.uniform(0,last)
-            solution_to_get = np.where(random_number <= evaluation)[0]
-            new_generation.append(population[solution_to_get])
+            solution_to_get = np.where(random_number <= evaluation)[0][0]
+            new_generation.append(population[solution_to_get][1])
         return new_generation
     def rank_assignation(self,population):
         evaluation = np.array([],dtype=float)
@@ -146,7 +145,7 @@ class GeneticAlgorithm(Search):
         # print(len(deque_list)/2)
         for i in range(int(len(population)/2)):
             first_half.append(population[i])
-            population = population[:-1]
+            population = population[1:]
         final_crossover = []
         for i in range(len(population)):
             #print(f'Parents\n \t\t Parent1:{population[i]}\n\t\t Parent2:{first_half[i]}\n')
@@ -167,10 +166,37 @@ class GeneticAlgorithm(Search):
         #2. Cross parents
         list_of_children = []
         first_child = np.concatenate((parent_one[:point_in_which_we_split] ,parent_two[point_in_which_we_split:]),axis=None)
+        first_child = self.correctPossibleNumberStations(first_child)
         list_of_children.append(first_child)
         second_child =np.concatenate(( parent_one[point_in_which_we_split:] , parent_two [:point_in_which_we_split]),axis=None)
+        second_child = self.correctPossibleNumberStations(second_child)
         list_of_children.append(second_child)
         return list_of_children
+      ##############################################################################################
+    ############################## correctPossibleNumberStations #################################
+    ##############################################################################################
+    def correctPossibleNumberStations(self,configuration):
+        """
+        In this function we correct the number of ceros and ones to our needs.
+        :param configuration: ndarray from numpy library representing a binary array, a configuration, a solution, a chromosome
+        """
+        # we get the number of ones
+        import numpy as np
+        number_of_ones_we_must_have = self.problem.dictionary.get('number_stations')
+        number_of_ones_we_have = np.count_nonzero(configuration==1)
+        if (number_of_ones_we_have < number_of_ones_we_must_have):
+            # we must introduce some ones
+            difference = number_of_ones_we_must_have - number_of_ones_we_have
+            positions_where_zeros_are = np.where(configuration == 0)[0]
+            new_positions_ones = np.random.choice(positions_where_zeros_are,difference, replace = False)
+            configuration[new_positions_ones] = 1
+        if (number_of_ones_we_have > number_of_ones_we_must_have):
+            # we compute the difference 
+            difference =  number_of_ones_we_have - number_of_ones_we_must_have
+            positions_where_ones_are = np.where(configuration==1)[0]
+            new_positions_zero = np.random.choice(positions_where_ones_are,difference,replace = False)
+            configuration[new_positions_zero] = 0
+        return configuration
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       mutation
     #//////////////////////////////////////////////////////////////////////
