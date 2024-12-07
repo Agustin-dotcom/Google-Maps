@@ -6,97 +6,77 @@ sys.path.append('c:\\users\\agus\\appdata\\local\\programs\\python\\python312\\l
 import numpy as np
 
 from abc import ABC,abstractmethod
-class Search:
+class Search(ABC):
     def __init__(self,problem):
         self.problem = problem
         self.openDS = [] # open_data_structure
         self.explored = {0}
         self.nodesGenerated = 0
-        #self.initial = 0
-        #self.final = 0
+        self.time = dict()
     def insert(self,element): # siempre insertamos de la misma forma
         self.openDS.append(element)
     #@abstractmethod
     def extract():
         pass
     #@abstractmethod
-    ##############################################################################################
-    ######################################### evaluation #########################################
-    ##############################################################################################
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #                       evaluation
+    #////////////////////////////////////////////////////////////////////
     def evaluation(self,solution):#O(n^2)
         total_population = 0 
         weight_per_station = 0
-        min_of_all_a_star = float('inf') 
+        
         # 1. Iterate through each station
         for idx,i in enumerate(self.problem.dictionary.get('candidates').values()): # O(n^2)
+            min_of_all_a_star = float('inf') 
             if solution[idx] == 0:
                 continue 
             pop = i.get('population')
             total_population += pop 
             station = i.get('identifier') 
-
+            self.final = station
             # 2. Calculate the time from each candidate to a fixed station
             for j in self.problem.dictionary.get('candidates').values(): # O(n) 
                 candidate = j.get('identifier')
-                
-                time_a_star = self.get_time_a_star(candidate,station) 
-                if time_a_star == 0:
-                    continue 
+                self.initial = candidate 
+                time_a_star = self.get_time_a_star() 
                 if time_a_star < min_of_all_a_star:
                     min_of_all_a_star = time_a_star
-            if min_of_all_a_star == float('inf'):
-                continue
             weight_per_station += min_of_all_a_star * pop
-        
-        if total_population == 0:
-            return 0
         return weight_per_station / total_population 
-    ##############################################################################################
-    ######################################### get_time_a_star #########################################
-    ##############################################################################################
-    def get_time_a_star(self,initial,final):
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #                       get_time_a_star
+    #////////////////////////////////////////////////////////////////////
+    def get_time_a_star(self):
         
-        if( not self.is_already_in_memory(initial,final)): # if it is NOT in memory
+        if( not self.is_already_in_memory()): # if it is NOT in memory
             # save it in memory
-            return self.save_changes(initial,final)
+            return self.save_changes()
         #otherwise just get it from memory
-        return self.problem.dictionary.get('candidates').get(initial).get('time').get(final).get('A*')# get it from memory
-           ##############################################################################################
-    ######################################### is_already_in_memory #########################################
-    ##############################################################################################
-    def is_already_in_memory(self,initial,final):
-        if ('time' in self.problem.dictionary.get('candidates').get(initial)):
-            for i in self.problem.dictionary.get('candidates').get(initial).get('time').values():
-                if(i.get('identifier') == final):
-                    #print(f'def is_already_in_memory: Ya lo tenemos en memoria!! No hace falta calcularlo!!')
-                    return True
-        return False
-        ##############################################################################################
-    ######################################### save_changes #########################################
-    ##############################################################################################
-    def save_changes(self,initial,final):
-        """
-        The idea is saving a dictionary of dictionaries ('time') which for each candidate will store 
-        where it can go and how much time it costs
-
-        {'candidate1':{'identifier':,'population':,'time': {'identifier':,'A*':}},
-        'candidate2':{'identifier':,'population':,'time':{'identifier':,'A*':}}}
-        """
+        return self.time.get((self.initial,self.final))
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #                       is_already_in_memory
+    #////////////////////////////////////////////////////////////////////
+    def is_already_in_memory(self):
+        return (self.initial,self.final) in self.time
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #                       save_changes
+    #////////////////////////////////////////////////////////////////////
+    def save_changes(self):
         from AStar import AStar
         instance_of_search = AStar(self.problem)
-        time_a_star = instance_of_search.search(initial,final)
-        #print(f' We just made a call to A* ')
-        if(not 'time' in self.problem.dictionary.get('candidates').get(initial)):
-            #print(f' Antes no existia el campo time. ahora si 😎')
-            self.problem.dictionary.get('candidates').get(initial)['time'] = dict()        
-        self.problem.dictionary.get('candidates').get(initial).get('time')[final] ={'identifier':final,'A*':time_a_star}
+        time_a_star = instance_of_search.search()
+        self.time[(self.initial,self.final)] = time_a_star
         return time_a_star
-            
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #                       search
+    #////////////////////////////////////////////////////////////////////
+    @abstractmethod
     def search(self):
        pass
-    ##############################################################################################
-    ################################### generateARandomSolution ##################################
-    ##############################################################################################
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #                       generateARandomSolution
+    #////////////////////////////////////////////////////////////////////
     def generateARandomSolution(self):
         """
         Function to create a random solution.
@@ -108,9 +88,9 @@ class Search:
         positions_where_we_are_going_to_introduce_ones = np.random.choice(length_of_array_of_candidates,number_of_ones_we_need,replace = False)
         random_solution[positions_where_we_are_going_to_introduce_ones] = 1
         return random_solution
-    #################################################################################
-    ####################             expand             ############################
-    #################################################################################
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #                       expand
+    #////////////////////////////////////////////////////////////////////
     def expand(self,Node_param): #O(n)
         """ 
         :param Node_param: nodo al que apuntamos 

@@ -3,6 +3,8 @@ from Search import Search
 #                       GeneticAlgorithm
 #////////////////////////////////////////////////////////////////
 class GeneticAlgorithm(Search):
+    def __init__(self):
+        self.p = []
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       search
     #/////////////////////////////////////////////////////////////////////
@@ -10,17 +12,27 @@ class GeneticAlgorithm(Search):
     def search(self,population_size,strategy = Replacement.PROPORTION_BASED_SELECTION):
         #Lesson 8 Slide 18
         
-        p = self.generate_population(population_size) # O(n) # create candidate solutions (individuals)
-        p = self.evaluate(p) # obtains  their score
-
-        while(population_size != 0 ):# O(n)
-            p_ = self.select_population(p,strategy) # Selects some individuals by score
-            p_ = self.crossover(p_) #crosses pairs of selected individuals
-            p_ = self.mutation(p_) # mutates the crossed individuals
-            p_ = self.evaluate(p_) # obtains the score of the new individuals
-            p = self.combine(p,p_) # forms the new generation            
-            population_size-=1
-        return p
+        self.p = self.generate_population(population_size) # O(n) # create candidate solutions (individuals)
+        self.evaluate(self.p) # obtains  their score
+        
+        import heapq
+        import numpy as np
+        counter = 0
+        while(True):# O(n)
+            temp = self.p
+            previous_current_solution = heapq.heappop(temp)[1]
+            p_ = self.select_population(self.p,strategy) # Selects some individuals by score
+            self.crossover(p_) #crosses pairs of selected individuals
+            self.mutation(p_) # mutates the crossed individuals
+            self.evaluate(p_) # obtains the score of the new individuals
+            self.p = self.combine(self.p,p_) # forms the new generation            
+            temp = self.p
+            new_current_solution = heapq.heappop(temp)[1]
+            if np.array_equal(previous_current_solution, new_current_solution):
+                counter +=1
+            if counter == 5:
+                break
+        return self.p
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       generate_population
     #////////////////////////////////////////////////////////////////////
@@ -47,7 +59,10 @@ class GeneticAlgorithm(Search):
             evaluation_value /= total
             evaluation_value = -evaluation_value
             heapq.heappop(list_for_heapq,(evaluation_value,tuple(population[i])))
-        return list_for_heapq
+        population  = list_for_heapq
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #                               deal_with_division_by_zero
+    #/////////////////////////////////////////////////////////////////////////
     def deal_with_division_by_zero(self,evaluation_value):
         if evaluation_value == 0:
             return float('inf')
@@ -57,22 +72,6 @@ class GeneticAlgorithm(Search):
     #/////////////////////////////////////////////////////////////////////////
     from Replacement import Replacement
     def select_population(self,population,strategy):
-        """
-        :param population: a set of solutions
-
-        :returns : a generation with elitism and diversity 
-        """
-        from Replacement import Replacement
-        match strategy:
-            case Replacement.PROPORTION_BASED_SELECTION:
-                return self.proportion_based_selection(population)
-            case Replacement.RANK_ASSIGNATION:
-                return self.rank_assignation(population)
-            case Replacement.TOURNAMENT:
-                return self.tournament_assignation(population)
-            case _:
-                return self.proportion_based_selection(population)
-    def proportion_based_selection(self,population):
         import numpy as np
         evaluation = np.array([],dtype=float)
         for i in range(len(population)):
@@ -91,46 +90,7 @@ class GeneticAlgorithm(Search):
             solution_to_get = np.where(random_number <= evaluation)[0][0]
             new_generation.append(population[solution_to_get][1])
         return new_generation
-    def rank_assignation(self,population):
-        evaluation = np.array([],dtype=float)
-        N = len(population)
-        # 1. Evaluate each individual 
-        for i in range(len(population)):#O(n)
-            evaluation.append(self.evaluation(population[i]))
-        evaluation = 1/evaluation
-        indices_where_we_have_the_data_before_making_the_sort = np.argsort(evaluation)[::-1]
-        evaluation = np.sort(evaluation)
-        evaluation = evaluation[::-1]
-        denominator = N ** 2 + N
-        for i in range(len(evaluation)):
-            pos = i+1
-            evaluation[i] = (2*(N-pos+1)/denominator)
-        import numpy as np
-        # 2. Arrange the wheel
-        evaluation = np.cumsum(evaluation)
-        last = evaluation[len(evaluation)-1]
-        # 3. Replicate individuals according to wheel
-        new_generation = []
-        for i in range(len(population)):#O(n)
-            random_number = np.random.uniform(0,last)
-            solution_to_get = np.where(random_number <= evaluation)[0][0].item()
-            new_generation.append(population[indices_where_we_have_the_data_before_making_the_sort[solution_to_get]])
-        return new_generation
-    def tournament_assignation(self,population):
-        k = len(population)
-        new_population = []
-        for _ in range(len(population)):
-            # 1. Take k individuals randomly
-            import numpy as np
-            import heapq
-            number_of_individuals_to_take = np.random.randint(1,k+1)
-            # 2. Play the tournament
-            tournament = []
-            for _ in range(number_of_individuals_to_take):
-                take_this_population = np.random.randint(0,k)
-                heapq.heappush(tournament,(self.evaluation(population[take_this_population]),tuple(population[take_this_population])))
-            new_population.append(heapq.heappop(tournament)[1])
-        return new_population
+        
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               crossover
     #//////////////////////////////////////////////////////////////////////
@@ -208,7 +168,7 @@ class GeneticAlgorithm(Search):
             for j in range(len(population[i])): # going through bits
                 if random.uniform(0,1) <= mutation_rate:
                     population[i][j] = 1 - population[i].item(j) # mutate gene
-        return population
+        population = population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       combine
     #/////////////////////////////////////////////////////////////////////////
