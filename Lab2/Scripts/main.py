@@ -7,6 +7,10 @@ from Selection import Selection
 from Replacement import Replacement 
 problem = Problem('calle_del_virrey_morcillo_albacete_250_3_candidates_15_ns_4.json')
 from RandomSearch import RandomSearch
+import numpy as np
+# Establish seed
+np.random.seed(42)
+
 agus = RandomSearch(problem)
 print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
 print("\t \t RANDOM ALGORITHM")
