@@ -40,6 +40,8 @@ class Search(ABC):
                 candidate = j.get('identifier')
                 Search.initial = candidate 
                 time_a_star = self.get_time_a_star() 
+                if time_a_star == 0:
+                    continue
                 if time_a_star < min_of_all_a_star:
                     min_of_all_a_star = time_a_star
             weight_per_station += min_of_all_a_star * pop
