@@ -44,6 +44,8 @@ class Search(ABC):
                     continue
                 if time_a_star < min_of_all_a_star:
                     min_of_all_a_star = time_a_star
+            if min_of_all_a_star == float('inf'):
+                continue
             weight_per_station += min_of_all_a_star * pop
         return weight_per_station / total_population 
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
