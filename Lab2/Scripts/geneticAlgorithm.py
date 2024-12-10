@@ -3,8 +3,9 @@ from Search import Search
 #                       GeneticAlgorithm
 #////////////////////////////////////////////////////////////////
 class GeneticAlgorithm(Search):
-    def __init__(self):
+    def __init__(self,problem):
         self.p = []
+        super().__init__(problem)
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       search
     #/////////////////////////////////////////////////////////////////////
