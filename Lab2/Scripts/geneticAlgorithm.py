@@ -73,7 +73,6 @@ class GeneticAlgorithm(Search):
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               select_population
     #/////////////////////////////////////////////////////////////////////////
-    from Replacement import Replacement
     def select_population(self,population,strategy):
         import numpy as np
         evaluation = np.array([],dtype=float)
@@ -151,7 +150,7 @@ class GeneticAlgorithm(Search):
             new_positions_ones = np.random.choice(positions_where_zeros_are,difference, replace = False)
             configuration[new_positions_ones] = 1
         if (number_of_ones_we_have > number_of_ones_we_must_have):
-            # we compute the difference 
+            # we must remove some ones
             difference =  number_of_ones_we_have - number_of_ones_we_must_have
             positions_where_ones_are = np.where(configuration==1)[0]
             new_positions_zero = np.random.choice(positions_where_ones_are,difference,replace = False)
@@ -165,22 +164,15 @@ class GeneticAlgorithm(Search):
         import random
         
         for i in range(len(population)): # going through solutions
-            for j in range(len(population[i])): # going through bits
+            for j in range(len(population[i][1])): # going through bits
                 if random.uniform(0,1) <= mutation_rate:
-                    population[i][j] = 1 - population[i].item(j) # mutate gene
+                    population[i][1][j] = 1 - population[i][1].item(j) # mutate gene
         population = population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       combine
     #/////////////////////////////////////////////////////////////////////////
     from Selection import Selection
     def combine(self,population_one,population_two,strategy_combine = Selection.REPLACEMENT):
-        """
-        :returns truncation_policy_list : a population
-        """
-        # 1. Truncation: Selects the best individuals among both population (P and P')
-        # 2. Elitism: Preserves the best individual in the former population and sacrifices the worst one in the new one.
-        # In other words, take P' and the worst indivual interchanges with the best in P
-        # 3. Replacement: In this case, the generated population replaces the former one.
         truncation_policy_list = []
         import heapq
         if  len(population_one) % 2 != 0:
@@ -190,26 +182,14 @@ class GeneticAlgorithm(Search):
             case Selection.REPLACEMENT:
                 return population_two
             case Selection.ELITISM:
-                population_one_with_evaluation = []
-                for i in range(len(population_one)):
-                    heapq.heappush(population_one_with_evaluation,self.evaluation(population_one[i],tuple(population_one[i])))
-                population_two_with_evaluation = []
-                for i in range(len(population_two)):
-                    heapq.heappush(population_two_with_evaluation,self.evaluation(population_two[i],tuple(population_two[i])))
-                for _ in range(int(len(population_one)-1)):
-                    truncation_policy_list.append(heapq.heappop(population_one_with_evaluation)[1])
-                truncation_policy_list.append(heapq.heappop(population_two_with_evaluation)[1])
+                for _ in range(int(len(population_two)-1)):
+                    truncation_policy_list.append(heapq.heappop(population_two)[1])
+                truncation_policy_list.append(heapq.heappop(population_one)[1])
                 return truncation_policy_list
             case Selection.TRUNCATION:
-                population_one_with_evaluation = []
-                for i in range(len(population_one)):
-                    heapq.heappush(population_one_with_evaluation,self.evaluation(population_one[i],tuple(population_one[i])))
-                population_two_with_evaluation = []
-                for i in range(len(population_two)):
-                    heapq.heappush(population_two_with_evaluation,self.evaluation(population_two[i],tuple(population_two[i])))
                 for _ in range(int(len(population_one)/2)):
-                    truncation_policy_list.append(heapq.heappop(population_one_with_evaluation)[1])
-                    truncation_policy_list.append(heapq.heappop(population_two_with_evaluation)[1])
+                    truncation_policy_list.append(heapq.heappop(population_one)[1])
+                    truncation_policy_list.append(heapq.heappop(population_two)[1])
                 return truncation_policy_list
             case _: 
                 return population_two
