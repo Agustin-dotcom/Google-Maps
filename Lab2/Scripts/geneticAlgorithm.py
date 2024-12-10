@@ -62,7 +62,7 @@ class GeneticAlgorithm(Search):
             evaluation_value = self.deal_with_division_by_zero(evaluation_value)
             evaluation_value /= total
             evaluation_value = -evaluation_value
-            heapq.heappop(list_for_heapq,(evaluation_value,tuple(population[i])))
+            heapq.heappush(list_for_heapq,(evaluation_value,tuple(population[i])))
         population  = list_for_heapq
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               deal_with_division_by_zero
