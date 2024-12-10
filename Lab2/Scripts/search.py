@@ -7,18 +7,18 @@ import numpy as np
 
 from abc import ABC,abstractmethod
 class Search(ABC):
+    initial = 0
+    final = 0
     def __init__(self,problem):
         self.problem = problem
         self.openDS = [] # open_data_structure
         self.explored = {0}
         self.nodesGenerated = 0
         self.time = dict()
-    def insert(self,element): # siempre insertamos de la misma forma
+    def insert(self,element):  
         self.openDS.append(element)
-    #@abstractmethod
     def extract():
         pass
-    #@abstractmethod
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       evaluation
     #////////////////////////////////////////////////////////////////////
@@ -34,11 +34,11 @@ class Search(ABC):
             pop = i.get('population')
             total_population += pop 
             station = i.get('identifier') 
-            self.final = station
+            Search.final = station
             # 2. Calculate the time from each candidate to a fixed station
             for j in self.problem.dictionary.get('candidates').values(): # O(n) 
                 candidate = j.get('identifier')
-                self.initial = candidate 
+                Search.initial = candidate 
                 time_a_star = self.get_time_a_star() 
                 if time_a_star < min_of_all_a_star:
                     min_of_all_a_star = time_a_star
@@ -53,12 +53,12 @@ class Search(ABC):
             # save it in memory
             return self.save_changes()
         #otherwise just get it from memory
-        return self.time.get((self.initial,self.final))
+        return self.time.get((Search.initial,Search.final))
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       is_already_in_memory
     #////////////////////////////////////////////////////////////////////
     def is_already_in_memory(self):
-        return (self.initial,self.final) in self.time
+        return (Search.initial,Search.final) in self.time
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       save_changes
     #////////////////////////////////////////////////////////////////////
@@ -92,9 +92,6 @@ class Search(ABC):
     #                       expand
     #////////////////////////////////////////////////////////////////////
     def expand(self,Node_param): #O(n)
-        """ 
-        :param Node_param: nodo al que apuntamos 
-        :returns: list of nodes """
         successors = []
         currentIntersection = self.problem.dictionary.get('intersections').get(Node_param.state.state) # O(1)
 
@@ -102,13 +99,13 @@ class Search(ABC):
         for destination in listOrdered: # O(n)
             """currentIntersection.get("whereto")
             [{'id': 1256026663, 'cost': 1.7331}, {'id': 1531659796, 'cost': 2.346}]"""
-            if destination.get('id') in self.explored: # O(1) # preguntamos si ya lo hemos recorrido
+            if destination.get('id') in self.explored: # O(1) 
                 continue
             from Action import Action
             newAction = Action(# O(1)
-                    Node_param.state.state, #origen
-                    destination.get("id"), # destino
-                    destination.get("cost") #coste
+                    Node_param.state.state, 
+                    destination.get("id"), 
+                    destination.get("cost") 
                 )
             # REMEMBER THAT destination is A DICTIONARY {"id":,"cost":}
             from State import State

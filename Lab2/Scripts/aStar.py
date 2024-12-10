@@ -12,7 +12,7 @@ class AStar(Search):# takes into account g(n), not only h(n)
          # element is a node
         """self.openDS is by default a deque() (see Search __init__) so we
         have to convert deque() into a list"""
-        goalId = self.final
+        goalId = Search.final
         self.openDS = list(self.openDS)
         heuristic = (self.computeHeuristic(element,goalId)/self.problem.dictionary.get('maxSpeedOfAllSpeeds'))+element.accumulatedCost
         #print('\n-----------\n'.join(map(str,self.openDS)))
@@ -27,24 +27,19 @@ class AStar(Search):# takes into account g(n), not only h(n)
     ######################################## computeHeuristic ####################################
     ##############################################################################################
     def computeHeuristic(self,node_param,goalId): #O(1)
-        """self.openDS is by default a deque() (see Search __init__) so we
-        have to convert deque() into a list"""
-        self.openDS = list(self.openDS) # medios para obtener lo que queremos
-        #goalId = self.final # Obtenemos estado final
-        coord_1 = (node_param.state.longitude, node_param.state.latitude) # (longitude,latitude)
+        self.openDS = list(self.openDS) 
+        coord_1 = (node_param.state.longitude, node_param.state.latitude) 
         coord_2 = (self.problem.dictionary.get('intersections').get(goalId).get('longitude'), 
-        self.problem.dictionary.get('intersections').get(goalId).get('latitude'))  # (longitude,latitude)
-        # Usar el elipsoide WGS84 para calcular la distancia
-        geod = Geodesic.WGS84 # cosas de la librería
-        resultado = geod.Inverse(coord_1[0], coord_1[1], coord_2[0], coord_2[1]) # cosas de la librería
-        # Distancia en metros
+        self.problem.dictionary.get('intersections').get(goalId).get('latitude'))  
+        geod = Geodesic.WGS84 
+        resultado = geod.Inverse(coord_1[0], coord_1[1], coord_2[0], coord_2[1]) 
         distancia = resultado['s12'] 
         return distancia
          ##############################################################################################
     ######################################### search #########################################
     ##############################################################################################
     def search(self): # O(n) 
-        self.initializeOpen(self.initial) # inicializo nodo raiz # O(1)
+        self.initializeOpen(Search.initial) # O(1)
         self.insert(self.root)
         while len(self.openDS)!=0:    
             node = self.extract() # O(1) 
@@ -77,4 +72,4 @@ class AStar(Search):# takes into account g(n), not only h(n)
     ####################             testGoal              ##########################
     #################################################################################
     def testGoal(self,node):# O(1)
-        return self.final == node.state.state# node.state es de tipo State y node.state.state es de tipo int
+        return Search.final == node.state.state# node.state es de tipo State y node.state.state es de tipo int
