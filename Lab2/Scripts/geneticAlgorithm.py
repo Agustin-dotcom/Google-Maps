@@ -74,24 +74,20 @@ class GeneticAlgorithm(Search):
     #                               select_population
     #/////////////////////////////////////////////////////////////////////////
     def select_population(self,population,strategy):
-        import numpy as np
-        evaluation = np.array([],dtype=float)
-        for i in range(len(population)):
-            evaluation.append(-population[i][0])
-        # 2. Arrange the wheel
-        evaluation = np.cumsum(evaluation)
-        last = float('inf')
-        i = -1
-        while last == float('inf'):
-            last = evaluation[len(evaluation)+i]
-            i-=1
-        # 3. Replicate individuals according to wheel
-        new_generation = []
-        for i in range(len(population)):#O(n)
-            random_number = np.random.uniform(0,last)
-            solution_to_get = np.where(random_number <= evaluation)[0][0]
-            new_generation.append(population[solution_to_get][1])
-        return new_generation
+        k = len(population)
+        new_population = []
+        for _ in range(len(population)):
+            # 1. Take k individuals randomly
+            import numpy as np
+            import heapq
+            number_of_individuals_to_take = np.random.randint(1,k+1)
+            # 2. Play the tournament
+            tournament = []
+            for _ in range(number_of_individuals_to_take):
+                take_this_population = np.random.randint(0,k)
+                heapq.heappush(tournament,(self.evaluation(population[take_this_population]),tuple(population[take_this_population])))
+            new_population.append(heapq.heappop(tournament)[1])
+        return new_population
         
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               crossover
