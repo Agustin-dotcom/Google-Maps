@@ -28,8 +28,11 @@ class GeneticAlgorithm(Search):
             self.p = self.combine(self.p,p_) # forms the new generation            
             temp = self.p
             new_current_solution = heapq.heappop(temp)[1]
-            if np.array_equal(previous_current_solution, new_current_solution):
+            condition = np.array_equal(previous_current_solution, new_current_solution)
+            if condition:
                 counter +=1
+            if not condition:
+                counter = 0
             if counter == 5:
                 break
         return self.p
@@ -38,23 +41,23 @@ class GeneticAlgorithm(Search):
     #////////////////////////////////////////////////////////////////////
     def generate_population(self,population_size):#O(n)
         population = []
-        
+        import heapq
         for _ in range(population_size):#O(n)
-            population.append(self.generateARandomSolution())#O(1)
+            heapq.heappush(population,(0,tuple(self.generateARandomSolution())))
         return population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                           evaluate
     #/////////////////////////////////////////////////////////////////////
     def evaluate(self,population):
-        """:param population : a list 
-         :returns: a heapq of paired value (score,solution)"""
         total = 0
         import heapq
         list_for_heapq = []
+        evaluation_values_not_to_be_calculated_again = []
         for i in range(len(population)):
-            total += self.evaluation(population[i])
+            evaluation_values_not_to_be_calculated_again.append(self.evaluation(population[i][1]))
+            total += evaluation_values_not_to_be_calculated_again[i]
         for i in range(len(population)):# O(n)
-            evaluation_value=self.evaluation(population[i])
+            evaluation_value=evaluation_values_not_to_be_calculated_again[i]
             evaluation_value = self.deal_with_division_by_zero(evaluation_value)
             evaluation_value /= total
             evaluation_value = -evaluation_value
@@ -95,9 +98,6 @@ class GeneticAlgorithm(Search):
     #                               crossover
     #//////////////////////////////////////////////////////////////////////
     def crossover(self,population):
-        if (population == None):
-            print(f'population == None')
-            return
         if len(population) % 2 != 0:
             population = population[:-1]
         first_half = []
