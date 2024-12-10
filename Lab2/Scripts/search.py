@@ -28,8 +28,9 @@ class Search(ABC):
         
         # 1. Iterate through each station
         for idx,i in enumerate(self.problem.dictionary.get('candidates').values()): # O(n^2)
-            min_of_all_a_star = float('inf') 
-            if heapq.heappop(solution)[1][idx] == 0:
+            min_of_all_a_star = float('inf')
+            get_this_one = heapq.heappop(solution)[1] 
+            if get_this_one[idx] == 0:
                 continue 
             pop = i.get('population')
             total_population += pop 
