@@ -29,29 +29,33 @@ class Search(ABC):
         # 1. Iterate through each station
         for idx,i in enumerate(self.problem.dictionary.get('candidates').values()): # O(n^2)
             min_of_all_a_star = float('inf')
-            if solution[idx] == 0:
-                continue 
             pop = i.get('population')
             total_population += pop 
             candidate = i.get('identifier') 
-            Search.final = candidate
-            print(f'place_id={candidate};citizens={pop}')
+            Search.initial = candidate
+            if Main.DEBUG:
+                print(f'place_id={candidate};citizens={pop}')
             # 2. Calculate the time from each candidate to a fixed station
-            for j in self.problem.dictionary.get('candidates').values(): # O(n) 
+            for idj,j in enumerate(self.problem.dictionary.get('candidates').values()): # O(n) 
+                if solution[idj] == 0:
+                    continue 
                 station = j.get('identifier')
-                Search.initial = station 
+                Search.final = station 
                 time_a_star = self.get_time_a_star() 
-                print(f'to station with id {station} = {time_a_star}')
-                if time_a_star == 0:
-                    continue
+                from Main import Main
+                if Main.DEBUG:
+                    print(f'to station with id {station} = {time_a_star}')
                 if time_a_star < min_of_all_a_star:
                     min_of_all_a_star = time_a_star
             if min_of_all_a_star == float('inf'):
                 continue
-            print(f'min_distance --> {min_of_all_a_star}')
-            weight_per_candidate += min_of_all_a_star * pop
-            print(f'accounting for ={weight_per_candidate}')
-            print(f'__________________________________________')
+            if Main.DEBUG:
+                print(f'min_distance --> {min_of_all_a_star}')
+            only_this_one = min_of_all_a_star * pop
+            weight_per_candidate += only_this_one
+            if Main.DEBUG:
+                print(f'accounting for ={only_this_one}')
+                print(f'__________________________________________')
         return weight_per_candidate / total_population 
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       get_time_a_star
@@ -75,7 +79,7 @@ class Search(ABC):
         from AStar import AStar
         instance_of_search = AStar(self.problem)
         time_a_star = instance_of_search.search()
-        self.time[(self.initial,self.final)] = time_a_star
+        self.time[(Search.initial,Search.final)] = time_a_star
         return time_a_star
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       search
@@ -87,7 +91,6 @@ class Search(ABC):
     #                       generateARandomSolution
     #////////////////////////////////////////////////////////////////////
     def generateARandomSolution(self):
-        np.random.seed(42)
         length_of_array_of_candidates = len(self.problem.dictionary.get('candidates'))
         number_of_ones_we_need = self.problem.dictionary.get('number_stations')
         random_solution = np.zeros(length_of_array_of_candidates,dtype=int)

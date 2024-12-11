@@ -1,10 +1,15 @@
 from Search import Search
+from Solution import Solution
+import heapq
+import numpy as np
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #                       GeneticAlgorithm
 #////////////////////////////////////////////////////////////////
 class GeneticAlgorithm(Search):
     def __init__(self,problem):
         self.p = []
+        self.p_ = []
+        self.momento_solution = 0
         super().__init__(problem)
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       search
@@ -14,37 +19,39 @@ class GeneticAlgorithm(Search):
         #Lesson 8 Slide 18
         
         self.p = self.generate_population(population_size) # O(n) # create candidate solutions (individuals)
-        self.evaluate(self.p) # obtains  their score
+        self.p = self.evaluate(self.p) # obtains  their score
         
-        import heapq
-        import numpy as np
-        counter = 0
-        while(True):# O(n)
-            temp = self.p
-            previous_current_solution = heapq.heappop(temp)[1]
-            p_ = self.select_population(self.p,strategy) # Selects some individuals by score
-            self.crossover(p_) #crosses pairs of selected individuals
-            self.mutation(p_) # mutates the crossed individuals
-            self.evaluate(p_) # obtains the score of the new individuals
-            self.p = self.combine(self.p,p_) # forms the new generation            
-            temp = self.p
-            new_current_solution = heapq.heappop(temp)[1]
-            condition = np.array_equal(previous_current_solution, new_current_solution)
-            if condition:
-                counter +=1
-            if not condition:
-                counter = 0
-            if counter == 5:
-                break
+
+        # counter = 0
+        while(population_size != 0):# O(n)
+            # temp = self.p
+            # previous_current_solution = heapq.heappop(temp).solution
+            self.p_ = self.select_population(self.p,strategy) # Selects some individuals by score
+            self.p_ = self.crossover(self.p_) #crosses pairs of selected individuals
+            self.p_ = self.mutation(self.p_) # mutates the crossed individuals
+            self.p_ = self.evaluate(self.p_) # obtains the score of the new individuals
+            self.p = self.combine(self.p,self.p_) # forms the new generation            
+            population_size -= 1
+            # temp = self.p
+            # new_current_solution = heapq.heappop(temp).solution
+            # condition = np.array_equal(previous_current_solution, new_current_solution)
+            # if condition:
+            #     counter +=1
+            # if not condition:
+            #     counter = 0
+            # if counter == 2:
+            #     break
         return self.p
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       generate_population
     #////////////////////////////////////////////////////////////////////
+    
     def generate_population(self,population_size):#O(n)
         population = []
         import heapq
         for _ in range(population_size):#O(n)
-            heapq.heappush(population,(0,tuple(self.generateARandomSolution())))
+            heapq.heappush(population,Solution(0,self.generateARandomSolution(),Solution.momento))
+            Solution.momento += 1
         return population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                           evaluate
@@ -55,12 +62,13 @@ class GeneticAlgorithm(Search):
         list_for_heapq = []
         evaluation_values_not_to_be_calculated_again = []
         for i in range(len(population)):# O(n)
-            evaluation_values_not_to_be_calculated_again.append(self.evaluation(population[i][1]))
+            evaluation_values_not_to_be_calculated_again.append(self.evaluation(population[i].solution))
             total += evaluation_values_not_to_be_calculated_again[i]
         for i in range(len(population)):# O(n)
             evaluation_value = evaluation_values_not_to_be_calculated_again[i]
-            heapq.heappush(list_for_heapq,(evaluation_value,tuple(population[i])))
-        population  = list_for_heapq
+            heapq.heappush(list_for_heapq,Solution(evaluation_value,population[i].solution,Solution.momento))
+            Solution.momento += 1
+        return list_for_heapq
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               select_population
     #/////////////////////////////////////////////////////////////////////////
@@ -70,15 +78,14 @@ class GeneticAlgorithm(Search):
         for _ in range(len(population)):
             # 1. Take k individuals randomly
             import numpy as np
-            np.random.seed(42)
             import heapq
             number_of_individuals_to_take = np.random.randint(1,k+1)
             # 2. Play the tournament
             tournament = []
             for _ in range(number_of_individuals_to_take):
                 take_this_population = np.random.randint(0,k)
-                heapq.heappush(tournament,(self.evaluation(population[take_this_population][1]),tuple(population[take_this_population][1])))
-            new_population.append(heapq.heappop(tournament)[1])
+                heapq.heappush(tournament,population[take_this_population])
+            new_population.append(heapq.heappop(tournament))
         return new_population
         
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -88,19 +95,16 @@ class GeneticAlgorithm(Search):
         if len(population) % 2 != 0:
             population = population[:-1]
         first_half = []
-        # print(len(deque_list))
-        # print(len(deque_list)/2)
         for i in range(int(len(population)/2)):
             first_half.append(population[i])
             population = population[1:]
         final_crossover = []
         for i in range(len(population)):
-            #print(f'Parents\n \t\t Parent1:{population[i]}\n\t\t Parent2:{first_half[i]}\n')
-            list_of_two_children = self.join_these_two(population[i],first_half[i])
-            #print(f'Children \n')
-            for j in range(len(list_of_two_children)):
-                #print(f'\t\tChild{j+1}:{list_of_two_children[j]}\n')
-                final_crossover.append(list_of_two_children[j])
+            list_of_two_children = self.join_these_two(population[i].solution,first_half[i].solution)
+            population[i].solution = list_of_two_children[0]
+            first_half[i].solution = list_of_two_children[1]
+            final_crossover.append(population[i])
+            final_crossover.append(first_half[i])
         return final_crossover
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               join_these_two
@@ -150,11 +154,12 @@ class GeneticAlgorithm(Search):
     def mutation(self,population):
         mutation_rate = 0.1
         import random
-        random.seed(42)
         for i in range(len(population)): # going through solutions
-            for j in range(len(population[i])): # going through bits
+            for j in range(len(population[i].solution)): # going through bits
                 if random.uniform(0,1) <= mutation_rate:
-                    population[i][j] = 1 - population[i].item(j) # mutate gene
+                    population[i].solution[j] = 1 - population[i].solution.item(j) # mutate gene
+                    population[i].solution = self.correctPossibleNumberStations(population[i].solution)
+        return population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       combine
     #/////////////////////////////////////////////////////////////////////////
@@ -163,20 +168,20 @@ class GeneticAlgorithm(Search):
         bag_of_individuals = []
         import heapq
         if  len(population_one) % 2 != 0:
-            bag_of_individuals.append(heapq.heappop(population_one)[1])
+            bag_of_individuals.append(heapq.heappop(population_one))
         from Selection import Selection
         match(strategy_combine):
             case Selection.REPLACEMENT:
                 return population_two
             case Selection.ELITISM:
                 for _ in range(int(len(population_two)-1)):
-                    bag_of_individuals.append(heapq.heappop(population_two)[1])
-                bag_of_individuals.append(heapq.heappop(population_one)[1])
+                    bag_of_individuals.append(heapq.heappop(population_two))
+                bag_of_individuals.append(heapq.heappop(population_one))
                 return bag_of_individuals
             case Selection.TRUNCATION:
                 for _ in range(int(len(population_one)/2)):
-                    bag_of_individuals.append(heapq.heappop(population_one)[1])
-                    bag_of_individuals.append(heapq.heappop(population_two)[1])
+                    bag_of_individuals.append(heapq.heappop(population_one))
+                    bag_of_individuals.append(heapq.heappop(population_two))
                 return bag_of_individuals
             case _: 
                 return population_two

@@ -1,17 +1,17 @@
 from Search import Search
+from Solution import Solution
 class RandomSearch(Search):
     def search(self,MaxIters):
         iteration = 0
         list_of_solutions_with_corresponding_score = []
         while (iteration < MaxIters):
-            x = self.generateARandomSolution()
-            score = self.evaluation(x)
+            x =Solution(0,self.generateARandomSolution(),Solution.momento)
+            Solution.momento += 1
+            score = self.evaluation(x.solution)
             import heapq
-            heapq.heappush(list_of_solutions_with_corresponding_score,(score,tuple(x)))
+            x.score = score
+            heapq.heappush(list_of_solutions_with_corresponding_score,x)
             list_of_solutions_with_corresponding_score.sort()
             print(f'This is the random solution we have just created {x}')
-            #x_ = self.hillClimbing(x)
-            #if(self.evaluation(x_) > self.evaluation(solution)):
-            #    solution = x_
             iteration += 1
         return list_of_solutions_with_corresponding_score
