@@ -38,8 +38,10 @@ class Search(ABC):
             # 2. Calculate the time from each candidate to a fixed station
             for j in self.problem.dictionary.get('candidates').values(): # O(n) 
                 candidate = j.get('identifier')
+                print(f'place_id={candidate};citizens={pop}')
                 Search.initial = candidate 
                 time_a_star = self.get_time_a_star() 
+                print(f'to station with id {station} = {time_a_star}')
                 if time_a_star == 0:
                     continue
                 if time_a_star < min_of_all_a_star:
@@ -82,10 +84,7 @@ class Search(ABC):
     #                       generateARandomSolution
     #////////////////////////////////////////////////////////////////////
     def generateARandomSolution(self):
-        """
-        Function to create a random solution.
-        
-        """
+        np.random.seed(42)
         length_of_array_of_candidates = len(self.problem.dictionary.get('candidates'))
         number_of_ones_we_need = self.problem.dictionary.get('number_stations')
         random_solution = np.zeros(length_of_array_of_candidates,dtype=int)

@@ -54,23 +54,13 @@ class GeneticAlgorithm(Search):
         import heapq
         list_for_heapq = []
         evaluation_values_not_to_be_calculated_again = []
-        for i in range(len(population)):
+        for i in range(len(population)):# O(n)
             evaluation_values_not_to_be_calculated_again.append(self.evaluation(population[i][1]))
             total += evaluation_values_not_to_be_calculated_again[i]
         for i in range(len(population)):# O(n)
-            evaluation_value=evaluation_values_not_to_be_calculated_again[i]
-            evaluation_value = self.deal_with_division_by_zero(evaluation_value)
-            evaluation_value /= total
-            evaluation_value = -evaluation_value
+            evaluation_value = evaluation_values_not_to_be_calculated_again[i]
             heapq.heappush(list_for_heapq,(evaluation_value,tuple(population[i])))
         population  = list_for_heapq
-    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-    #                               deal_with_division_by_zero
-    #/////////////////////////////////////////////////////////////////////////
-    def deal_with_division_by_zero(self,evaluation_value):
-        if evaluation_value == 0:
-            return float('inf')
-        return 1/evaluation_value
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               select_population
     #/////////////////////////////////////////////////////////////////////////
@@ -80,6 +70,7 @@ class GeneticAlgorithm(Search):
         for _ in range(len(population)):
             # 1. Take k individuals randomly
             import numpy as np
+            np.seed(42)
             import heapq
             number_of_individuals_to_take = np.random.randint(1,k+1)
             # 2. Play the tournament
@@ -170,23 +161,23 @@ class GeneticAlgorithm(Search):
     #/////////////////////////////////////////////////////////////////////////
     from Selection import Selection
     def combine(self,population_one,population_two,strategy_combine = Selection.REPLACEMENT):
-        truncation_policy_list = []
+        bag_of_individuals = []
         import heapq
         if  len(population_one) % 2 != 0:
-            truncation_policy_list.append(heapq.heappop(population_one)[1])
+            bag_of_individuals.append(heapq.heappop(population_one)[1])
         from Selection import Selection
         match(strategy_combine):
             case Selection.REPLACEMENT:
                 return population_two
             case Selection.ELITISM:
                 for _ in range(int(len(population_two)-1)):
-                    truncation_policy_list.append(heapq.heappop(population_two)[1])
-                truncation_policy_list.append(heapq.heappop(population_one)[1])
-                return truncation_policy_list
+                    bag_of_individuals.append(heapq.heappop(population_two)[1])
+                bag_of_individuals.append(heapq.heappop(population_one)[1])
+                return bag_of_individuals
             case Selection.TRUNCATION:
                 for _ in range(int(len(population_one)/2)):
-                    truncation_policy_list.append(heapq.heappop(population_one)[1])
-                    truncation_policy_list.append(heapq.heappop(population_two)[1])
-                return truncation_policy_list
+                    bag_of_individuals.append(heapq.heappop(population_one)[1])
+                    bag_of_individuals.append(heapq.heappop(population_two)[1])
+                return bag_of_individuals
             case _: 
                 return population_two
