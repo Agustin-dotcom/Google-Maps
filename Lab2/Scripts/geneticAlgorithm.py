@@ -77,7 +77,7 @@ class GeneticAlgorithm(Search):
             tournament = []
             for _ in range(number_of_individuals_to_take):
                 take_this_population = np.random.randint(0,k)
-                heapq.heappush(tournament,(self.evaluation(population[take_this_population]),tuple(population[take_this_population])))
+                heapq.heappush(tournament,(self.evaluation(population[take_this_population][1]),tuple(population[take_this_population][1])))
             new_population.append(heapq.heappop(tournament)[1])
         return new_population
         
@@ -150,11 +150,11 @@ class GeneticAlgorithm(Search):
     def mutation(self,population):
         mutation_rate = 0.1
         import random
-        
+        random.seed(42)
         for i in range(len(population)): # going through solutions
-            for j in range(len(population[i][1])): # going through bits
+            for j in range(len(population[i])): # going through bits
                 if random.uniform(0,1) <= mutation_rate:
-                    population[i][1][j] = 1 - population[i][1].item(j) # mutate gene
+                    population[i][j] = 1 - population[i].item(j) # mutate gene
         population = population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       combine
