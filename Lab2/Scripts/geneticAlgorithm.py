@@ -155,7 +155,6 @@ class GeneticAlgorithm(Search):
             for j in range(len(population[i])): # going through bits
                 if random.uniform(0,1) <= mutation_rate:
                     population[i][j] = 1 - population[i].item(j) # mutate gene
-        population = population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       combine
     #/////////////////////////////////////////////////////////////////////////
