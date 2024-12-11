@@ -24,7 +24,7 @@ class Search(ABC):
     #////////////////////////////////////////////////////////////////////
     def evaluation(self,solution):#O(n^2)
         total_population = 0 
-        weight_per_station = 0
+        weight_per_candidate = 0
         
         # 1. Iterate through each station
         for idx,i in enumerate(self.problem.dictionary.get('candidates').values()): # O(n^2)
@@ -33,13 +33,13 @@ class Search(ABC):
                 continue 
             pop = i.get('population')
             total_population += pop 
-            station = i.get('identifier') 
-            Search.final = station
+            candidate = i.get('identifier') 
+            Search.final = candidate
+            print(f'place_id={candidate};citizens={pop}')
             # 2. Calculate the time from each candidate to a fixed station
             for j in self.problem.dictionary.get('candidates').values(): # O(n) 
-                candidate = j.get('identifier')
-                print(f'place_id={candidate};citizens={pop}')
-                Search.initial = candidate 
+                station = j.get('identifier')
+                Search.initial = station 
                 time_a_star = self.get_time_a_star() 
                 print(f'to station with id {station} = {time_a_star}')
                 if time_a_star == 0:
@@ -48,8 +48,11 @@ class Search(ABC):
                     min_of_all_a_star = time_a_star
             if min_of_all_a_star == float('inf'):
                 continue
-            weight_per_station += min_of_all_a_star * pop
-        return weight_per_station / total_population 
+            print(f'min_distance --> {min_of_all_a_star}')
+            weight_per_candidate += min_of_all_a_star * pop
+            print(f'accounting for ={weight_per_candidate}')
+            print(f'__________________________________________')
+        return weight_per_candidate / total_population 
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       get_time_a_star
     #////////////////////////////////////////////////////////////////////

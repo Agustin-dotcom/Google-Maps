@@ -70,7 +70,7 @@ class GeneticAlgorithm(Search):
         for _ in range(len(population)):
             # 1. Take k individuals randomly
             import numpy as np
-            np.seed(42)
+            np.random.seed(42)
             import heapq
             number_of_individuals_to_take = np.random.randint(1,k+1)
             # 2. Play the tournament
