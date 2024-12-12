@@ -5,10 +5,13 @@ import heapq
 sys.path.append('c:\\users\\agus\\appdata\\local\\programs\\python\\python312\\lib\\site-packages')
 import numpy as np
 
+
 from abc import ABC,abstractmethod
 class Search(ABC):
     initial = 0
     final = 0
+    a_star_total = 0
+    a_star_real = 0
     def __init__(self,problem):
         self.problem = problem
         self.openDS = [] # open_data_structure
@@ -33,7 +36,8 @@ class Search(ABC):
             total_population += pop 
             candidate = i.get('identifier') 
             Search.initial = candidate
-            if Main.DEBUG:
+            from Main import Main
+            if Main.DEBUG_EVALUATION:
                 print(f'place_id={candidate};citizens={pop}')
             # 2. Calculate the time from each candidate to a fixed station
             for idj,j in enumerate(self.problem.dictionary.get('candidates').values()): # O(n) 
@@ -43,17 +47,17 @@ class Search(ABC):
                 Search.final = station 
                 time_a_star = self.get_time_a_star() 
                 from Main import Main
-                if Main.DEBUG:
+                if Main.DEBUG_EVALUATION:
                     print(f'to station with id {station} = {time_a_star}')
                 if time_a_star < min_of_all_a_star:
                     min_of_all_a_star = time_a_star
             if min_of_all_a_star == float('inf'):
                 continue
-            if Main.DEBUG:
+            if Main.DEBUG_EVALUATION:
                 print(f'min_distance --> {min_of_all_a_star}')
             only_this_one = min_of_all_a_star * pop
             weight_per_candidate += only_this_one
-            if Main.DEBUG:
+            if Main.DEBUG_EVALUATION:
                 print(f'accounting for ={only_this_one}')
                 print(f'__________________________________________')
         return weight_per_candidate / total_population 
@@ -61,7 +65,7 @@ class Search(ABC):
     #                       get_time_a_star
     #////////////////////////////////////////////////////////////////////
     def get_time_a_star(self):
-        
+        Search.a_star_total += 1
         if( not self.is_already_in_memory()): # if it is NOT in memory
             # save it in memory
             return self.save_changes()
@@ -77,6 +81,7 @@ class Search(ABC):
     #////////////////////////////////////////////////////////////////////
     def save_changes(self):
         from AStar import AStar
+        Search.a_star_real += 1
         instance_of_search = AStar(self.problem)
         time_a_star = instance_of_search.search()
         self.time[(Search.initial,Search.final)] = time_a_star

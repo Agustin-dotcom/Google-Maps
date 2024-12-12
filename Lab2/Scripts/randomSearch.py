@@ -1,7 +1,7 @@
 from Search import Search
 from Solution import Solution
 class RandomSearch(Search):
-    def search(self,MaxIters):
+    def search(self,MaxIters = 50):
         iteration = 0
         list_of_solutions_with_corresponding_score = []
         while (iteration < MaxIters):

@@ -8,15 +8,14 @@ class AStar(Search):# takes into account g(n), not only h(n)
     ##############################################################################################
     ############################################# insert #########################################
     ##############################################################################################
+    def __init__(self,problem):
+        self.distance = dict()
+        super().__init__(problem)
     def insert(self,element):
-         # element is a node
-        """self.openDS is by default a deque() (see Search __init__) so we
-        have to convert deque() into a list"""
         goalId = Search.final
         self.openDS = list(self.openDS)
         heuristic = (self.computeHeuristic(element,goalId)/self.problem.dictionary.get('maxSpeedOfAllSpeeds'))+element.accumulatedCost
-        #print('\n-----------\n'.join(map(str,self.openDS)))
-        heapq.heappush(self.openDS,(heuristic,element)) # element is going to be a paired value (h,Node)
+        heapq.heappush(self.openDS,(heuristic,element))
     ##############################################################################################
     ############################################ extract #########################################
     ##############################################################################################
@@ -27,10 +26,18 @@ class AStar(Search):# takes into account g(n), not only h(n)
     ##############################################################################################
     def computeHeuristic(self,node_param,goalId): #O(1)
         self.openDS = list(self.openDS) 
-        coord_1 = (node_param.state.longitude, node_param.state.latitude) 
-        coord_2 = (self.problem.dictionary.get('intersections').get(goalId).get('longitude'), 
-        self.problem.dictionary.get('intersections').get(goalId).get('latitude'))   
-        resultado = self.haversine(coord_1[0], coord_1[1], coord_2[0], coord_2[1]) 
+        coord_1 = (
+            node_param.state.longitude,
+              node_param.state.latitude
+              ) 
+        coord_2 = (
+            self.problem.dictionary.get('intersections').get(goalId).get('longitude'), 
+        self.problem.dictionary.get('intersections').get(goalId).get('latitude')
+        )   
+        if (coord_1,coord_2) in self.distance:
+            return self.distance.get((coord_1,coord_2))
+        resultado = self.haversine(coord_1,coord_2)
+        self.distance[(coord_1,coord_2)] = resultado 
         distancia = resultado * 1000
         return distancia
 
@@ -38,22 +45,25 @@ class AStar(Search):# takes into account g(n), not only h(n)
 #                   haversine
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     
-    def haversine(self,lon1, lat1, lon2, lat2):
-        """
-        Calculate the great circle distance in kilometers between two points 
-        on the earth (specified in decimal degrees)
-        """
-        # convert decimal degrees to radians 
-        from math import radians, cos, sin, asin, sqrt
-        lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    def haversine(self,coord1,coord2):
+        lon1,lat1=coord1
+        lon2,lat2=coord2
+        import math
+        R=6371000                               # radius of Earth in meters
+        phi_1=math.radians(lat1)
+        phi_2=math.radians(lat2)
 
-        # haversine formula 
-        dlon = lon2 - lon1 
-        dlat = lat2 - lat1 
-        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-        c = 2 * asin(sqrt(a)) 
-        r = 6371 # Radius of earth in kilometers. Use 3956 for miles. Determines return value units.
-        return c * r
+        delta_phi=math.radians(lat2-lat1)
+        delta_lambda=math.radians(lon2-lon1)
+
+        a=math.sin(delta_phi/2.0)**2+\
+           math.cos(phi_1)*math.cos(phi_2)*\
+           math.sin(delta_lambda/2.0)**2
+        c=2*math.atan2(math.sqrt(a),math.sqrt(1-a))
+        
+        meters=R*c                         # output distance in meters
+        km=meters/1000.0              # output distance in kilometers
+        return km
     ##############################################################################################
     ######################################### search #########################################
     ##############################################################################################
@@ -81,11 +91,11 @@ class AStar(Search):# takes into account g(n), not only h(n)
         from Node import Node
         from State import State
         from Action import Action
-        self.root = Node(None,State(initial,longitudeInitialNode,latitudeInitialNode),Action(None,initial,0),0,0) # no estoy seguro si para llegar al nodo raiz action == None
+        self.root = Node(None,State(initial,longitudeInitialNode,latitudeInitialNode),Action(None,initial,0),0,0) 
         self.nodesGenerated+=1
         self.root.momento = self.nodesGenerated
     #################################################################################
     ####################             testGoal              ##########################
     #################################################################################
     def testGoal(self,node):# O(1)
-        return Search.final == node.state.state# node.state es de tipo State y node.state.state es de tipo int
+        return Search.final == node.state.state
