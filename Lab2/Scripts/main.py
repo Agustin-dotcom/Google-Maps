@@ -26,12 +26,7 @@ class Main:
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     nameProblem VARCHAR(50),
                     typeOfProblem TEXT,
-                    nodesGenerated INTEGER,
-                    nodesExpanded INTEGER,
                     executionTime REAL,
-                    formattedCostTime TEXT,
-                    depthOfSolution INTEGER,
-                    SolutionCost REAL,
                     algorithm TEXT
                     )''')
         print("Tabla 'resultados' creada o ya existe.")
@@ -51,6 +46,7 @@ class Main:
                         print(f'num_candidates is {len(problem.dictionary.get('candidates'))}, to select {problem.dictionary.get('number_stations')}')
                     start = time.perf_counter()
                     if Main.DEBUG_MAIN:
+                        print(f'Problem {i}')
                         print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
                         print(f"\t \t {k.__class__.__name__}") 
                         print("//////////////////////////////////////////")
@@ -65,26 +61,30 @@ class Main:
                         print(f'fitness = {solution.score}')
                         print(f'The {problem.dictionary.get('number_stations')} stations will be located in intersections:')
                         print(solution.solution)
-                        for id,i in enumerate(search.problem.dictionary.get('candidates').values()):
+                        print()
+                        print(f'The following are the stations ')
+                        print('[',end=' ')
+                        for id,i_ in enumerate(search.problem.dictionary.get('candidates').values()):
                             if  solution.solution[id] == 0:
                                 continue
-                            print(i.get('identifier'))
+                            print(id,end=' ')
+                        print(']')
                         print('\n')
                         print('A_Star calls:')
                         print(f'\ttotal --> {Search.a_star_total}')
                         print(f'\treal --> {Search.a_star_real}')
                         print('Evaluated individuals:')
-                        print(f'\ttotal --> ')
-                        print(f'\treal --> ')
+                        print(f'\ttotal --> {Search.evaluated_total}')
+                        print(f'\treal --> {Search.evaluated_real}')
                         print('___________________________________________')
                         print('\n')
-                        self.guardar_en_base_de_datos(i,problem,execution_time,j,k.__class__.__name__)
+                        self.guardar_en_base_de_datos(i,execution_time,j,k.__class__.__name__)
     def formatear_segundos(self,segundos):
         horas = int(segundos // 3600)
         minutos = int((segundos % 3600) // 60)
         segundos_restantes = segundos % 60
         return f"{horas:02}:{minutos:02}:{segundos_restantes:02}"
-    def guardar_en_base_de_datos(self,nombre_problema,problem,tiempo_ejecucion,tipo_problema,algoritmo):
+    def guardar_en_base_de_datos(self,nombre_problema,tiempo_ejecucion,tipo_problema,algoritmo):
         os.chdir("C:\\googleMapsVS\\Google-Maps\\Lab2\\")
         __file__ = "resultados_programa_lab2.db"
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -94,15 +94,9 @@ class Main:
         c.execute('''INSERT INTO resultados 
                          (nameProblem,
                     typeOfProblem,
-                    nodesGenerated,
-                    nodesExpanded,
                     executionTime,
-                    formattedCostTime,
-                    depthOfSolution,
-                    SolutionCost,
                     algorithm) 
-                         VALUES (?,?,?,?, ?, ?, ?, ?, ?)''', 
-                     (nombre_problema,tipo_problema, problem.nodesGenerated,problem.expandedNodes, 
-                     tiempo_ejecucion,self.formatear_segundos(problem.totalCost), problem.depth, 
-                     problem.totalCost, algoritmo))
+                         VALUES (?,?,?, ?)''', 
+                     (nombre_problema,tipo_problema,  
+                     tiempo_ejecucion, algoritmo))
         db.commit()

@@ -81,7 +81,7 @@ class AStar(Search):# takes into account g(n), not only h(n)
                 for  successor in successors1: # O(n)
                     self.insert(successor) # O(1)
                 self.explored.add(node.state.state) 
-        return float('inf') 
+        return 3600*5
     ##############################################################################################
     ######################################## initializeOpen ######################################
     ##############################################################################################

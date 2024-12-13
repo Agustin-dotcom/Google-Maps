@@ -12,12 +12,17 @@ class Search(ABC):
     final = 0
     a_star_total = 0
     a_star_real = 0
+    evaluated_real = 0
+    evaluated_total = 0
+    time = dict()
+    individuals_already_evaluated = dict()
     def __init__(self,problem):
+        Search.evaluated_total = 0
+        Search.evaluated_real = 0
         self.problem = problem
         self.openDS = [] # open_data_structure
         self.explored = {0}
         self.nodesGenerated = 0
-        self.time = dict()
     def insert(self,element):  
         self.openDS.append(element)
     def extract():
@@ -26,12 +31,15 @@ class Search(ABC):
     #                       evaluation
     #////////////////////////////////////////////////////////////////////
     def evaluation(self,solution):#O(n^2)
+        if tuple(solution) in Search.individuals_already_evaluated:
+            Search.evaluated_total += 1
+            return Search.individuals_already_evaluated.get(tuple(solution))
         total_population = 0 
         weight_per_candidate = 0
         
         # 1. Iterate through each station
         for idx,i in enumerate(self.problem.dictionary.get('candidates').values()): # O(n^2)
-            min_of_all_a_star = float('inf')
+            min_of_all_a_star = 3600*5
             pop = i.get('population')
             total_population += pop 
             candidate = i.get('identifier') 
@@ -51,7 +59,7 @@ class Search(ABC):
                     print(f'to station with id {station} = {time_a_star}')
                 if time_a_star < min_of_all_a_star:
                     min_of_all_a_star = time_a_star
-            if min_of_all_a_star == float('inf'):
+            if min_of_all_a_star == 3600*5:
                 continue
             if Main.DEBUG_EVALUATION:
                 print(f'min_distance --> {min_of_all_a_star}')
@@ -60,7 +68,10 @@ class Search(ABC):
             if Main.DEBUG_EVALUATION:
                 print(f'accounting for ={only_this_one}')
                 print(f'__________________________________________')
-        return weight_per_candidate / total_population 
+        Search.evaluated_real += 1
+        Search.evaluated_total += 1
+        Search.individuals_already_evaluated[tuple(solution)] = weight_per_candidate / total_population
+        return Search.individuals_already_evaluated[tuple(solution)]
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       get_time_a_star
     #////////////////////////////////////////////////////////////////////
@@ -70,12 +81,12 @@ class Search(ABC):
             # save it in memory
             return self.save_changes()
         #otherwise just get it from memory
-        return self.time.get((Search.initial,Search.final))
+        return Search.time.get((Search.initial,Search.final))
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       is_already_in_memory
     #////////////////////////////////////////////////////////////////////
     def is_already_in_memory(self):
-        return (Search.initial,Search.final) in self.time
+        return (Search.initial,Search.final) in Search.time
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       save_changes
     #////////////////////////////////////////////////////////////////////
@@ -84,7 +95,7 @@ class Search(ABC):
         Search.a_star_real += 1
         instance_of_search = AStar(self.problem)
         time_a_star = instance_of_search.search()
-        self.time[(Search.initial,Search.final)] = time_a_star
+        Search.time[(Search.initial,Search.final)] = time_a_star
         return time_a_star
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       search

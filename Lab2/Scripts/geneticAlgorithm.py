@@ -10,6 +10,8 @@ class GeneticAlgorithm(Search):
         self.p = []
         self.p_ = []
         self.momento_solution = 0
+        Search.a_star_real = 0
+        Search.a_star_total = 0
         super().__init__(problem)
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       search
@@ -40,8 +42,7 @@ class GeneticAlgorithm(Search):
         population = []
         import heapq
         for _ in range(population_size):#O(n)
-            heapq.heappush(population,Solution(0,self.generateARandomSolution(),Solution.momento))
-            Solution.momento += 1
+            heapq.heappush(population,Solution(0,self.generateARandomSolution()))
         return population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                           evaluate
@@ -56,24 +57,23 @@ class GeneticAlgorithm(Search):
             total += evaluation_values_not_to_be_calculated_again[i]
         for i in range(len(population)):# O(n)
             evaluation_value = evaluation_values_not_to_be_calculated_again[i]
-            heapq.heappush(list_for_heapq,Solution(evaluation_value,population[i].solution,Solution.momento))
-            Solution.momento += 1
+            heapq.heappush(list_for_heapq,Solution(evaluation_value,population[i].solution))
         return list_for_heapq
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                               select_population
     #/////////////////////////////////////////////////////////////////////////
     def select_population(self,population):
-        k = len(population)
+        length_of_the_list_of_individuals = len(population)
         new_population = []
+        # 1. Take k individuals randomly
+        k = 3 #np.random.randint(1,length_of_the_list_of_individuals+1)
         for _ in range(len(population)):
-            # 1. Take k individuals randomly
             import numpy as np
             import heapq
-            number_of_individuals_to_take = 3 #np.random.randint(1,k+1)
             # 2. Play the tournament
             tournament = []
-            for _ in range(number_of_individuals_to_take):
-                take_this_population = np.random.randint(0,k)
+            for _ in range(k):
+                take_this_population = np.random.randint(0,length_of_the_list_of_individuals)
                 heapq.heappush(tournament,population[take_this_population])
             new_population.append(heapq.heappop(tournament))
         return new_population
@@ -86,7 +86,7 @@ class GeneticAlgorithm(Search):
             population = population[:-1]
         first_half = []
         for i in range(int(len(population)/2)):
-            first_half.append(population[i])
+            first_half.append(population[0])
             population = population[1:]
         final_crossover = []
         for i in range(len(population)):
@@ -145,10 +145,15 @@ class GeneticAlgorithm(Search):
         mutation_rate = 0.2
         import random
         for i in range(len(population)): # going through solutions
-            for j in range(len(population[i].solution)): # going through bits
-                if random.uniform(0,1) <= mutation_rate:
-                    population[i].solution[j] = 1 - population[i].solution.item(j) # mutate gene
-                    population[i].solution = self.correctPossibleNumberStations(population[i].solution)
+            if random.uniform(0,1) <= mutation_rate:
+                positions_where_zeros_are = np.where(population[i].solution == 0)[0]
+                in_this_position_there_is_a_ZERO = np.random.choice(positions_where_zeros_are,1, replace = False)
+                j = in_this_position_there_is_a_ZERO
+                population[i].solution[j] = 1 # mutate gene
+                positions_where_ones_are = np.where(population[i].solution == 1)[0]
+                in_this_position_there_is_a_ONE = np.random.choice(positions_where_ones_are,1,replace = False)
+                j = in_this_position_there_is_a_ONE
+                population[i].solution[j] = 0  # mutate gene
         return population
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                       combine
