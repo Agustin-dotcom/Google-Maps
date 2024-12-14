@@ -55,8 +55,6 @@ Evaluated individuals:
 
 __________________________________________________
 
-The 3 stations will be located in intersections:
-[ 2 11 17]
 sample-problems-lab2/small/calle_agustina_aroca_albacete_250_0_candidates_75_ns_7.json
 total seconds (execution time) is : 0:00:00.853508
 Best individual : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -78,9 +76,6 @@ Evaluated individuals:
 	real --> 3101
 
 __________________________________________________
-
-The 7 stations will be located in intersections:
-[17 26 40 46 51 56 65]
 sample-problems-lab2/small/calle_herreros_albacete_250_1_candidates_25_ns_5.json
 total seconds (execution time) is : 0:00:00.112625
 Best individual : [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -103,8 +98,6 @@ Evaluated individuals:
 
 __________________________________________________
 
-The 5 stations will be located in intersections:
-[ 0  4  7  9 11]
 sample-problems-lab2/medium/
 sample-problems-lab2/medium/calle_ínsula_barataria_albacete_500_0_candidates_140_ns_34.json
 total seconds (execution time) is : 0:00:15.444181
@@ -129,9 +122,6 @@ Evaluated individuals:
 
 __________________________________________________
 
-The 34 stations will be located in intersections:
-[  0   1  13  16  23  24  27  30  32  36  38  39  43  44  48  55  61  71
-  74  77  78  82  85  90  96  98  99 105 110 118 122 128 130 138]
 sample-problems-lab2/medium/calle_franciscanos_albacete_500_3_candidates_107_ns_8.json
 total seconds (execution time) is : 0:00:01.439443
 Best individual : [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
@@ -154,8 +144,6 @@ Evaluated individuals:
 
 __________________________________________________
 
-The 8 stations will be located in intersections:
-[  6  20  40  41  51  86  96 102]
 sample-problems-lab2/medium/calle_agustina_aroca_albacete_500_1_candidates_89_ns_22.json
 total seconds (execution time) is : 0:00:03.560331
 Best individual : [0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
@@ -178,8 +166,6 @@ Evaluated individuals:
 
 __________________________________________________
 
-The 22 stations will be located in intersections:
-[ 1  3  5  6  9 12 17 19 20 21 23 35 36 37 45 46 51 57 59 71 78 86]
 sample-problems-lab2/medium/calle_palmas_de_gran_canaria_albacete_500_2_candidates_167_ns_23.json
 total seconds (execution time) is : 0:00:10.627251
 Best individual : [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
@@ -203,9 +189,6 @@ Evaluated individuals:
 
 __________________________________________________
 
-The 23 stations will be located in intersections:
-[  2  16  19  22  26  29  32  33  43  48  59  64  66  76  94 114 120 122
- 137 143 149 152 160]
 sample-problems-lab2/medium/calle_antonio_gotor_albacete_500_4_candidates_118_ns_13.json
 
 total seconds (execution time) is : 0:00:04.030445
@@ -229,8 +212,6 @@ Evaluated individuals:
 
 __________________________________________________
 
-The 13 stations will be located in intersections:
-[ 10  17  27  47  49  50  55  74  75  76  84  97 105]
 sample-problems-lab2/medium/camino_de_alto_los_chorlitos_albacete_2000_4_candidates_121_ns_28.json
 total seconds (execution time) is : 0:00:09.372497
 Best individual : [1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
@@ -254,9 +235,6 @@ Evaluated individuals:
 
 __________________________________________________
 
-The 28 stations will be located in intersections:
-[  0   1   4  11  17  19  26  27  28  33  37  38  50  51  57  63  64  67
-  71  90  91  92 101 103 105 106 108 118]
 sample-problems-lab2/medium/calle_f_albacete_2000_0_candidates_25_ns_4.json
 total seconds (execution time) is : 0:00:00.090259
 Best individual : [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1]
@@ -279,8 +257,6 @@ Evaluated individuals:
 
 __________________________________________________
 
-The 4 stations will be located in intersections:
-[ 2 21 23 24]
 sample-problems-lab2/medium/camino_de_alto_los_chorlitos_albacete_2000_2_candidates_38_ns_6.json
 total seconds (execution time) is : 0:00:00.273085
 Best individual : [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0]
